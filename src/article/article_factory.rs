@@ -126,7 +126,7 @@ impl TryFrom<Result<String, std::io::Error>> for FrontMatterLine {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use std::collections::BTreeSet;
+	use std::collections::HashSet;
 
 	// This comment is taken verbatim from the java example
 	/*
@@ -155,7 +155,7 @@ mod test {
 		let article = ArticleFactory::create_from_iterators(front_matter, Content::from(std::iter::empty)).unwrap();
 		assert_eq!("Cool: A blog post", article.title.text);
 
-		let expected_tags: BTreeSet<_> = vec!["$TAG", "$TOG"]
+		let expected_tags: HashSet<_> = vec!["$TAG", "$TOG"]
 			.into_iter()
 			.map(ToString::to_string)
 			.map(|text| Tag { text })
@@ -184,7 +184,7 @@ mod test {
 		let article = ArticleFactory::create_from_iterators(front_matter, Content::from(std::iter::empty)).unwrap();
 		assert_eq!("A blog post", article.title.text);
 
-		let expected_tags: BTreeSet<_> = vec!["$TAG", "$TOG"]
+		let expected_tags: HashSet<_> = vec!["$TAG", "$TOG"]
 			.into_iter()
 			.map(ToString::to_string)
 			.map(|text| Tag { text })
@@ -220,7 +220,7 @@ mod test {
 		let article = ArticleFactory::create_from_lines(file);
 		assert_eq!("A cool blog post", article.title.text);
 
-		let expected_tags: BTreeSet<_> = vec!["$TAG", "$TOG"]
+		let expected_tags: HashSet<_> = vec!["$TAG", "$TOG"]
 			.into_iter()
 			.map(ToString::to_string)
 			.map(|text| Tag { text })

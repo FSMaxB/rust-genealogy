@@ -4,7 +4,7 @@ use crate::article::slug::Slug;
 use crate::article::tag::Tag;
 use crate::article::title::Title;
 use chrono::NaiveDate;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 
 mod article_factory;
@@ -17,7 +17,7 @@ mod title;
 #[derive(Debug)]
 pub struct Article {
 	pub title: Title,
-	pub tags: BTreeSet<Tag>,
+	pub tags: HashSet<Tag>,
 	pub date: NaiveDate,
 	pub description: Description,
 	pub slug: Slug,

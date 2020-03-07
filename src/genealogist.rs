@@ -1,4 +1,4 @@
-mod genealogist;
-mod genealogist_service;
-mod relation_type;
-mod typed_relation;
+pub mod genealogist;
+pub mod genealogist_service;
+pub mod relation_type;
+pub mod typed_relation;

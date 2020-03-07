@@ -1,3 +1,4 @@
+mod article;
 mod exception;
 mod text_parser_tests;
 mod try_iterator;

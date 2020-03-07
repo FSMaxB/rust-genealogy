@@ -2,6 +2,7 @@ use crate::article::Article;
 use crate::exception::Exception;
 use crate::genealogist::relation_type::RelationType;
 
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct TypedRelation {
 	pub article1: Article,
 	pub article2: Article,

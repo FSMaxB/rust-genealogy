@@ -1,6 +1,7 @@
 use crate::exception::Exception;
 use std::convert::TryFrom;
 
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct RelationType {
 	// Comment taken verbatim from the java implementation:
 	// `RelationType` is a string (and not an enum) because Genealogist implementations

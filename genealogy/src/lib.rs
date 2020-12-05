@@ -1,3 +1,5 @@
+mod java_replicas;
+
 #[cfg(test)]
 mod tests {
 	#[test]

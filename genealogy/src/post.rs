@@ -6,6 +6,7 @@ use chrono::NaiveDate;
 use std::collections::BTreeSet;
 
 mod description;
+mod repository;
 mod slug;
 mod tag;
 mod talk;

@@ -10,6 +10,7 @@ pub mod test_helpers;
 #[cfg(test)]
 pub mod text_parser_tests;
 mod utils;
+mod genealogist;
 
 #[tokio::main]
 async fn main() -> Result<(), Exception> {

@@ -7,6 +7,8 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = {version = "0.3", features = ['fs', 'io-util', 'stream', 'macros', 'rt-multi-thread']}
-futures = {version = "0.3", default_features = false, features = ['async-await']}
 directories = "3"
+futures = {version = "0.3", default_features = false, features = ['async-await']}
+lazy_static = "1"
+regex = "1"
+tokio = {version = "0.3", features = ['fs', 'io-util', 'stream', 'macros', 'rt-multi-thread']}

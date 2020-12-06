@@ -3,6 +3,7 @@ use crate::java_replicas::exception::Exception;
 
 mod config;
 mod java_replicas;
+mod post;
 mod process_details;
 
 #[tokio::main]

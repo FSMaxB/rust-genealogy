@@ -6,9 +6,11 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::PostTrait;
 use chrono::NaiveDate;
+use debug_stub_derive::DebugStub;
 use std::collections::BTreeSet;
 use std::hash::{Hash, Hasher};
 
+#[derive(DebugStub)]
 pub struct Article {
 	pub title: Title,
 	pub tags: BTreeSet<Tag>,
@@ -16,6 +18,7 @@ pub struct Article {
 	pub description: Description,
 	pub slug: Slug,
 	pub repository: Option<Repository>,
+	#[debug_stub = "Content"]
 	pub content: Content,
 }
 

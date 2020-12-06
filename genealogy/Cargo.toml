@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 chrono = "0.4"
+debug_stub_derive = "0.3"
 directories = "3"
 futures = {version = "0.3", default_features = false, features = ['async-await']}
 lazy_static = "1"

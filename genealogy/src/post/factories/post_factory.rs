@@ -7,25 +7,18 @@ use std::path::PathBuf;
 
 pub struct PostFactory;
 
-impl PostFactory {
-	#[allow(dead_code)]
-	pub const DATE: &'static str = "date";
-	#[allow(dead_code)]
-	pub const DESCRIPTION: &'static str = "description";
-	#[allow(dead_code)]
-	pub const REPOSITORY: &'static str = "repo";
-	#[allow(dead_code)]
-	pub const SLIDES: &'static str = "slides";
-	#[allow(dead_code)]
-	pub const SLUG: &'static str = "slug";
-	#[allow(dead_code)]
-	pub const TAGS: &'static str = "tags";
-	#[allow(dead_code)]
-	pub const TITLE: &'static str = "title";
-	#[allow(dead_code)]
-	pub const VIDEO: &'static str = "videoSlug";
+pub const DATE: &str = "date";
+pub const DESCRIPTION: &str = "description";
+pub const REPOSITORY: &str = "repo";
+#[allow(dead_code)]
+pub const SLIDES: &str = "slides";
+pub const SLUG: &str = "slug";
+pub const TAGS: &str = "tags";
+pub const TITLE: &str = "title";
+#[allow(dead_code)]
+pub const VIDEO: &str = "videoSlug";
 
-	#[allow(dead_code)]
+impl PostFactory {
 	pub fn read_post_from_path(file: &PathBuf) -> Result<RawPost, Exception> {
 		unchecked_files_read_all_lines(file)
 			.map_err(|error| {
@@ -38,7 +31,6 @@ impl PostFactory {
 			.and_then(Self::read_post_from_lines)
 	}
 
-	#[allow(dead_code)]
 	pub fn read_post_from_lines(file_lines: Vec<String>) -> Result<RawPost, Exception> {
 		let front_matter = extract_front_matter(file_lines.clone())?; // FIXME: Cloning for now, but do it properly with slices and lifetimes later.
 		let content = Box::new(move || extract_content(file_lines));

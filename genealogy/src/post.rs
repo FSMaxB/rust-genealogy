@@ -9,17 +9,17 @@ use chrono::NaiveDate;
 use std::collections::BTreeSet;
 use std::ops::Deref;
 
-mod article;
-mod content;
-mod description;
-mod factories;
-mod repository;
-mod slug;
-mod tag;
-mod talk;
-mod title;
-mod video;
-mod video_slug;
+pub mod article;
+pub mod content;
+pub mod description;
+pub mod factories;
+pub mod repository;
+pub mod slug;
+pub mod tag;
+pub mod talk;
+pub mod title;
+pub mod video;
+pub mod video_slug;
 
 pub trait PostTrait {
 	fn title(&self) -> &Title;
@@ -29,7 +29,6 @@ pub trait PostTrait {
 	fn slug(&self) -> &Slug;
 }
 
-#[allow(dead_code)]
 pub enum Post {
 	Article(Article),
 	Talk(Talk),

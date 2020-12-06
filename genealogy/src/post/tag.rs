@@ -29,6 +29,7 @@ impl Tag {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::test_helpers::btree_set_of_tags;
 	use std::collections::BTreeSet;
 
 	#[test]
@@ -77,14 +78,5 @@ mod test {
 		let expected_tags = btree_set_of_tags(&["$TAG"]);
 
 		assert_eq!(expected_tags, Tag::from_text(tags_text));
-	}
-
-	fn btree_set_of_tags(texts: &[&str]) -> BTreeSet<Tag> {
-		texts
-			.iter()
-			.copied()
-			.map(str::to_owned)
-			.map(|text| Tag { text })
-			.collect()
 	}
 }

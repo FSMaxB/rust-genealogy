@@ -3,8 +3,10 @@ use crate::java_replicas::exception::Exception;
 
 mod config;
 mod java_replicas;
-mod post;
+pub mod post;
 mod process_details;
+#[cfg(test)]
+pub mod test_helpers;
 #[cfg(test)]
 pub mod text_parser_tests;
 mod utils;

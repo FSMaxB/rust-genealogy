@@ -6,6 +6,7 @@ pub enum Exception {
 	IllegalArgument(String),
 	UncheckedIO(std::io::Error),
 	RuntimeException(String),
+	DateTimeException(chrono::format::ParseError),
 }
 
 impl Display for Exception {
@@ -21,6 +22,9 @@ impl Display for Exception {
 			RuntimeException(message) => {
 				write!(formatter, "RuntimeException: '{}'", message)
 			}
+			DateTimeException(error) => {
+				write!(formatter, "DateTimeException: '{}'", error)
+			}
 		}
 	}
 }
@@ -30,5 +34,11 @@ impl Error for Exception {}
 impl From<std::io::Error> for Exception {
 	fn from(io_error: std::io::Error) -> Self {
 		Self::UncheckedIO(io_error)
+	}
+}
+
+impl From<chrono::format::ParseError> for Exception {
+	fn from(parse_error: chrono::format::ParseError) -> Self {
+		Self::DateTimeException(parse_error)
 	}
 }

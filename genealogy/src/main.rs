@@ -2,7 +2,7 @@ use crate::config::Config;
 use crate::helpers::exception::Exception;
 
 mod config;
-mod genealogist;
+pub mod genealogist;
 mod genealogy;
 pub(crate) mod helpers;
 pub mod post;

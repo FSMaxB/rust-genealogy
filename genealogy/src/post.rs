@@ -50,3 +50,22 @@ impl Deref for Post {
 		}
 	}
 }
+
+#[cfg(test)]
+pub mod test {
+	use super::*;
+	use crate::helpers::exception::Exception;
+
+	pub fn post_with_slug(slug: &str) -> Result<Post, Exception> {
+		let article = Article {
+			title: Title::from_text("title")?,
+			tags: Tag::from_text("[Tag]"),
+			date: chrono::offset::Local::today().naive_local(),
+			description: Description::from_text("description")?,
+			slug: Slug::from_value(slug.to_string())?,
+			repository: None,
+			content: Box::new(|| Box::new(std::iter::once("".to_string()))),
+		};
+		Ok(Post::Article(article))
+	}
+}

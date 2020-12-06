@@ -38,3 +38,38 @@ where
 		}
 	}
 }
+
+#[cfg(test)]
+mod test {
+	use crate::helpers::exception::Exception::IllegalArgument;
+	use crate::helpers::iterator::IteratorExtension;
+
+	#[allow(clippy::unit_arg)]
+	#[test]
+	fn empty_stream_empty_optional() {
+		let iterator = std::iter::empty::<()>();
+		let option = iterator.equal().map(Result::unwrap).fold(None, |_, value| Some(value));
+		assert!(option.is_none())
+	}
+
+	#[test]
+	fn single_element_stream_optional_with_that_element() {
+		let iterator = std::iter::once("element");
+		let option = iterator.equal().map(Result::unwrap).fold(None, |_, value| Some(value));
+		assert_eq!(Some("element"), option);
+	}
+
+	#[test]
+	fn equal_element_stream_optional_with_that_element() {
+		let iterator = vec!["element", "element", "element"].into_iter();
+		let option = iterator.equal().map(Result::unwrap).fold(None, |_, value| Some(value));
+		assert_eq!(Some("element"), option);
+	}
+
+	#[test]
+	fn non_equal_element_stream_throws_exception() {
+		let iterator = vec!["element", "other element"].into_iter();
+		let result = iterator.equal().collect::<Result<Vec<_>, _>>();
+		assert!(matches!(result, Err(IllegalArgument(_))))
+	}
+}

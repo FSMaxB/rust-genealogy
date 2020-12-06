@@ -13,3 +13,4 @@ futures = {version = "0.3", default_features = false, features = ['async-await']
 lazy_static = "1"
 regex = "1"
 tokio = {version = "0.3", features = ['fs', 'io-util', 'stream', 'macros', 'rt-multi-thread']}
+url = "2"

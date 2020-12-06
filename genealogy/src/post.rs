@@ -8,6 +8,7 @@ use std::collections::BTreeSet;
 mod description;
 mod slug;
 mod tag;
+mod talk;
 mod title;
 mod video_slug;
 

@@ -5,6 +5,8 @@ use crate::post::title::Title;
 use chrono::NaiveDate;
 use std::collections::BTreeSet;
 
+mod article;
+mod content;
 mod description;
 mod repository;
 mod slug;

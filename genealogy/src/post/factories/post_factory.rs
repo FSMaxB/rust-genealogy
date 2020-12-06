@@ -10,12 +10,10 @@ pub struct PostFactory;
 pub const DATE: &str = "date";
 pub const DESCRIPTION: &str = "description";
 pub const REPOSITORY: &str = "repo";
-#[allow(dead_code)]
 pub const SLIDES: &str = "slides";
 pub const SLUG: &str = "slug";
 pub const TAGS: &str = "tags";
 pub const TITLE: &str = "title";
-#[allow(dead_code)]
 pub const VIDEO: &str = "videoSlug";
 
 impl PostFactory {

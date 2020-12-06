@@ -2,13 +2,13 @@ use crate::java_replicas::exception::Exception;
 use crate::java_replicas::exception::Exception::RuntimeException;
 use crate::post::article::Article;
 use crate::post::description::Description;
+use crate::post::factories::parse_date;
 use crate::post::factories::post_factory::{PostFactory, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE};
 use crate::post::factories::raw_post::RawPost;
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
-use chrono::NaiveDate;
 use std::path::PathBuf;
 
 pub struct ArticleFactory;
@@ -41,7 +41,7 @@ fn create_article(post: RawPost) -> Result<Article, Exception> {
 	Ok(Article {
 		title: Title::from_text(front_matter.value_of(TITLE)?)?,
 		tags: Tag::from_text(front_matter.value_of(TAGS)?),
-		date: NaiveDate::parse_from_str(front_matter.value_of(DATE)?, "%Y-%m-%d")?,
+		date: parse_date(front_matter.value_of(DATE)?)?,
 		description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,
 		slug: Slug::from_value(front_matter.value_of(SLUG)?.to_string())?,
 		repository: front_matter
@@ -58,6 +58,7 @@ fn create_article(post: RawPost) -> Result<Article, Exception> {
 mod test {
 	use super::*;
 	use crate::test_helpers::btree_set_of_tags;
+	use chrono::NaiveDate;
 
 	#[test]
 	fn create_from_front_matter_multiple_colons_get_valid_article() {

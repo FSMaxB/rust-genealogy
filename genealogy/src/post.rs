@@ -12,6 +12,7 @@ use std::ops::Deref;
 mod article;
 mod content;
 mod description;
+mod factories;
 mod repository;
 mod slug;
 mod tag;

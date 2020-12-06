@@ -1,10 +1,10 @@
 use crate::config::Config;
-use crate::java_replicas::exception::Exception;
+use crate::helpers::exception::Exception;
 
 mod config;
 mod genealogist;
 mod genealogy;
-mod java_replicas;
+pub(crate) mod helpers;
 pub mod post;
 mod process_details;
 mod recommendation;

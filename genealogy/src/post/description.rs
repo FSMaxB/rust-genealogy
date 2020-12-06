@@ -1,5 +1,5 @@
-use crate::java_replicas::exception::Exception;
-use crate::java_replicas::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::IllegalArgument;
 use crate::utils::remove_outer_quotation_marks;
 
 #[derive(Debug, PartialEq, Eq, Hash)]

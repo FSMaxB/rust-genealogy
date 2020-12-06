@@ -1,5 +1,5 @@
-use crate::java_replicas::exception::Exception;
-use crate::java_replicas::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::IllegalArgument;
 
 // TODO: Should this be wrapped in an Arc when using it?
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

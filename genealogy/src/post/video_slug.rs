@@ -1,5 +1,5 @@
-use crate::java_replicas::exception::Exception;
-use crate::java_replicas::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::IllegalArgument;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VideoSlug {

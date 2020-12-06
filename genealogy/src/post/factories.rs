@@ -1,4 +1,4 @@
-use crate::java_replicas::exception::Exception;
+use crate::helpers::exception::Exception;
 use chrono::NaiveDate;
 
 mod article_factory;

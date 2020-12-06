@@ -1,5 +1,5 @@
-use crate::java_replicas::exception::Exception;
-use crate::java_replicas::exception::Exception::RuntimeException;
+use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::RuntimeException;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
 use crate::post::factories::post_factory::{PostFactory, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE, VIDEO};

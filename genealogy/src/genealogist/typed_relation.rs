@@ -1,6 +1,6 @@
 use crate::genealogist::relation_type::RelationType;
-use crate::java_replicas::exception::Exception;
-use crate::java_replicas::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::IllegalArgument;
 use crate::post::Post;
 use std::sync::Arc;
 

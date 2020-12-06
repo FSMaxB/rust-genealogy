@@ -1,4 +1,4 @@
-use crate::java_replicas::exception::Exception;
+use crate::helpers::exception::Exception;
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::fs::File;

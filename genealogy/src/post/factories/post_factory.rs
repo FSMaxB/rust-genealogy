@@ -1,5 +1,5 @@
-use crate::java_replicas::exception::Exception;
-use crate::java_replicas::exception::Exception::{IllegalArgument, RuntimeException};
+use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::{IllegalArgument, RuntimeException};
 use crate::post::factories::raw_front_matter::RawFrontMatter;
 use crate::post::factories::raw_post::RawPost;
 use crate::utils::unchecked_files_read_all_lines;

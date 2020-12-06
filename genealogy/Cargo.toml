@@ -14,3 +14,6 @@ lazy_static = "1"
 regex = "1"
 tokio = {version = "0.3", features = ['fs', 'io-util', 'stream', 'macros', 'rt-multi-thread']}
 url = "2"
+
+[dev-dependencies]
+literally = "0.1.3"

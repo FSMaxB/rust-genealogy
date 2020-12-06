@@ -2,7 +2,7 @@ use crate::genealogist::typed_relation::TypedRelation;
 use crate::post::Post;
 
 mod genealogist_service;
-mod relation_type;
+pub mod relation_type;
 mod typed_relation;
 
 pub trait Genealogist {

@@ -3,6 +3,7 @@ use crate::java_replicas::exception::Exception;
 
 mod config;
 mod genealogist;
+mod genealogy;
 mod java_replicas;
 pub mod post;
 mod process_details;

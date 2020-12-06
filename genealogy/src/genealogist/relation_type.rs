@@ -1,7 +1,8 @@
 use crate::java_replicas::exception::Exception;
 use crate::java_replicas::exception::Exception::IllegalArgument;
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+// TODO: Should this be wrapped in an Arc when using it?
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RelationType {
 	pub value: String,
 }

@@ -1,1 +1,1 @@
-pub type Content = Box<dyn FnOnce() -> dyn Iterator<Item = String>>;
+pub type Content = Box<dyn FnOnce() -> Box<dyn Iterator<Item = String>>>;

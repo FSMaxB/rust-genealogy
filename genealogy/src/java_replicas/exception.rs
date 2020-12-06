@@ -4,7 +4,8 @@ use std::fmt::{Display, Formatter};
 #[derive(Debug)]
 pub enum Exception {
 	IllegalArgument(String),
-	UncheckedIo(tokio::io::Error),
+	UncheckedIO(std::io::Error),
+	RuntimeException(String),
 }
 
 impl Display for Exception {
@@ -14,8 +15,11 @@ impl Display for Exception {
 			IllegalArgument(message) => {
 				write!(formatter, "IllegalArgumentException: '{}'", message)
 			}
-			UncheckedIo(error) => {
+			UncheckedIO(error) => {
 				write!(formatter, "UncheckedIOException: '{}'", error)
+			}
+			RuntimeException(message) => {
+				write!(formatter, "RuntimeException: '{}'", message)
 			}
 		}
 	}
@@ -23,8 +27,8 @@ impl Display for Exception {
 
 impl Error for Exception {}
 
-impl From<tokio::io::Error> for Exception {
-	fn from(tokio_error: tokio::io::Error) -> Self {
-		Self::UncheckedIo(tokio_error)
+impl From<std::io::Error> for Exception {
+	fn from(io_error: std::io::Error) -> Self {
+		Self::UncheckedIO(io_error)
 	}
 }

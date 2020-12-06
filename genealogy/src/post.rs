@@ -11,6 +11,7 @@ mod slug;
 mod tag;
 mod talk;
 mod title;
+mod video;
 mod video_slug;
 
 pub trait PostTrait {

@@ -5,6 +5,9 @@ mod config;
 mod java_replicas;
 mod post;
 mod process_details;
+#[cfg(test)]
+pub mod text_parser_tests;
+mod utils;
 
 #[tokio::main]
 async fn main() -> Result<(), Exception> {

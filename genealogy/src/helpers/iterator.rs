@@ -4,6 +4,7 @@ use std::fmt::Debug;
 use std::iter::Iterator;
 
 pub mod equal;
+pub mod result_iterator;
 pub mod split_pair;
 
 pub trait IteratorExtension: Sized {

@@ -7,7 +7,7 @@ use crate::helpers::mean::Mean;
 use crate::post::Post;
 use std::sync::Arc;
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
 	pub post1: Arc<Post>,
 	pub post2: Arc<Post>,

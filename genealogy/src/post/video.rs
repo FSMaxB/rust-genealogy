@@ -6,6 +6,7 @@ use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
 use crate::post::PostTrait;
 use chrono::NaiveDate;
+use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::hash::{Hash, Hasher};
 
@@ -45,6 +46,20 @@ impl PostTrait for Video {
 impl PartialEq for Video {
 	fn eq(&self, other: &Self) -> bool {
 		self.slug.eq(&other.slug)
+	}
+}
+
+// NOTE: Not part of the original, but very helpful.
+impl PartialOrd for Video {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		self.slug.partial_cmp(&other.slug)
+	}
+}
+
+// NOTE: Not part of the original, but very helpful.
+impl Ord for Video {
+	fn cmp(&self, other: &Self) -> Ordering {
+		self.slug.cmp(&other.slug)
 	}
 }
 

@@ -29,7 +29,7 @@ pub trait PostTrait {
 	fn slug(&self) -> &Slug;
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Post {
 	Article(Article),
 	Talk(Talk),

@@ -7,6 +7,7 @@ use crate::post::title::Title;
 use crate::post::PostTrait;
 use chrono::NaiveDate;
 use debug_stub_derive::DebugStub;
+use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::hash::{Hash, Hasher};
 
@@ -52,6 +53,20 @@ impl PartialEq for Article {
 }
 
 impl Eq for Article {}
+
+// NOTE: Not part of the original, but very helpful.
+impl PartialOrd for Article {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		self.slug.partial_cmp(&other.slug)
+	}
+}
+
+// NOTE: Not part of the original, but very helpful.
+impl Ord for Article {
+	fn cmp(&self, other: &Self) -> Ordering {
+		self.slug.cmp(&other.slug)
+	}
+}
 
 impl Hash for Article {
 	fn hash<H: Hasher>(&self, state: &mut H) {

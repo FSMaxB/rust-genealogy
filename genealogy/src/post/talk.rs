@@ -5,6 +5,7 @@ use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
 use crate::post::PostTrait;
 use chrono::NaiveDate;
+use std::cmp::Ordering;
 use std::collections::BTreeSet;
 use std::hash::{Hash, Hasher};
 use url::Url;
@@ -49,6 +50,20 @@ impl PartialEq for Talk {
 }
 
 impl Eq for Talk {}
+
+// NOTE: Not part of the original, but very helpful.
+impl PartialOrd for Talk {
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		self.slug.partial_cmp(&other.slug)
+	}
+}
+
+// NOTE: Not part of the original, but very helpful.
+impl Ord for Talk {
+	fn cmp(&self, other: &Self) -> Ordering {
+		self.slug.cmp(&other.slug)
+	}
+}
 
 impl Hash for Talk {
 	fn hash<H: Hasher>(&self, state: &mut H) {

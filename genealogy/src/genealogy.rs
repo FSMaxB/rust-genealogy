@@ -9,7 +9,7 @@ use itertools::Itertools;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-mod relation;
+pub mod relation;
 mod weights;
 
 pub struct Genealogy {

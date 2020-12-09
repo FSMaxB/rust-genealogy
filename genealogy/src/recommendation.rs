@@ -1,10 +1,12 @@
 use crate::post::Post;
 use std::sync::Arc;
 
-#[derive(PartialEq, Eq, Hash)]
+mod recommender;
+
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Recommendation {
-	pub post: Arc<Post>,
-	pub recommended_posts: Vec<Arc<Post>>,
+	post: Arc<Post>,
+	recommended_posts: Vec<Arc<Post>>,
 }
 
 impl Recommendation {
@@ -19,5 +21,10 @@ impl Recommendation {
 			post,
 			recommended_posts: recommendations,
 		}
+	}
+
+	#[allow(dead_code)]
+	pub fn recommended_posts(&self) -> &Vec<Arc<Post>> {
+		&self.recommended_posts
 	}
 }

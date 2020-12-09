@@ -52,7 +52,7 @@ impl PartialEq for Video {
 // NOTE: Not part of the original, but very helpful.
 impl PartialOrd for Video {
 	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		self.slug.partial_cmp(&other.slug)
+		Some(self.cmp(&other))
 	}
 }
 

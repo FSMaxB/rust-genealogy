@@ -2,6 +2,7 @@ use crate::genealogy::relation::Relation;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgument;
 use crate::recommendation::Recommendation;
+use resiter::Map;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, BTreeSet};
 use std::ops::Deref;
@@ -11,7 +12,7 @@ pub struct Recommender;
 impl Recommender {
 	#[allow(dead_code)]
 	pub fn recommend(
-		relations: impl Iterator<Item = Relation>,
+		relations: impl Iterator<Item = Result<Relation, Exception>>,
 		per_post: usize,
 	) -> Result<impl Iterator<Item = Recommendation>, Exception> {
 		// RUSTIFICATION: NonZeroUsize
@@ -22,13 +23,14 @@ impl Recommender {
 			)));
 		}
 		let by_post = relations
-			.map(RelationSortedByPostThenByDecreasingScore::from)
-			.map(|relation| (relation.post1.clone(), relation))
-			.fold(BTreeMap::new(), |mut map, (post1, relation)| {
+			.map_ok(RelationSortedByPostThenByDecreasingScore::from)
+			.map_ok(|relation| (relation.post1.clone(), relation))
+			.try_fold(BTreeMap::new(), |mut map, result| {
+				let (post1, relation) = result?;
 				// NOTE: The BTreeSet already puts the relations into a sorted order
 				map.entry(post1).or_insert_with(BTreeSet::new).insert(relation);
-				map
-			});
+				Ok::<_, Exception>(map)
+			})?;
 
 		Ok(by_post.into_iter().map(move |(post, sorted_relations)| {
 			Recommendation::new(
@@ -111,7 +113,7 @@ mod test {
 
 	#[test]
 	fn for_one_post_one_relation() {
-		let recommendations = Recommender::recommend(vec![RELATION_AC.clone()].into_iter(), 1)
+		let recommendations = Recommender::recommend(vec![RELATION_AC.clone()].into_iter().map(Ok), 1)
 			.unwrap()
 			.collect::<BTreeSet<_>>();
 		let expected_recommendations =
@@ -121,9 +123,10 @@ mod test {
 
 	#[test]
 	fn for_one_post_two_relations() {
-		let recommendations = Recommender::recommend(vec![RELATION_AB.clone(), RELATION_AC.clone()].into_iter(), 1)
-			.unwrap()
-			.collect::<BTreeSet<_>>();
+		let recommendations =
+			Recommender::recommend(vec![RELATION_AB.clone(), RELATION_AC.clone()].into_iter().map(Ok), 1)
+				.unwrap()
+				.collect::<BTreeSet<_>>();
 		let expected_recommendations =
 			bset! {Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_B.clone()]}};
 		assert_eq!(expected_recommendations, recommendations);
@@ -132,7 +135,9 @@ mod test {
 	#[test]
 	fn for_many_posts_one_relation_each() {
 		let recommendations = Recommender::recommend(
-			vec![RELATION_AC.clone(), RELATION_BC.clone(), RELATION_CB.clone()].into_iter(),
+			vec![RELATION_AC.clone(), RELATION_BC.clone(), RELATION_CB.clone()]
+				.into_iter()
+				.map(Ok),
 			1,
 		)
 		.unwrap()
@@ -156,7 +161,8 @@ mod test {
 				RELATION_CA.clone(),
 				RELATION_CB.clone(),
 			]
-			.into_iter(),
+			.into_iter()
+			.map(Ok),
 			1,
 		)
 		.unwrap()

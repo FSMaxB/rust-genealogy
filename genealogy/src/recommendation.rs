@@ -23,6 +23,10 @@ impl Recommendation {
 		}
 	}
 
+	pub fn post(&self) -> &Arc<Post> {
+		&self.post
+	}
+
 	#[allow(dead_code)]
 	pub fn recommended_posts(&self) -> &Vec<Arc<Post>> {
 		&self.recommended_posts

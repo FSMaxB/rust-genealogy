@@ -1,4 +1,9 @@
+use genealogists::r#type::type_genealogist_service::TypeGenealogistService;
+use genealogists::repo::repo_genealogist_service::RepoGenealogistService;
+use genealogists::silly::silly_genealogist_service::SillyGenealogistService;
+use genealogists::tags::tag_genealogist_service::TagGenealogistService;
 use genealogy::config::Config;
+use genealogy::genealogist::genealogist_service::GenealogistService;
 use genealogy::genealogist::Genealogist;
 use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
@@ -63,9 +68,18 @@ fn markdown_files_in(folder: &PathBuf) -> impl Iterator<Item = Result<PathBuf, E
 		.filter_ok(|path| path.ends_with(".md"))
 }
 
-fn get_genealogists(_posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {
-	// FIXME: Implement this
-	vec![]
+fn get_genealogists(posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {
+	// NOTE: Not quite dynamic class loading, but hey, that's just not possible in Rust
+	let genealogist_services: Vec<Box<dyn GenealogistService>> = vec![
+		Box::new(SillyGenealogistService),
+		Box::new(TagGenealogistService),
+		Box::new(RepoGenealogistService),
+		Box::new(TypeGenealogistService),
+	];
+	genealogist_services
+		.into_iter()
+		.map(move |service| service.procure(Box::new(posts.clone().into_iter())))
+		.collect()
 }
 
 // WTF: W.T.F. Don't build your own JSON, you just don't ever do that!

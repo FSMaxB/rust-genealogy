@@ -1,0 +1,13 @@
+[package]
+name = "genealogy-main"
+version = "0.1.0"
+authors = ["Max Bruckner <max@maxbruckner.de>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+resiter = "0.4"
+tokio = {version = "0.3", features = ["macros", "rt-multi-thread"]}
+genealogists = {path = "../genealogists"}
+genealogy = {path = "../genealogy"}

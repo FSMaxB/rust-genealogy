@@ -2,4 +2,5 @@
 members = [
 	'genealogy',
 	'genealogists',
+	'genealogy-main',
 ]

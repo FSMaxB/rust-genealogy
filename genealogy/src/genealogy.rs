@@ -10,7 +10,7 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 pub mod relation;
-mod weights;
+pub mod weights;
 
 pub struct Genealogy {
 	posts: Vec<Arc<Post>>,

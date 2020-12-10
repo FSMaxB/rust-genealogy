@@ -1,7 +1,7 @@
 use crate::post::Post;
 use std::sync::Arc;
 
-mod recommender;
+pub mod recommender;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Recommendation {

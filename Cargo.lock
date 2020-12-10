@@ -209,6 +209,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "genealogists"
+version = "0.1.0"
+dependencies = [
+ "genealogy",
+ "lazy_static",
+]
+
+[[package]]
 name = "genealogy"
 version = "0.1.0"
 dependencies = [

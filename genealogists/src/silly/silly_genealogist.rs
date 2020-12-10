@@ -1,0 +1,30 @@
+use genealogy::genealogist::relation_type::RelationType;
+use genealogy::genealogist::typed_relation::TypedRelation;
+use genealogy::genealogist::Genealogist;
+use genealogy::helpers::exception::Exception;
+use genealogy::post::Post;
+use lazy_static::lazy_static;
+use std::collections::BTreeSet;
+use std::sync::Arc;
+
+pub struct SillyGenealogist;
+
+lazy_static! {
+	static ref TYPE: RelationType = RelationType::from_value("silly".to_string()).unwrap();
+}
+
+impl Genealogist for SillyGenealogist {
+	fn infer(&self, post1: Arc<Post>, post2: Arc<Post>) -> Result<TypedRelation, Exception> {
+		let post1_letters = title_letters(&post1);
+		let post2_letters = title_letters(&post2);
+		let intersection = post1_letters.intersection(&post2_letters);
+		let score = ((100.0 * intersection.count() as f64) / (post1_letters.len() as f64)).round() as u64;
+
+		TypedRelation::new(post1, post2, TYPE.clone(), score)
+	}
+}
+
+// RUSTIFICATION: Use correct type.
+fn title_letters(post: &Post) -> BTreeSet<i32> {
+	post.title().text.to_lowercase().encode_utf16().map(i32::from).collect()
+}

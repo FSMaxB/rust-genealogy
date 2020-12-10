@@ -3,7 +3,7 @@ use crate::helpers::exception::Exception;
 use crate::post::Post;
 use std::sync::Arc;
 
-mod genealogist_service;
+pub mod genealogist_service;
 pub mod relation_type;
 pub mod typed_relation;
 

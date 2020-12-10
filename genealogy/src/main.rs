@@ -1,31 +1,19 @@
-use crate::config::Config;
-use crate::genealogist::Genealogist;
-use crate::genealogy::weights::Weights;
-use crate::genealogy::Genealogy;
-use crate::helpers::exception::Exception;
-use crate::post::factories::article_factory::ArticleFactory;
-use crate::post::factories::talk_factory::TalkFactory;
-use crate::post::factories::video_factory::VideoFactory;
-use crate::post::Post;
-use crate::recommendation::recommender::Recommender;
-use crate::recommendation::Recommendation;
-use crate::utils::{unchecked_files_list, unchecked_files_write};
+use genealogy::config::Config;
+use genealogy::genealogist::Genealogist;
+use genealogy::genealogy::weights::Weights;
+use genealogy::genealogy::Genealogy;
+use genealogy::helpers::exception::Exception;
+use genealogy::post::factories::article_factory::ArticleFactory;
+use genealogy::post::factories::talk_factory::TalkFactory;
+use genealogy::post::factories::video_factory::VideoFactory;
+use genealogy::post::Post;
+use genealogy::process_details;
+use genealogy::recommendation::recommender::Recommender;
+use genealogy::recommendation::Recommendation;
+use genealogy::utils::{unchecked_files_list, unchecked_files_write};
 use resiter::{AndThen, Filter, Map};
 use std::path::PathBuf;
 use std::sync::Arc;
-
-mod config;
-pub mod genealogist;
-mod genealogy;
-pub(crate) mod helpers;
-pub mod post;
-mod process_details;
-mod recommendation;
-#[cfg(test)]
-pub mod test_helpers;
-#[cfg(test)]
-pub mod text_parser_tests;
-mod utils;
 
 #[tokio::main]
 async fn main() -> Result<(), Exception> {

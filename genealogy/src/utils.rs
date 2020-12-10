@@ -1,8 +1,10 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::iterator::result_iterator::ResultIteratorExtension;
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use resiter::Map;
+use std::fs::{read_dir, File};
+use std::io::{BufRead, BufReader, Write};
 use std::path::PathBuf;
 
 pub fn remove_outer_quotation_marks(string: &str) -> String {
@@ -11,6 +13,18 @@ pub fn remove_outer_quotation_marks(string: &str) -> String {
 	}
 
 	OUTER_QUOTATION_MARK_REGEX.replace_all(string, "").into_owned()
+}
+
+pub fn unchecked_files_list(dir: &PathBuf) -> impl Iterator<Item = Result<PathBuf, Exception>> {
+	read_dir(dir)
+		.into_result_iterator()
+		.map(|result| result.and_then(std::convert::identity))
+		.map(|result| result.map_err(Exception::from))
+		.map_ok(|dir_entry| dir_entry.path())
+}
+
+pub fn unchecked_files_write(path: &PathBuf, content: &str) -> Result<(), Exception> {
+	Ok(File::create(path)?.write_all(content.as_bytes())?)
 }
 
 pub fn unchecked_files_read_all_lines(file: &PathBuf) -> Result<Vec<String>, Exception> {

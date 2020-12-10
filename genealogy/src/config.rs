@@ -70,7 +70,7 @@ fn from_raw_config(raw: Vec<String>) -> Result<Config, Exception> {
 	});
 	if let Some(output_file) = &output_file {
 		// NOTE: The availability of metadata is used as the indicator if the file exists.
-		let not_writable = !output_file
+		let not_writable = output_file
 			.metadata()
 			.map(|metadata| metadata.permissions().readonly())
 			.unwrap_or(true);

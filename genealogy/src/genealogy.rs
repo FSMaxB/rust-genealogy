@@ -5,7 +5,7 @@ use crate::genealogy::weights::Weights;
 use crate::helpers::exception::Exception;
 use crate::helpers::iterator::result_iterator::ResultIteratorExtension;
 use crate::post::Post;
-use itertools::Itertools;
+use resiter::Map;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
@@ -49,13 +49,9 @@ impl Genealogy {
 		let weights = self.weights.clone();
 		sorted_typed_relations
 			.into_result_iterator()
-			.map_results(|(_, value)| value)
-			.flat_map(|post_with_relations| {
-				post_with_relations
-					.into_result_iterator()
-					.map_results(|(_, value)| value)
-			})
-			.map_results(move |relations| Relation::aggregate(relations.iter(), &weights))
+			.map_ok(|(_, value)| value)
+			.flat_map(|post_with_relations| post_with_relations.into_result_iterator().map_ok(|(_, value)| value))
+			.map_ok(move |relations| Relation::aggregate(relations.iter(), &weights))
 			.map(|result| result.and_then(std::convert::identity))
 	}
 }

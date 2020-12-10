@@ -123,12 +123,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "either"
-version = "1.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
-
-[[package]]
 name = "form_urlencoded"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -222,11 +216,11 @@ dependencies = [
  "debug_stub_derive",
  "directories",
  "futures",
- "itertools",
  "lazy_static",
  "literally",
  "parking_lot",
  "regex",
+ "resiter",
  "tokio",
  "url",
 ]
@@ -269,15 +263,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "61124eeebbd69b8190558df225adf7e4caafce0d743919e5d6b19652314ec5ec"
 dependencies = [
  "cfg-if 1.0.0",
-]
-
-[[package]]
-name = "itertools"
-version = "0.9.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "284f18f85651fe11e8a991b2adb42cb078325c996ed026d994719efcfca1d54b"
-dependencies = [
- "either",
 ]
 
 [[package]]
@@ -481,6 +466,12 @@ name = "regex-syntax"
 version = "0.6.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b181ba2dcf07aaccad5448e8ead58db5b742cf85dfe035e2227f137a539a189"
+
+[[package]]
+name = "resiter"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bd69ab1e90258b7769f0b5c46bfd802b8206d0707ced4ca4b9d5681b744de1be"
 
 [[package]]
 name = "rust-argon2"

@@ -8,7 +8,7 @@ use genealogy::genealogist::Genealogist;
 use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
-use genealogy::post::factories::article_factory::ArticleFactory;
+use genealogy::post::article::Article;
 use genealogy::post::factories::talk_factory::TalkFactory;
 use genealogy::post::factories::video_factory::VideoFactory;
 use genealogy::post::Post;
@@ -17,6 +17,7 @@ use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::{unchecked_files_list, unchecked_files_write};
 use resiter::{AndThen, Filter, Map};
+use std::convert::TryFrom;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -41,8 +42,7 @@ async fn main() -> Result<(), Exception> {
 fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
-			markdown_files_in(article_folder)
-				.and_then_ok(|path| ArticleFactory::create_article_from_path(&path).map(Post::Article)),
+			markdown_files_in(article_folder).and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::Article)),
 		),
 		Box::new(markdown_files_in(talk_folder).and_then_ok(|path| TalkFactory::create_talk(&path).map(Post::Talk))),
 		Box::new(

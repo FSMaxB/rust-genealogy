@@ -3,7 +3,7 @@ use crate::helpers::exception::Exception::{IllegalArgument, RuntimeException};
 use crate::post::factories::raw_front_matter::RawFrontMatter;
 use crate::post::factories::raw_post::RawPost;
 use crate::utils::unchecked_files_read_all_lines;
-use std::path::PathBuf;
+use std::path::Path;
 
 pub struct PostFactory;
 
@@ -17,7 +17,7 @@ pub const TITLE: &str = "title";
 pub const VIDEO: &str = "videoSlug";
 
 impl PostFactory {
-	pub fn read_post_from_path(file: &PathBuf) -> Result<RawPost, Exception> {
+	pub fn read_post_from_path(file: &Path) -> Result<RawPost, Exception> {
 		unchecked_files_read_all_lines(file)
 			.map_err(|error| {
 				RuntimeException(format!(

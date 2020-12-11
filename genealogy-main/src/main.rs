@@ -17,7 +17,7 @@ use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::{unchecked_files_list, unchecked_files_write};
 use resiter::{AndThen, Filter, Map};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 #[tokio::main]
@@ -38,11 +38,7 @@ async fn main() -> Result<(), Exception> {
 	Ok(())
 }
 
-fn create_genealogy(
-	article_folder: &PathBuf,
-	talk_folder: &PathBuf,
-	video_folder: &PathBuf,
-) -> Result<Genealogy, Exception> {
+fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
 			markdown_files_in(article_folder)
@@ -62,7 +58,7 @@ fn create_genealogy(
 	Ok(Genealogy::new(posts, genealogists, Arc::new(Weights::all_equal())))
 }
 
-fn markdown_files_in(folder: &PathBuf) -> impl Iterator<Item = Result<PathBuf, Exception>> {
+fn markdown_files_in(folder: &Path) -> impl Iterator<Item = Result<PathBuf, Exception>> {
 	unchecked_files_list(folder)
 		.filter_ok(|path| path.is_file())
 		.filter_ok(|path| path.ends_with(".md"))

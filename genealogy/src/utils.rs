@@ -5,7 +5,7 @@ use regex::Regex;
 use resiter::Map;
 use std::fs::{read_dir, File};
 use std::io::{BufRead, BufReader, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub fn remove_outer_quotation_marks(string: &str) -> String {
 	lazy_static! {
@@ -15,7 +15,7 @@ pub fn remove_outer_quotation_marks(string: &str) -> String {
 	OUTER_QUOTATION_MARK_REGEX.replace_all(string, "").into_owned()
 }
 
-pub fn unchecked_files_list(dir: &PathBuf) -> impl Iterator<Item = Result<PathBuf, Exception>> {
+pub fn unchecked_files_list(dir: &Path) -> impl Iterator<Item = Result<PathBuf, Exception>> {
 	read_dir(dir)
 		.into_result_iterator()
 		.map(|result| result.and_then(std::convert::identity))
@@ -23,11 +23,11 @@ pub fn unchecked_files_list(dir: &PathBuf) -> impl Iterator<Item = Result<PathBu
 		.map_ok(|dir_entry| dir_entry.path())
 }
 
-pub fn unchecked_files_write(path: &PathBuf, content: &str) -> Result<(), Exception> {
+pub fn unchecked_files_write(path: &Path, content: &str) -> Result<(), Exception> {
 	Ok(File::create(path)?.write_all(content.as_bytes())?)
 }
 
-pub fn unchecked_files_read_all_lines(file: &PathBuf) -> Result<Vec<String>, Exception> {
+pub fn unchecked_files_read_all_lines(file: &Path) -> Result<Vec<String>, Exception> {
 	let file = File::open(file).map_err(Exception::from)?;
 	BufReader::new(file)
 		.lines()

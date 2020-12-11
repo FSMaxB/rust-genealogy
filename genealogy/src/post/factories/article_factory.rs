@@ -9,12 +9,12 @@ use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
-use std::path::PathBuf;
+use std::path::Path;
 
 pub struct ArticleFactory;
 
 impl ArticleFactory {
-	pub fn create_article_from_path(file: &PathBuf) -> Result<Article, Exception> {
+	pub fn create_article_from_path(file: &Path) -> Result<Article, Exception> {
 		let post = PostFactory::read_post_from_path(file).map_err(|error| {
 			RuntimeException(format!(
 				r#"Creating article failed: "{}", error: {}"#,

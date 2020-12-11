@@ -2,7 +2,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgument;
 use directories::UserDirs;
 use futures::TryStreamExt;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tokio::io::{AsyncBufReadExt, BufReader};
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -41,7 +41,7 @@ async fn read_user_config() -> Result<Vec<String>, Exception> {
 	read_config(&home_directory).await
 }
 
-async fn read_config(path: &PathBuf) -> Result<Vec<String>, Exception> {
+async fn read_config(path: &Path) -> Result<Vec<String>, Exception> {
 	let config_file = tokio::fs::File::open(path).await.map_err(Exception::from)?;
 	BufReader::new(config_file)
 		.lines()

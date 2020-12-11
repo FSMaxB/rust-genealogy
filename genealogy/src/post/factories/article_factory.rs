@@ -14,7 +14,6 @@ use std::path::PathBuf;
 pub struct ArticleFactory;
 
 impl ArticleFactory {
-	#[allow(dead_code)]
 	pub fn create_article_from_path(file: &PathBuf) -> Result<Article, Exception> {
 		let post = PostFactory::read_post_from_path(file).map_err(|error| {
 			RuntimeException(format!(
@@ -26,7 +25,6 @@ impl ArticleFactory {
 		create_article(post)
 	}
 
-	#[allow(dead_code)]
 	pub fn create_article_from_lines(file_lines: Vec<String>) -> Result<Article, Exception> {
 		let post = PostFactory::read_post_from_lines(file_lines)?;
 		create_article(post)

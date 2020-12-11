@@ -15,7 +15,6 @@ pub struct Relation {
 }
 
 impl Relation {
-	#[allow(dead_code)]
 	pub fn new(post1: Arc<Post>, post2: Arc<Post>, score: u64) -> Result<Relation, Exception> {
 		// WTF: Why use a `long` if you are actually only allowing values up to 100?
 		// RUSTIFICATION: Create a separate type that upholds this invariant.
@@ -29,7 +28,6 @@ impl Relation {
 		}
 	}
 
-	#[allow(dead_code)]
 	pub(crate) fn aggregate<'relations>(
 		typed_relations: impl Iterator<Item = &'relations TypedRelation>,
 		weights: &Weights,

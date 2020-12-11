@@ -7,7 +7,6 @@ pub struct Repository {
 }
 
 impl Repository {
-	#[allow(dead_code)]
 	pub fn from_identifier(identifier: String) -> Result<Repository, Exception> {
 		if identifier.trim().is_empty() {
 			Err(IllegalArgument(

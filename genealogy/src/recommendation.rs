@@ -10,7 +10,6 @@ pub struct Recommendation {
 }
 
 impl Recommendation {
-	#[allow(dead_code)]
 	pub fn new(
 		post: Arc<Post>,
 		sorted_recommendations: impl Iterator<Item = Arc<Post>>,
@@ -27,7 +26,6 @@ impl Recommendation {
 		&self.post
 	}
 
-	#[allow(dead_code)]
 	pub fn recommended_posts(&self) -> &Vec<Arc<Post>> {
 		&self.recommended_posts
 	}

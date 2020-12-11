@@ -8,7 +8,6 @@ pub struct RelationType {
 }
 
 impl RelationType {
-	#[allow(dead_code)]
 	pub fn from_value(value: String) -> Result<RelationType, Exception> {
 		if value.is_empty() {
 			Err(IllegalArgument("Relation types can't have an empty value.".to_string()))

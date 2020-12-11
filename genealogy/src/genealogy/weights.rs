@@ -8,7 +8,6 @@ pub struct Weights {
 }
 
 impl Weights {
-	#[allow(dead_code)]
 	pub fn new(weights: BTreeMap<RelationType, f64>, default_weight: f64) -> Self {
 		Self {
 			weights,
@@ -16,7 +15,6 @@ impl Weights {
 		}
 	}
 
-	#[allow(dead_code)]
 	pub fn all_equal() -> Self {
 		Self {
 			weights: Default::default(),
@@ -24,7 +22,6 @@ impl Weights {
 		}
 	}
 
-	#[allow(dead_code)]
 	pub fn weight_of(&self, genealogist_type: &RelationType) -> f64 {
 		self.weights
 			.get(genealogist_type)

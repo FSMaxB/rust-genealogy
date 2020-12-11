@@ -8,7 +8,6 @@ pub struct Description {
 }
 
 impl Description {
-	#[allow(dead_code)]
 	pub fn from_text(text: &str) -> Result<Description, Exception> {
 		let unquoted_text = remove_outer_quotation_marks(text);
 		if unquoted_text.trim().is_empty() {

@@ -14,7 +14,6 @@ pub struct TypedRelation {
 }
 
 impl TypedRelation {
-	#[allow(dead_code)]
 	pub fn new(
 		post1: Arc<Post>,
 		post2: Arc<Post>,

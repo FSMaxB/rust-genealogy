@@ -8,7 +8,6 @@ pub struct Tag {
 }
 
 impl Tag {
-	#[allow(dead_code)]
 	pub fn from_text(tags_text: &str) -> BTreeSet<Tag> {
 		lazy_static! {
 			static ref SQUARE_BRACKET_REGEX: Regex = Regex::new("^\\[|\\]$").unwrap();

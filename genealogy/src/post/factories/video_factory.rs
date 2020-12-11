@@ -15,7 +15,6 @@ use std::path::PathBuf;
 pub struct VideoFactory;
 
 impl VideoFactory {
-	#[allow(dead_code)]
 	pub fn create_video(file: &PathBuf) -> Result<Video, Exception> {
 		let post = PostFactory::read_post_from_path(file).map_err(|error| {
 			RuntimeException(format!(

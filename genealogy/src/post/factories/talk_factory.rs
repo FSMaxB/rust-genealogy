@@ -15,7 +15,6 @@ use url::Url;
 pub struct TalkFactory;
 
 impl TalkFactory {
-	#[allow(dead_code)]
 	pub fn create_talk(file: &PathBuf) -> Result<Talk, Exception> {
 		let post = PostFactory::read_post_from_path(file).map_err(|error| {
 			RuntimeException(format!(

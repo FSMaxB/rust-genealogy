@@ -7,7 +7,6 @@ pub struct Slug {
 }
 
 impl Slug {
-	#[allow(dead_code)]
 	pub fn from_value(value: String) -> Result<Slug, Exception> {
 		if value.trim().is_empty() {
 			Err(IllegalArgument("Slugs can't have an empty value.".to_string()))

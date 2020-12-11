@@ -7,7 +7,6 @@ pub struct VideoSlug {
 }
 
 impl VideoSlug {
-	#[allow(dead_code)]
 	pub fn from_value(value: String) -> Result<VideoSlug, Exception> {
 		if value.trim().is_empty() {
 			Err(IllegalArgument("VideoSlugs can't have an empty value.".to_string()))

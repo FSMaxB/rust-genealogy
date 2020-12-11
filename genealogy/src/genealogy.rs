@@ -19,7 +19,6 @@ pub struct Genealogy {
 }
 
 impl Genealogy {
-	#[allow(dead_code)]
 	pub fn new(posts: Vec<Arc<Post>>, genealogists: Vec<Arc<dyn Genealogist>>, weights: Arc<Weights>) -> Self {
 		Self {
 			posts,
@@ -28,7 +27,6 @@ impl Genealogy {
 		}
 	}
 
-	#[allow(dead_code)]
 	pub fn infer_relations(&self) -> impl Iterator<Item = Result<Relation, Exception>> {
 		self.aggregate_typed_relations(infer_typed_relations(self.posts.clone(), self.genealogists.clone()))
 	}

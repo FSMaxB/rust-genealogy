@@ -10,7 +10,6 @@ use std::ops::Deref;
 pub struct Recommender;
 
 impl Recommender {
-	#[allow(dead_code)]
 	pub fn recommend(
 		relations: impl Iterator<Item = Result<Relation, Exception>>,
 		per_post: usize,

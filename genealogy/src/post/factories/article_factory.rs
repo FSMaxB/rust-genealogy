@@ -3,30 +3,30 @@ use crate::helpers::exception::Exception::RuntimeException;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
-use crate::post::factories::post_factory::{PostFactory, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE};
-use crate::post::factories::raw_post::RawPost;
+use crate::post::factories::raw_post::{RawPost, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE};
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
+use std::convert::TryFrom;
 use std::path::Path;
 
 pub struct ArticleFactory;
 
 impl ArticleFactory {
-	pub fn create_article_from_path(file: &Path) -> Result<Article, Exception> {
-		let post = PostFactory::read_post_from_path(file).map_err(|error| {
+	pub fn create_article_from_path(path: &Path) -> Result<Article, Exception> {
+		let post = RawPost::try_from(path).map_err(|error| {
 			RuntimeException(format!(
 				r#"Creating article failed: "{}", error: {}"#,
-				file.to_string_lossy(),
+				path.to_string_lossy(),
 				error
 			))
 		})?;
 		create_article(post)
 	}
 
-	pub fn create_article_from_lines(file_lines: Vec<String>) -> Result<Article, Exception> {
-		let post = PostFactory::read_post_from_lines(file_lines)?;
+	pub fn create_article_from_lines(lines: Vec<String>) -> Result<Article, Exception> {
+		let post = RawPost::try_from(lines)?;
 		create_article(post)
 	}
 }

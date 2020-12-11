@@ -2,24 +2,24 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
-use crate::post::factories::post_factory::{PostFactory, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE, VIDEO};
-use crate::post::factories::raw_post::RawPost;
+use crate::post::factories::raw_post::{RawPost, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE, VIDEO};
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video::Video;
 use crate::post::video_slug::VideoSlug;
-use std::path::PathBuf;
+use std::convert::TryFrom;
+use std::path::Path;
 
 pub struct VideoFactory;
 
 impl VideoFactory {
-	pub fn create_video(file: &PathBuf) -> Result<Video, Exception> {
-		let post = PostFactory::read_post_from_path(file).map_err(|error| {
+	pub fn create_video(path: &Path) -> Result<Video, Exception> {
+		let post = RawPost::try_from(path).map_err(|error| {
 			RuntimeException(format!(
 				r#"Creating video failed: "{}", error: {}"#,
-				file.to_string_lossy(),
+				path.to_string_lossy(),
 				error
 			))
 		})?;

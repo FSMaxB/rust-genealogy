@@ -5,6 +5,7 @@ use crate::recommendation::Recommendation;
 use resiter::Map;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, BTreeSet};
+use std::num::NonZeroUsize;
 use std::ops::Deref;
 
 pub struct Recommender;
@@ -14,13 +15,12 @@ impl Recommender {
 		relations: impl Iterator<Item = Result<Relation, Exception>>,
 		per_post: usize,
 	) -> Result<impl Iterator<Item = Recommendation>, Exception> {
-		// RUSTIFICATION: NonZeroUsize
-		if per_post < 1 {
-			return Err(IllegalArgument(format!(
+		let per_post = NonZeroUsize::new(per_post).ok_or_else(|| {
+			IllegalArgument(format!(
 				"Number of recommendations per post must be greater zero: {}",
 				per_post
-			)));
-		}
+			))
+		})?;
 		let by_post = relations
 			.map_ok(RelationSortedByPostThenByDecreasingScore::from)
 			.map_ok(|relation| (relation.post1.clone(), relation))

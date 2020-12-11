@@ -1,4 +1,5 @@
 use crate::post::Post;
+use std::num::NonZeroUsize;
 use std::sync::Arc;
 
 pub mod recommender;
@@ -13,9 +14,9 @@ impl Recommendation {
 	pub fn new(
 		post: Arc<Post>,
 		sorted_recommendations: impl Iterator<Item = Arc<Post>>,
-		per_post: usize,
+		per_post: NonZeroUsize,
 	) -> Recommendation {
-		let recommendations = sorted_recommendations.take(per_post).collect();
+		let recommendations = sorted_recommendations.take(per_post.get()).collect();
 		Recommendation {
 			post,
 			recommended_posts: recommendations,

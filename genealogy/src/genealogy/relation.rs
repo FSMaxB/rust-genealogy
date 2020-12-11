@@ -55,7 +55,7 @@ impl Relation {
 			// NOTE: `averagingDouble` was replaced by `Mean`
 			.try_fold((None, Mean::default()), |(_, mean), result| {
 				let (posts, score) = result?;
-				Ok::<_, Exception>((Some(posts), mean.add(score)))
+				Ok::<_, Exception>((Some(posts), mean.add_number(score)))
 			})?;
 		let (posts, score) = posts
 			.zip(Option::<f64>::from(mean))

@@ -5,7 +5,7 @@ pub struct Mean {
 }
 
 impl Mean {
-	pub fn add(mut self, number: f64) -> Mean {
+	pub fn add_number(mut self, number: f64) -> Mean {
 		self.sum = self.sum.add(number);
 		self.count += 1;
 		self

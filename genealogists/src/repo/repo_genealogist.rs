@@ -19,19 +19,16 @@ fn determine_score(post1: &Post, post2: &Post) -> u64 {
 	let repo1 = get_repository(post1);
 	let repo2 = get_repository(post2);
 
-	// RUSTIFICATION: Use match
-	if repo1.is_some() != repo2.is_some() {
-		return 0;
-	}
-
-	if repo1.is_none() {
-		return 20;
-	}
-
-	if repo1 == repo2 {
-		100
-	} else {
-		50
+	match (repo1, repo2) {
+		(Some(_), None) | (None, Some(_)) => 0,
+		(None, None) => 20,
+		(Some(repo1), Some(repo2)) => {
+			if repo1 == repo2 {
+				100
+			} else {
+				50
+			}
+		}
 	}
 }
 

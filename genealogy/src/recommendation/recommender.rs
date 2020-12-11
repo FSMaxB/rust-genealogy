@@ -1,6 +1,5 @@
 use crate::genealogy::relation::Relation;
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
 use crate::recommendation::Recommendation;
 use resiter::Map;
 use std::cmp::Ordering;
@@ -13,14 +12,8 @@ pub struct Recommender;
 impl Recommender {
 	pub fn recommend(
 		relations: impl Iterator<Item = Result<Relation, Exception>>,
-		per_post: usize,
+		per_post: NonZeroUsize,
 	) -> Result<impl Iterator<Item = Recommendation>, Exception> {
-		let per_post = NonZeroUsize::new(per_post).ok_or_else(|| {
-			IllegalArgument(format!(
-				"Number of recommendations per post must be greater zero: {}",
-				per_post
-			))
-		})?;
 		let by_post = relations
 			.map_ok(RelationSortedByPostThenByDecreasingScore::from)
 			.map_ok(|relation| (relation.post1.clone(), relation))
@@ -112,9 +105,12 @@ mod test {
 
 	#[test]
 	fn for_one_post_one_relation() {
-		let recommendations = Recommender::recommend(vec![RELATION_AC.clone()].into_iter().map(Ok), 1)
-			.unwrap()
-			.collect::<BTreeSet<_>>();
+		let recommendations = Recommender::recommend(
+			vec![RELATION_AC.clone()].into_iter().map(Ok),
+			NonZeroUsize::new(1).unwrap(),
+		)
+		.unwrap()
+		.collect::<BTreeSet<_>>();
 		let expected_recommendations =
 			bset! {Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_C.clone()]}};
 		assert_eq!(expected_recommendations, recommendations);
@@ -122,10 +118,12 @@ mod test {
 
 	#[test]
 	fn for_one_post_two_relations() {
-		let recommendations =
-			Recommender::recommend(vec![RELATION_AB.clone(), RELATION_AC.clone()].into_iter().map(Ok), 1)
-				.unwrap()
-				.collect::<BTreeSet<_>>();
+		let recommendations = Recommender::recommend(
+			vec![RELATION_AB.clone(), RELATION_AC.clone()].into_iter().map(Ok),
+			NonZeroUsize::new(1).unwrap(),
+		)
+		.unwrap()
+		.collect::<BTreeSet<_>>();
 		let expected_recommendations =
 			bset! {Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_B.clone()]}};
 		assert_eq!(expected_recommendations, recommendations);
@@ -137,7 +135,7 @@ mod test {
 			vec![RELATION_AC.clone(), RELATION_BC.clone(), RELATION_CB.clone()]
 				.into_iter()
 				.map(Ok),
-			1,
+			NonZeroUsize::new(1).unwrap(),
 		)
 		.unwrap()
 		.collect::<BTreeSet<_>>();
@@ -162,7 +160,7 @@ mod test {
 			]
 			.into_iter()
 			.map(Ok),
-			1,
+			NonZeroUsize::new(1).unwrap(),
 		)
 		.unwrap()
 		.collect::<BTreeSet<_>>();

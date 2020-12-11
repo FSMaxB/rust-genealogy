@@ -18,6 +18,7 @@ use genealogy::recommendation::Recommendation;
 use genealogy::utils::{unchecked_files_list, unchecked_files_write};
 use resiter::{AndThen, Filter, Map};
 use std::convert::TryFrom;
+use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -31,7 +32,7 @@ async fn main() -> Result<(), Exception> {
 	let genealogy = create_genealogy(&config.article_folder, &config.talk_folder, &config.video_folder)?;
 
 	let relations = genealogy.infer_relations();
-	let recommendations = Recommender::recommend(relations, 3)?;
+	let recommendations = Recommender::recommend(relations, NonZeroUsize::new(3).unwrap())?;
 	let recommendations_as_json = recommendations_to_json(recommendations);
 	if let Some(output_file) = &config.output_file {
 		unchecked_files_write(output_file, &recommendations_as_json)?;

@@ -9,8 +9,8 @@ use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::article::Article;
-use genealogy::post::factories::talk_factory::TalkFactory;
 use genealogy::post::factories::video_factory::VideoFactory;
+use genealogy::post::talk::Talk;
 use genealogy::post::Post;
 use genealogy::process_details;
 use genealogy::recommendation::recommender::Recommender;
@@ -44,7 +44,7 @@ fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Pa
 		Box::new(
 			markdown_files_in(article_folder).and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::Article)),
 		),
-		Box::new(markdown_files_in(talk_folder).and_then_ok(|path| TalkFactory::create_talk(&path).map(Post::Talk))),
+		Box::new(markdown_files_in(talk_folder).and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::Talk))),
 		Box::new(
 			markdown_files_in(video_folder).and_then_ok(|path| VideoFactory::create_video(&path).map(Post::Video)),
 		),

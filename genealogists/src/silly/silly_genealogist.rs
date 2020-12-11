@@ -24,7 +24,6 @@ impl Genealogist for SillyGenealogist {
 	}
 }
 
-// RUSTIFICATION: Use correct type.
-fn title_letters(post: &Post) -> BTreeSet<i32> {
-	post.title().text.to_lowercase().encode_utf16().map(i32::from).collect()
+fn title_letters(post: &Post) -> BTreeSet<u16> {
+	post.title().text.to_lowercase().encode_utf16().collect()
 }

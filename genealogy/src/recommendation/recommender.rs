@@ -76,30 +76,38 @@ impl Ord for RelationSortedByPostThenByDecreasingScore {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::genealogy::score::Score;
 	use crate::post::test::post_with_slug;
 	use crate::post::Post;
 	use lazy_static::lazy_static;
 	use literally::bset;
+	use std::convert::TryInto;
 	use std::sync::Arc;
 
 	lazy_static! {
 		static ref POST_A: Arc<Post> = Arc::new(post_with_slug("a").unwrap());
 		static ref POST_B: Arc<Post> = Arc::new(post_with_slug("b").unwrap());
 		static ref POST_C: Arc<Post> = Arc::new(post_with_slug("c").unwrap());
-		static ref RELATION_AB: Relation = RelationTestHelper::create(POST_A.clone(), POST_B.clone(), 60).unwrap();
-		static ref RELATION_AC: Relation = RelationTestHelper::create(POST_A.clone(), POST_C.clone(), 40).unwrap();
-		static ref RELATION_BA: Relation = RelationTestHelper::create(POST_B.clone(), POST_A.clone(), 50).unwrap();
-		static ref RELATION_BC: Relation = RelationTestHelper::create(POST_B.clone(), POST_C.clone(), 70).unwrap();
-		static ref RELATION_CA: Relation = RelationTestHelper::create(POST_C.clone(), POST_A.clone(), 80).unwrap();
-		static ref RELATION_CB: Relation = RelationTestHelper::create(POST_C.clone(), POST_B.clone(), 60).unwrap();
+		static ref RELATION_AB: Relation =
+			RelationTestHelper::create(POST_A.clone(), POST_B.clone(), 60.try_into().unwrap());
+		static ref RELATION_AC: Relation =
+			RelationTestHelper::create(POST_A.clone(), POST_C.clone(), 40.try_into().unwrap());
+		static ref RELATION_BA: Relation =
+			RelationTestHelper::create(POST_B.clone(), POST_A.clone(), 50.try_into().unwrap());
+		static ref RELATION_BC: Relation =
+			RelationTestHelper::create(POST_B.clone(), POST_C.clone(), 70.try_into().unwrap());
+		static ref RELATION_CA: Relation =
+			RelationTestHelper::create(POST_C.clone(), POST_A.clone(), 80.try_into().unwrap());
+		static ref RELATION_CB: Relation =
+			RelationTestHelper::create(POST_C.clone(), POST_B.clone(), 60.try_into().unwrap());
 	}
 
 	struct RelationTestHelper;
 
 	impl RelationTestHelper {
 		// WTF: Why a static method just to call the constructor with the exact same arguments. WTF x2
-		fn create(post1: Arc<Post>, post2: Arc<Post>, score: u64) -> Result<Relation, Exception> {
-			Relation::new(post1, post2, score)
+		fn create(post1: Arc<Post>, post2: Arc<Post>, score: Score) -> Relation {
+			Relation { post1, post2, score }
 		}
 	}
 

@@ -1,33 +1,22 @@
 use crate::genealogist::typed_relation::TypedRelation;
+use crate::genealogy::score::Score;
 use crate::genealogy::weights::Weights;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgument;
 use crate::helpers::iterator::IteratorExtension;
 use crate::helpers::mean::Mean;
 use crate::post::Post;
+use std::convert::TryFrom;
 use std::sync::Arc;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Relation {
 	pub post1: Arc<Post>,
 	pub post2: Arc<Post>,
-	pub score: u64,
+	pub score: Score,
 }
 
 impl Relation {
-	pub fn new(post1: Arc<Post>, post2: Arc<Post>, score: u64) -> Result<Relation, Exception> {
-		// WTF: Why use a `long` if you are actually only allowing values up to 100?
-		// RUSTIFICATION: Create a separate type that upholds this invariant.
-		if score > 100 {
-			Err(IllegalArgument(format!(
-				"Score should be in interval [0; 100]: {}",
-				score
-			)))
-		} else {
-			Ok(Relation { post1, post2, score })
-		}
-	}
-
 	pub(crate) fn aggregate<'relations>(
 		typed_relations: impl Iterator<Item = &'relations TypedRelation>,
 		weights: &Weights,
@@ -44,8 +33,7 @@ impl Relation {
 			.split_pair();
 		// NOTE: Replacement for `collectEqual`
 		let posts_iterator = posts_iterator.equal();
-		let score_iterator =
-			score_iterator.map(|(score, relation_type)| (score as f64) * weights.weight_of(relation_type));
+		let score_iterator = score_iterator.map(|(score, relation_type)| score * weights.weight_of(relation_type));
 
 		let (posts, mean) = posts_iterator
 			.zip(score_iterator)
@@ -58,7 +46,11 @@ impl Relation {
 		let (posts, score) = posts
 			.zip(Option::<f64>::from(mean))
 			.ok_or_else(|| IllegalArgument("Can't create relation from zero typed relations.".to_string()))?;
-		Ok(Relation::new(posts.0.clone(), posts.1.clone(), score.round() as u64)?)
+		Ok(Relation {
+			post1: posts.0.clone(),
+			post2: posts.1.clone(),
+			score: Score::try_from(score)?,
+		})
 	}
 }
 
@@ -69,6 +61,7 @@ mod test {
 	use crate::post::test::post_with_slug;
 	use lazy_static::lazy_static;
 	use literally::bmap;
+	use std::convert::TryInto;
 
 	const TAG_WEIGHT: f64 = 1.0;
 	const LINK_WEIGHT: f64 = 1.0;
@@ -87,10 +80,14 @@ mod test {
 
 	#[test]
 	fn single_typed_relation_weight_one_same_posts_and_score() {
-		let score = 60;
+		let score = 60.try_into().unwrap();
 		let (post_a, post_b) = test_posts();
-		let typed_relations =
-			[TypedRelation::new(post_a.clone(), post_b.clone(), TAG_RELATION.clone(), score).unwrap()];
+		let typed_relations = [TypedRelation {
+			post1: post_a.clone(),
+			post2: post_b.clone(),
+			relation_type: TAG_RELATION.clone(),
+			score,
+		}];
 
 		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
 		assert_eq!(post_a, relation.post1);
@@ -102,24 +99,44 @@ mod test {
 	fn two_typed_relations_weith_one_averaged_score() {
 		let (post_a, post_b) = test_posts();
 		let typed_relations = [
-			TypedRelation::new(post_a.clone(), post_b.clone(), TAG_RELATION.clone(), 40).unwrap(),
-			TypedRelation::new(post_a, post_b, TAG_RELATION.clone(), 80).unwrap(),
+			TypedRelation {
+				post1: post_a.clone(),
+				post2: post_b.clone(),
+				relation_type: TAG_RELATION.clone(),
+				score: 40.try_into().unwrap(),
+			},
+			TypedRelation {
+				post1: post_a,
+				post2: post_b,
+				relation_type: TAG_RELATION.clone(),
+				score: 80.try_into().unwrap(),
+			},
 		];
 
 		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		assert_eq!((40 + 80) / 2, relation.score);
+		assert_eq!(Score::try_from((40 + 80) / 2).unwrap(), relation.score);
 	}
 
 	#[test]
 	fn two_typed_relations_differing_weight_weighted_score() {
 		let (post_a, post_b) = test_posts();
 		let typed_relations = [
-			TypedRelation::new(post_a.clone(), post_b.clone(), TAG_RELATION.clone(), 40).unwrap(),
-			TypedRelation::new(post_a, post_b, LINK_RELATION.clone(), 80).unwrap(),
+			TypedRelation {
+				post1: post_a.clone(),
+				post2: post_b.clone(),
+				relation_type: TAG_RELATION.clone(),
+				score: 40.try_into().unwrap(),
+			},
+			TypedRelation {
+				post1: post_a,
+				post2: post_b,
+				relation_type: LINK_RELATION.clone(),
+				score: 80.try_into().unwrap(),
+			},
 		];
 
 		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		let expected_score = ((40.0 * TAG_WEIGHT + 80.0 * LINK_WEIGHT) / 2.0).round() as u64;
+		let expected_score = Score::try_from(((40.0 * TAG_WEIGHT + 80.0 * LINK_WEIGHT) / 2.0).round()).unwrap();
 		assert_eq!(expected_score, relation.score);
 	}
 

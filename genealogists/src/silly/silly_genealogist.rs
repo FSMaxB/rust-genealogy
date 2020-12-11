@@ -1,10 +1,12 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
 use genealogy::genealogist::Genealogist;
+use genealogy::genealogy::score::Score;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
 use lazy_static::lazy_static;
 use std::collections::BTreeSet;
+use std::convert::TryFrom;
 use std::sync::Arc;
 
 pub struct SillyGenealogist;
@@ -18,9 +20,15 @@ impl Genealogist for SillyGenealogist {
 		let post1_letters = title_letters(&post1);
 		let post2_letters = title_letters(&post2);
 		let intersection = post1_letters.intersection(&post2_letters);
-		let score = ((100.0 * intersection.count() as f64) / (post1_letters.len() as f64)).round() as u64;
+		let score =
+			Score::try_from(((100.0 * intersection.count() as f64) / (post1_letters.len() as f64)).round()).unwrap();
 
-		TypedRelation::new(post1, post2, TYPE.clone(), score)
+		Ok(TypedRelation {
+			post1,
+			post2,
+			relation_type: TYPE.clone(),
+			score,
+		})
 	}
 }
 

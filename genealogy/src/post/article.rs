@@ -8,7 +8,6 @@ use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
-use crate::post::PostTrait;
 use chrono::NaiveDate;
 use debug_stub_derive::DebugStub;
 use std::cmp::Ordering;
@@ -27,28 +26,6 @@ pub struct Article {
 	pub repository: Option<Repository>,
 	#[debug_stub = "Content"]
 	pub content: Content,
-}
-
-impl PostTrait for Article {
-	fn title(&self) -> &Title {
-		&self.title
-	}
-
-	fn tags(&self) -> &BTreeSet<Tag> {
-		&self.tags
-	}
-
-	fn date(&self) -> NaiveDate {
-		self.date
-	}
-
-	fn description(&self) -> &Description {
-		&self.description
-	}
-
-	fn slug(&self) -> &Slug {
-		&self.slug
-	}
 }
 
 // RUSTIFICATION: Implement PartialEq etc. for ALL Posts in one single impl block.

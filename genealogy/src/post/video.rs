@@ -8,7 +8,6 @@ use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
-use crate::post::PostTrait;
 use chrono::NaiveDate;
 use std::cmp::Ordering;
 use std::collections::BTreeSet;
@@ -25,28 +24,6 @@ pub struct Video {
 	pub slug: Slug,
 	pub video: VideoSlug,
 	pub repository: Option<Repository>,
-}
-
-impl PostTrait for Video {
-	fn title(&self) -> &Title {
-		&self.title
-	}
-
-	fn tags(&self) -> &BTreeSet<Tag> {
-		&self.tags
-	}
-
-	fn date(&self) -> NaiveDate {
-		self.date
-	}
-
-	fn description(&self) -> &Description {
-		&self.description
-	}
-
-	fn slug(&self) -> &Slug {
-		&self.slug
-	}
 }
 
 impl PartialEq for Video {

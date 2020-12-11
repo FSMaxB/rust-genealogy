@@ -7,7 +7,6 @@ use crate::post::title::Title;
 use crate::post::video::Video;
 use chrono::NaiveDate;
 use std::collections::BTreeSet;
-use std::ops::Deref;
 
 pub mod article;
 pub mod content;
@@ -21,14 +20,6 @@ pub mod title;
 pub mod video;
 pub mod video_slug;
 
-pub trait PostTrait {
-	fn title(&self) -> &Title;
-	fn tags(&self) -> &BTreeSet<Tag>;
-	fn date(&self) -> NaiveDate;
-	fn description(&self) -> &Description;
-	fn slug(&self) -> &Slug;
-}
-
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Post {
 	Article(Article),
@@ -36,17 +27,49 @@ pub enum Post {
 	Video(Video),
 }
 
-// NOTE: Although one could manually implement `PostTrait` for `Post`,
-// this is much easier to write and should work the same ergonomically when using it.
-impl Deref for Post {
-	type Target = dyn PostTrait;
-
-	fn deref(&self) -> &Self::Target {
+impl Post {
+	pub fn title(&self) -> &Title {
 		use Post::*;
 		match self {
-			Article(article) => article as &dyn PostTrait,
-			Talk(talk) => talk as &dyn PostTrait,
-			Video(video) => video as &dyn PostTrait,
+			Article(article) => &article.title,
+			Talk(talk) => &talk.title,
+			Video(video) => &video.title,
+		}
+	}
+
+	pub fn tags(&self) -> &BTreeSet<Tag> {
+		use Post::*;
+		match self {
+			Article(article) => &article.tags,
+			Talk(talk) => &talk.tags,
+			Video(video) => &video.tags,
+		}
+	}
+
+	pub fn date(&self) -> NaiveDate {
+		use Post::*;
+		match self {
+			Article(article) => article.date,
+			Talk(talk) => talk.date,
+			Video(video) => video.date,
+		}
+	}
+
+	pub fn description(&self) -> &Description {
+		use Post::*;
+		match self {
+			Article(article) => &article.description,
+			Talk(talk) => &talk.description,
+			Video(video) => &video.description,
+		}
+	}
+
+	pub fn slug(&self) -> &Slug {
+		use Post::*;
+		match self {
+			Article(article) => &article.slug,
+			Talk(talk) => &talk.slug,
+			Video(video) => &video.slug,
 		}
 	}
 }

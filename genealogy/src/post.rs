@@ -1,4 +1,3 @@
-use crate::helpers::classes::{Class, GetClass};
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::slug::Slug;
@@ -35,19 +34,6 @@ pub enum Post {
 	Article(Article),
 	Talk(Talk),
 	Video(Video),
-}
-
-// NOTE: 😝
-impl GetClass for Post {
-	fn get_class(&self) -> Class {
-		use Post::*;
-		match self {
-			Article(_) => "Article",
-			Talk(_) => "Talk",
-			Video(_) => "Video",
-		}
-		.into()
-	}
 }
 
 // NOTE: Although one could manually implement `PostTrait` for `Post`,

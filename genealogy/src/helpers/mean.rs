@@ -1,3 +1,5 @@
+use std::iter::FromIterator;
+
 #[derive(Default)]
 pub struct Mean {
 	sum: Sum,
@@ -19,6 +21,16 @@ impl From<Mean> for Option<f64> {
 		} else {
 			Some(f64::from(mean.sum) / (mean.count as f64))
 		}
+	}
+}
+
+impl FromIterator<f64> for Mean {
+	fn from_iter<DoubleIterator: IntoIterator<Item = f64>>(iterator: DoubleIterator) -> Self {
+		let mut mean = Mean::default();
+		for number in iterator.into_iter() {
+			mean = mean.add_number(number);
+		}
+		mean
 	}
 }
 

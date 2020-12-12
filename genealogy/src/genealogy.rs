@@ -84,6 +84,7 @@ mod test {
 	use crate::post::test::post_with_slug;
 	use lazy_static::lazy_static;
 	use literally::{bmap, bset};
+	use std::collections::BTreeSet;
 
 	lazy_static! {
 		static ref TAG_WEIGHT: Weight = weight(1.0);
@@ -228,39 +229,20 @@ mod test {
 		);
 
 		let relations = genealogy.infer_relations().collect::<Result<_, _>>().unwrap();
-		// RUSTIFICATION: Create these values from a simpler list of elements like e.g. ("a", "b")
-		let expected_relations = bset! {
-			Relation {
-				post1: POST_A.clone(),
-				post2: POST_B.clone(),
-				score: weighted_tag_score(&POST_A, &POST_B).into(),
-			},
-			Relation {
-				post1: POST_A.clone(),
-				post2: POST_C.clone(),
-				score: weighted_tag_score(&POST_A, &POST_C).into(),
-			},
-			Relation {
-				post1: POST_B.clone(),
-				post2: POST_A.clone(),
-				score: weighted_tag_score(&POST_B, &POST_A).into(),
-			},
-			Relation {
-				post1: POST_B.clone(),
-				post2: POST_C.clone(),
-				score: weighted_tag_score(&POST_B, &POST_C).into(),
-			},
-			Relation {
-				post1: POST_C.clone(),
-				post2: POST_A.clone(),
-				score: weighted_tag_score(&POST_C, &POST_A).into(),
-			},
-			Relation {
-				post1: POST_C.clone(),
-				post2: POST_B.clone(),
-				score: weighted_tag_score(&POST_C, &POST_B).into(),
-			},
-		};
+		let expected_relations = vec![
+			(POST_A.clone(), POST_B.clone()),
+			(POST_A.clone(), POST_C.clone()),
+			(POST_B.clone(), POST_A.clone()),
+			(POST_B.clone(), POST_C.clone()),
+			(POST_C.clone(), POST_A.clone()),
+			(POST_C.clone(), POST_B.clone()),
+		]
+		.into_iter()
+		.map(|(post1, post2)| {
+			let score = weighted_tag_score(&post1, &post2).into();
+			Relation { post1, post2, score }
+		})
+		.collect::<BTreeSet<_>>();
 
 		assert_eq!(expected_relations, relations);
 	}
@@ -274,38 +256,20 @@ mod test {
 		);
 
 		let relations = genealogy.infer_relations().collect::<Result<_, _>>().unwrap();
-		let expected_relations = bset! {
-			Relation {
-				post1: POST_A.clone(),
-				post2: POST_B.clone(),
-				score: link_and_tag_score(&POST_A, &POST_B),
-			},
-			Relation {
-				post1: POST_A.clone(),
-				post2: POST_C.clone(),
-				score: link_and_tag_score(&POST_A, &POST_C),
-			},
-			Relation {
-				post1: POST_B.clone(),
-				post2: POST_A.clone(),
-				score: link_and_tag_score(&POST_B, &POST_A),
-			},
-			Relation {
-				post1: POST_B.clone(),
-				post2: POST_C.clone(),
-				score: link_and_tag_score(&POST_B, &POST_C),
-			},
-			Relation {
-				post1: POST_C.clone(),
-				post2: POST_A.clone(),
-				score: link_and_tag_score(&POST_C, &POST_A),
-			},
-			Relation {
-				post1: POST_C.clone(),
-				post2: POST_B.clone(),
-				score: link_and_tag_score(&POST_C, &POST_B),
-			},
-		};
+		let expected_relations = vec![
+			(POST_A.clone(), POST_B.clone()),
+			(POST_A.clone(), POST_C.clone()),
+			(POST_B.clone(), POST_A.clone()),
+			(POST_B.clone(), POST_C.clone()),
+			(POST_C.clone(), POST_A.clone()),
+			(POST_C.clone(), POST_B.clone()),
+		]
+		.into_iter()
+		.map(|(post1, post2)| {
+			let score = link_and_tag_score(&post1, &post2).into();
+			Relation { post1, post2, score }
+		})
+		.collect::<BTreeSet<_>>();
 
 		assert_eq!(expected_relations, relations);
 	}

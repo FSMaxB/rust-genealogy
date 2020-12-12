@@ -81,7 +81,7 @@ mod test {
 
 	#[test]
 	fn single_typed_relation_weight_one_same_posts_and_score() {
-		let score = 60.try_into().unwrap();
+		let score = score(60);
 		let (post_a, post_b) = test_posts();
 		let typed_relations = [TypedRelation {
 			post1: post_a.clone(),
@@ -104,13 +104,13 @@ mod test {
 				post1: post_a.clone(),
 				post2: post_b.clone(),
 				relation_type: TAG_RELATION.clone(),
-				score: 40.try_into().unwrap(),
+				score: score(40),
 			},
 			TypedRelation {
 				post1: post_a,
 				post2: post_b,
 				relation_type: TAG_RELATION.clone(),
-				score: 80.try_into().unwrap(),
+				score: score(80),
 			},
 		];
 
@@ -137,9 +137,10 @@ mod test {
 		];
 
 		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		let expected_score =
-			Score::try_from(((f64::from(score(40) * *TAG_WEIGHT) + f64::from(score(80) * *LINK_WEIGHT)) / 2.0).round())
-				.unwrap();
+		let expected_score = vec![score(40) * *TAG_WEIGHT, score(80) * *LINK_WEIGHT]
+			.into_iter()
+			.collect::<Option<Score>>()
+			.unwrap();
 		assert_eq!(expected_score, relation.score);
 	}
 

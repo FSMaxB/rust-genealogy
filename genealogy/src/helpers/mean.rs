@@ -1,6 +1,6 @@
 use std::iter::FromIterator;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Mean {
 	sum: Sum,
 	count: usize,
@@ -34,7 +34,7 @@ impl FromIterator<f64> for Mean {
 	}
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Sum {
 	partials: Vec<f64>,
 }

@@ -79,12 +79,11 @@ fn infer_typed_relations(
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
-	use crate::genealogy::score::{score, Score};
+	use crate::genealogy::score::{score, Score, WeightedScore};
 	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::post_with_slug;
 	use lazy_static::lazy_static;
 	use literally::{bmap, bset};
-	use std::convert::TryInto;
 
 	lazy_static! {
 		static ref TAG_WEIGHT: Weight = weight(1.0);
@@ -144,8 +143,8 @@ mod test {
 		}
 	}
 
-	fn weighted_tag_score(post1: &Post, post2: &Post) -> Score {
-		(tag_score(post1, post2) * *TAG_WEIGHT).into()
+	fn weighted_tag_score(post1: &Post, post2: &Post) -> WeightedScore {
+		tag_score(post1, post2) * *TAG_WEIGHT
 	}
 
 	fn link_score(post1: &Post, post2: &Post) -> Score {
@@ -168,8 +167,8 @@ mod test {
 		}
 	}
 
-	fn weighted_link_score(post1: &Post, post2: &Post) -> Score {
-		(link_score(post1, post2) * *LINK_WEIGHT).into()
+	fn weighted_link_score(post1: &Post, post2: &Post) -> WeightedScore {
+		link_score(post1, post2) * *LINK_WEIGHT
 	}
 
 	#[test]
@@ -185,12 +184,12 @@ mod test {
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_B.clone(),
-				score: weighted_tag_score(&POST_A, &POST_B),
+				score: weighted_tag_score(&POST_A, &POST_B).into(),
 			},
 			Relation {
 				post1: POST_B.clone(),
 				post2: POST_A.clone(),
-				score: weighted_tag_score(&POST_B, &POST_A),
+				score: weighted_tag_score(&POST_B, &POST_A).into(),
 			},
 		};
 		assert_eq!(expected_relations, relations);
@@ -209,12 +208,12 @@ mod test {
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_B.clone(),
-				score: weighted_link_score(&POST_A, &POST_B),
+				score: weighted_link_score(&POST_A, &POST_B).into(),
 			},
 			Relation {
 				post1: POST_B.clone(),
 				post2: POST_A.clone(),
-				score: weighted_link_score(&POST_B, &POST_A),
+				score: weighted_link_score(&POST_B, &POST_A).into(),
 			},
 		};
 		assert_eq!(expected_relations, relations);
@@ -234,32 +233,32 @@ mod test {
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_B.clone(),
-				score: weighted_tag_score(&POST_A, &POST_B),
+				score: weighted_tag_score(&POST_A, &POST_B).into(),
 			},
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_C.clone(),
-				score: weighted_tag_score(&POST_A, &POST_C),
+				score: weighted_tag_score(&POST_A, &POST_C).into(),
 			},
 			Relation {
 				post1: POST_B.clone(),
 				post2: POST_A.clone(),
-				score: weighted_tag_score(&POST_B, &POST_A),
+				score: weighted_tag_score(&POST_B, &POST_A).into(),
 			},
 			Relation {
 				post1: POST_B.clone(),
 				post2: POST_C.clone(),
-				score: weighted_tag_score(&POST_B, &POST_C),
+				score: weighted_tag_score(&POST_B, &POST_C).into(),
 			},
 			Relation {
 				post1: POST_C.clone(),
 				post2: POST_A.clone(),
-				score: weighted_tag_score(&POST_C, &POST_A),
+				score: weighted_tag_score(&POST_C, &POST_A).into(),
 			},
 			Relation {
 				post1: POST_C.clone(),
 				post2: POST_B.clone(),
-				score: weighted_tag_score(&POST_C, &POST_B),
+				score: weighted_tag_score(&POST_C, &POST_B).into(),
 			},
 		};
 
@@ -279,35 +278,42 @@ mod test {
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_B.clone(),
-				score: ((f64::from(tag_score(&POST_A, &POST_B) * *TAG_WEIGHT) + f64::from(link_score(&POST_A, &POST_B) * *LINK_WEIGHT)) / 2.0).try_into().unwrap(),
+				score: link_and_tag_score(&POST_A, &POST_B),
 			},
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_C.clone(),
-				score: ((f64::from(tag_score(&POST_A, &POST_C) * *TAG_WEIGHT) + f64::from(link_score(&POST_A, &POST_C) * *LINK_WEIGHT)) / 2.0).try_into().unwrap(),
+				score: link_and_tag_score(&POST_A, &POST_C),
 			},
 			Relation {
 				post1: POST_B.clone(),
 				post2: POST_A.clone(),
-				score: ((f64::from(tag_score(&POST_B, &POST_A) * *TAG_WEIGHT) + f64::from(link_score(&POST_B, &POST_A) * *LINK_WEIGHT)) / 2.0).try_into().unwrap(),
+				score: link_and_tag_score(&POST_B, &POST_A),
 			},
 			Relation {
 				post1: POST_B.clone(),
 				post2: POST_C.clone(),
-				score: ((f64::from(tag_score(&POST_B, &POST_C) * *TAG_WEIGHT) + f64::from(link_score(&POST_B, &POST_C) * *LINK_WEIGHT)) / 2.0).round().try_into().unwrap(),
+				score: link_and_tag_score(&POST_B, &POST_C),
 			},
 			Relation {
 				post1: POST_C.clone(),
 				post2: POST_A.clone(),
-				score: ((f64::from(tag_score(&POST_C, &POST_A) * *TAG_WEIGHT) + f64::from(link_score(&POST_C, &POST_A) * *LINK_WEIGHT)) / 2.0).round().try_into().unwrap(),
+				score: link_and_tag_score(&POST_C, &POST_A),
 			},
 			Relation {
 				post1: POST_C.clone(),
 				post2: POST_B.clone(),
-				score: ((f64::from(tag_score(&POST_C, &POST_B) * *TAG_WEIGHT) + f64::from(link_score(&POST_C, &POST_B) * *LINK_WEIGHT)) / 2.0).round().try_into().unwrap(),
+				score: link_and_tag_score(&POST_C, &POST_B),
 			},
 		};
 
 		assert_eq!(expected_relations, relations);
+	}
+
+	fn link_and_tag_score(post1: &Post, post2: &Post) -> Score {
+		vec![weighted_tag_score(post1, post2), weighted_link_score(post1, post2)]
+			.into_iter()
+			.collect::<Option<Score>>()
+			.unwrap()
 	}
 }

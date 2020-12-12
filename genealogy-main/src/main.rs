@@ -26,13 +26,12 @@ use std::sync::Arc;
 
 mod json;
 
-#[tokio::main]
-async fn main() -> Result<(), Exception> {
+fn main() -> Result<(), Exception> {
 	println!("{}", process_details::process_details());
 
 	// NOTE: The first parameter is just the current program, so needs to be skipped.
 	let args = std::env::args().skip(1).collect();
-	let config = Config::create(args).await?;
+	let config = Config::create(args)?;
 	let genealogy = create_genealogy(&config.article_folder, &config.talk_folder, &config.video_folder)?;
 
 	let relations = genealogy.infer_relations();

@@ -15,7 +15,6 @@ lazy_static = "1"
 parking_lot = "0.11"
 regex = "1"
 resiter = "0.4"
-tokio = {version = "0.3", features = ['fs', 'io-util', 'stream']}
 url = "2"
 
 [dev-dependencies]

@@ -1,9 +1,10 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgument;
 use directories::UserDirs;
-use futures::TryStreamExt;
+use resiter::Map;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
-use tokio::io::{AsyncBufReadExt, BufReader};
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Config {
@@ -14,40 +15,36 @@ pub struct Config {
 }
 
 impl Config {
-	pub async fn create(args: Vec<String>) -> Result<Config, Exception> {
+	pub fn create(args: Vec<String>) -> Result<Config, Exception> {
 		let raw_config = if !args.is_empty() {
 			args
 		} else {
-			match read_project_config().await {
+			match read_project_config() {
 				Ok(args) => args,
-				Err(_) => read_user_config().await?,
+				Err(_) => read_user_config()?,
 			}
 		};
 		from_raw_config(raw_config)
 	}
 }
 
-async fn read_project_config() -> Result<Vec<String>, Exception> {
+fn read_project_config() -> Result<Vec<String>, Exception> {
 	let mut working_directory = std::env::current_dir().expect("Failed to get working directory.");
 	working_directory.push(CONFIG_FILE_NAME);
-	read_config(&working_directory).await
+	read_config(&working_directory)
 }
 
-async fn read_user_config() -> Result<Vec<String>, Exception> {
+fn read_user_config() -> Result<Vec<String>, Exception> {
 	let user_dirs = UserDirs::new().expect("Failed to find home directory.");
 	// WTF: Why would you store config files in the home directory, this is just rude! There's proper directories for that.
 	let mut home_directory = user_dirs.home_dir().to_path_buf();
 	home_directory.push(CONFIG_FILE_NAME);
-	read_config(&home_directory).await
+	read_config(&home_directory)
 }
 
-async fn read_config(path: &Path) -> Result<Vec<String>, Exception> {
-	let config_file = tokio::fs::File::open(path).await.map_err(Exception::from)?;
-	BufReader::new(config_file)
-		.lines()
-		.map_err(Exception::from)
-		.try_collect()
-		.await
+fn read_config(path: &Path) -> Result<Vec<String>, Exception> {
+	let config_file = File::open(path)?;
+	BufReader::new(config_file).lines().map_err(Exception::from).collect()
 }
 
 fn from_raw_config(raw: Vec<String>) -> Result<Config, Exception> {

@@ -41,7 +41,7 @@ impl Relation {
 			// NOTE: `averagingDouble` was replaced by `Mean`
 			.try_fold((None, Mean::default()), |(_, mean), result| {
 				let (posts, score) = result?;
-				Ok::<_, Exception>((Some(posts), mean.add_number(score)))
+				Ok::<_, Exception>((Some(posts), mean.add_number(score.into())))
 			})?;
 		let (posts, score) = posts
 			.zip(Option::<f64>::from(mean))
@@ -58,23 +58,24 @@ impl Relation {
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
+	use crate::genealogy::score::score;
+	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::post_with_slug;
 	use lazy_static::lazy_static;
 	use literally::bmap;
 	use std::convert::TryInto;
 
-	const TAG_WEIGHT: f64 = 1.0;
-	const LINK_WEIGHT: f64 = 1.0;
-
 	lazy_static! {
+		static ref TAG_WEIGHT: Weight = weight(1.0);
+		static ref LINK_WEIGHT: Weight = weight(1.0);
 		static ref TAG_RELATION: RelationType = RelationType::from_value("tag".to_string()).unwrap();
 		static ref LINK_RELATION: RelationType = RelationType::from_value("link".to_string()).unwrap();
 		static ref WEIGHTS: Weights = Weights::new(
 			bmap! {
-				TAG_RELATION.clone() => TAG_WEIGHT,
-				LINK_RELATION.clone() => LINK_WEIGHT,
+				TAG_RELATION.clone() => *TAG_WEIGHT,
+				LINK_RELATION.clone() => *LINK_WEIGHT,
 			},
-			0.5
+			weight(0.5),
 		);
 	}
 
@@ -136,7 +137,9 @@ mod test {
 		];
 
 		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		let expected_score = Score::try_from(((40.0 * TAG_WEIGHT + 80.0 * LINK_WEIGHT) / 2.0).round()).unwrap();
+		let expected_score =
+			Score::try_from(((f64::from(score(40) * *TAG_WEIGHT) + f64::from(score(80) * *LINK_WEIGHT)) / 2.0).round())
+				.unwrap();
 		assert_eq!(expected_score, relation.score);
 	}
 

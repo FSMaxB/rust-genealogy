@@ -1,14 +1,16 @@
 use crate::genealogist::relation_type::RelationType;
+use crate::genealogy::weight::Weight;
 use std::collections::BTreeMap;
+use std::convert::TryFrom;
 
 #[derive(Debug)]
 pub struct Weights {
-	weights: BTreeMap<RelationType, f64>,
-	default_weight: f64,
+	weights: BTreeMap<RelationType, Weight>,
+	default_weight: Weight,
 }
 
 impl Weights {
-	pub fn new(weights: BTreeMap<RelationType, f64>, default_weight: f64) -> Self {
+	pub fn new(weights: BTreeMap<RelationType, Weight>, default_weight: Weight) -> Self {
 		Self {
 			weights,
 			default_weight,
@@ -18,11 +20,11 @@ impl Weights {
 	pub fn all_equal() -> Self {
 		Self {
 			weights: Default::default(),
-			default_weight: 1.0,
+			default_weight: Weight::try_from(1.0).unwrap(),
 		}
 	}
 
-	pub fn weight_of(&self, genealogist_type: &RelationType) -> f64 {
+	pub fn weight_of(&self, genealogist_type: &RelationType) -> Weight {
 		self.weights
 			.get(genealogist_type)
 			.copied()
@@ -33,6 +35,7 @@ impl Weights {
 #[cfg(test)]
 mod test {
 	use crate::genealogist::relation_type::RelationType;
+	use crate::genealogy::weight::weight;
 	use crate::genealogy::weights::Weights;
 	use lazy_static::lazy_static;
 	use literally::bmap;
@@ -48,13 +51,13 @@ mod test {
 
 	#[test]
 	fn known_relation_type_returns_weight() {
-		let weights = Weights::new(bmap! {TAG_TYPE.clone() => 0.42}, 0.5);
+		let weights = Weights::new(bmap! {TAG_TYPE.clone() => weight(0.42)}, weight(0.5));
 		assert_eq!(0.42, weights.weight_of(&TAG_TYPE));
 	}
 
 	#[test]
 	fn unknown_relation_type_returns_default_weight() {
-		let weights = Weights::new(bmap! {TAG_TYPE.clone() => 0.42}, 0.5);
+		let weights = Weights::new(bmap! {TAG_TYPE.clone() => weight(0.42)}, weight(0.5));
 		assert_eq!(0.5, weights.weight_of(&LIST_TYPE));
 	}
 }

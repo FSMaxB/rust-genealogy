@@ -1,7 +1,9 @@
 use crate::genealogy::weight::Weight;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::mean::Mean;
 use std::convert::TryFrom;
+use std::iter::FromIterator;
 use std::ops::Mul;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -77,5 +79,16 @@ impl Mul<Weight> for Score {
 
 	fn mul(self, weight: Weight) -> Self::Output {
 		WeightedScore((self.0 as f64) * f64::from(weight))
+	}
+}
+
+impl FromIterator<WeightedScore> for Option<Score> {
+	fn from_iter<WeightedScoreIterator: IntoIterator<Item = WeightedScore>>(iterator: WeightedScoreIterator) -> Self {
+		let mean = iterator.into_iter().map(f64::from).collect::<Mean>();
+		Option::<f64>::from(mean)
+			// clamping to [0; 1] to account for possible floating point inaccuracies
+			.map(|value| value.max(0.0).min(100.0))
+			.map(WeightedScore)
+			.map(Score::from)
 	}
 }

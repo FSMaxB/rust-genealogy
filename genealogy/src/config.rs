@@ -19,27 +19,27 @@ impl Config {
 		let raw_config = if !args.is_empty() {
 			args
 		} else {
-			match read_project_config() {
+			match read_config(&project_config_directory()) {
 				Ok(args) => args,
-				Err(_) => read_user_config()?,
+				Err(_) => read_config(&user_config_directory())?,
 			}
 		};
 		from_raw_config(raw_config)
 	}
 }
 
-fn read_project_config() -> Result<Vec<String>, Exception> {
+fn project_config_directory() -> PathBuf {
 	let mut working_directory = std::env::current_dir().expect("Failed to get working directory.");
 	working_directory.push(CONFIG_FILE_NAME);
-	read_config(&working_directory)
+	working_directory
 }
 
-fn read_user_config() -> Result<Vec<String>, Exception> {
+fn user_config_directory() -> PathBuf {
 	let user_dirs = UserDirs::new().expect("Failed to find home directory.");
 	// WTF: Why would you store config files in the home directory, this is just rude! There's proper directories for that.
 	let mut home_directory = user_dirs.home_dir().to_path_buf();
 	home_directory.push(CONFIG_FILE_NAME);
-	read_config(&home_directory)
+	home_directory
 }
 
 fn read_config(path: &Path) -> Result<Vec<String>, Exception> {

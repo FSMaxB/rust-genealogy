@@ -1,3 +1,4 @@
+use crate::json::SerializedRecommendations;
 use genealogists::r#type::type_genealogist_service::TypeGenealogistService;
 use genealogists::repo::repo_genealogist_service::RepoGenealogistService;
 use genealogists::silly::silly_genealogist_service::SillyGenealogistService;
@@ -8,6 +9,7 @@ use genealogy::genealogist::Genealogist;
 use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
+use genealogy::helpers::exception::Exception::RuntimeException;
 use genealogy::post::article::Article;
 use genealogy::post::talk::Talk;
 use genealogy::post::video::Video;
@@ -22,6 +24,8 @@ use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+mod json;
+
 #[tokio::main]
 async fn main() -> Result<(), Exception> {
 	println!("{}", process_details::process_details());
@@ -33,7 +37,7 @@ async fn main() -> Result<(), Exception> {
 
 	let relations = genealogy.infer_relations();
 	let recommendations = Recommender::recommend(relations, NonZeroUsize::new(3).unwrap())?;
-	let recommendations_as_json = recommendations_to_json(recommendations);
+	let recommendations_as_json = recommendations_to_json(recommendations)?;
 	if let Some(output_file) = &config.output_file {
 		unchecked_files_write(output_file, &recommendations_as_json)?;
 	}
@@ -77,36 +81,8 @@ fn get_genealogists(posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {
 		.collect()
 }
 
-// WTF: W.T.F. Don't build your own JSON, you just don't ever do that!
-fn recommendations_to_json(recommendations: impl Iterator<Item = Recommendation>) -> String {
-	const FRAME: &str = r#"[
-$RECOMMENDATIONS
-]
-"#;
-	const RECOMMENDATION: &str = r#"	{
-		"title": "$TITLE",
-		"recommendations": [
-	$RECOMMENDED_POSTS
-		]
-	}
-	"#;
-
-	const RECOMMENDED_POSTS: &str = r#"			{ "title": "$TITLE" }"#;
-
-	let recs = recommendations
-		.map(|rec| {
-			let posts = rec
-				.recommended_posts()
-				.iter()
-				.map(|rec_art| rec_art.title())
-				.map(|rec_title| RECOMMENDED_POSTS.replace("$TITLE", &rec_title.text))
-				.collect::<Vec<_>>()
-				.join(",\n");
-			RECOMMENDATION
-				.replace("$TITLE", &rec.post().title().text)
-				.replace("$RECOMMENDED_POSTS", &posts)
-		})
-		.collect::<Vec<_>>()
-		.join(",\n");
-	FRAME.replace("$RECOMMENDATIONS", &recs)
+fn recommendations_to_json<'a>(recommendations: impl Iterator<Item = Recommendation>) -> Result<String, Exception> {
+	let serialized_recommendations = recommendations.collect::<SerializedRecommendations>();
+	serde_json::to_string(&serialized_recommendations)
+		.map_err(|error| RuntimeException(format!("Failed to serialize JSON: {}", error)))
 }

@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VideoSlug {
@@ -9,7 +9,9 @@ pub struct VideoSlug {
 impl VideoSlug {
 	pub fn from_value(value: String) -> Result<VideoSlug, Exception> {
 		if value.trim().is_empty() {
-			Err(IllegalArgument("VideoSlugs can't have an empty value.".to_string()))
+			Err(IllegalArgumentException(
+				"VideoSlugs can't have an empty value.".to_string(),
+			))
 		} else {
 			Ok(VideoSlug { value })
 		}
@@ -24,6 +26,9 @@ mod test {
 
 	#[test]
 	fn empty_text_exception() {
-		assert!(matches!(VideoSlug::from_value("".to_string()), Err(IllegalArgument(_))))
+		assert!(matches!(
+			VideoSlug::from_value("".to_string()),
+			Err(IllegalArgumentException(_))
+		))
 	}
 }

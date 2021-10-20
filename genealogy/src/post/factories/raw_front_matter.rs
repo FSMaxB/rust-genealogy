@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 use std::collections::BTreeMap;
 
 #[derive(Debug)]
@@ -17,6 +17,6 @@ impl RawFrontMatter {
 		self.lines
 			.get(key)
 			.map(String::as_str)
-			.ok_or_else(|| IllegalArgument(format!("Required key '{}' not present in front matter.", key)))
+			.ok_or_else(|| IllegalArgumentException(format!("Required key '{}' not present in front matter.", key)))
 	}
 }

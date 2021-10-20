@@ -1,6 +1,6 @@
 use crate::genealogy::weight::Weight;
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::mean::Mean;
 use std::convert::TryFrom;
 use std::iter::FromIterator;
@@ -14,7 +14,7 @@ impl TryFrom<u8> for Score {
 
 	fn try_from(score: u8) -> Result<Self, Self::Error> {
 		if score > 100 {
-			Err(IllegalArgument(format!(
+			Err(IllegalArgumentException(format!(
 				"Score should be in interval [0; 100]: {}",
 				score
 			)))
@@ -29,7 +29,7 @@ impl TryFrom<f64> for Score {
 
 	fn try_from(score: f64) -> Result<Self, Self::Error> {
 		if score > 100.0 {
-			Err(IllegalArgument(format!(
+			Err(IllegalArgumentException(format!(
 				"Score should be in interval [0; 100]: {}",
 				score
 			)))

@@ -31,7 +31,7 @@ fn main() -> Result<(), Exception> {
 
 	// NOTE: The first parameter is just the current program, so needs to be skipped.
 	let args = std::env::args().skip(1).collect();
-	let config = Config::create(args)?;
+	let config = Config::create(args)?.join()?;
 	let genealogy = create_genealogy(&config.article_folder, &config.talk_folder, &config.video_folder)?;
 
 	let relations = genealogy.infer_relations();

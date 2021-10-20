@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Slug {
@@ -9,7 +9,7 @@ pub struct Slug {
 impl Slug {
 	pub fn from_value(value: String) -> Result<Slug, Exception> {
 		if value.trim().is_empty() {
-			Err(IllegalArgument("Slugs can't have an empty value.".to_string()))
+			Err(IllegalArgumentException("Slugs can't have an empty value.".to_string()))
 		} else {
 			Ok(Slug { value })
 		}
@@ -24,6 +24,9 @@ mod test {
 
 	#[test]
 	fn empty_text_exception() {
-		assert!(matches!(Slug::from_value("".to_string()), Err(IllegalArgument(_))))
+		assert!(matches!(
+			Slug::from_value("".to_string()),
+			Err(IllegalArgumentException(_))
+		))
 	}
 }

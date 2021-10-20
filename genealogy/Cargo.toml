@@ -9,9 +9,11 @@ edition = "2018"
 [dependencies]
 chrono = {version = "0.4", default_features = false, features = ["clock"]}
 debug_stub_derive = "0.3"
-directories = "3"
+dirs = "4"
+futures-lite = "1"
 lazy_static = "1"
 parking_lot = "0.11"
+pin-project = "1"
 regex = {version = "1", default_features = false, features = ["std"]}
 resiter = "0.4"
 url = "2"

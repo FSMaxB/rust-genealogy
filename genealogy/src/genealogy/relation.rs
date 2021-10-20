@@ -2,7 +2,7 @@ use crate::genealogist::typed_relation::TypedRelation;
 use crate::genealogy::score::Score;
 use crate::genealogy::weights::Weights;
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::iterator::IteratorExtension;
 use crate::helpers::mean::Mean;
 use crate::post::Post;
@@ -45,7 +45,7 @@ impl Relation {
 			})?;
 		let (posts, score) = posts
 			.zip(Option::<f64>::from(mean))
-			.ok_or_else(|| IllegalArgument("Can't create relation from zero typed relations.".to_string()))?;
+			.ok_or_else(|| IllegalArgumentException("Can't create relation from zero typed relations.".to_string()))?;
 		Ok(Relation {
 			post1: posts.0.clone(),
 			post2: posts.1.clone(),

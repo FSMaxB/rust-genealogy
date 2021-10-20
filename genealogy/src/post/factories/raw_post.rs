@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::{IllegalArgument, RuntimeException};
+use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
 use crate::post::content::Content;
 use crate::post::factories::raw_front_matter::RawFrontMatter;
 use crate::utils::unchecked_files_read_all_lines;
@@ -69,16 +69,16 @@ fn read_front_matter(markdown_file: Vec<String>) -> impl Iterator<Item = String>
 
 // NOTE: FrontMatterLine is not necessary because `Iterator::collect` works on Tuples.
 fn key_value_pair_from(line: String) -> Result<(String, String), Exception> {
-	let colon_index = line
-		.find(':')
-		.ok_or_else(|| IllegalArgument(format!("Line doesn't seem to be a key/value pair (no colon): {}", line)))?;
+	let colon_index = line.find(':').ok_or_else(|| {
+		IllegalArgumentException(format!("Line doesn't seem to be a key/value pair (no colon): {}", line))
+	})?;
 	let (key, value) = line.split_at(colon_index);
 	let key = key.trim().to_string();
 	// The value still has the leading colon in it, so it needs to be removed.
 	let value = (&value[1..].trim()).to_string();
 
 	if key.is_empty() {
-		return Err(IllegalArgument(format!(r#"Line "{}" has no key"#, line)));
+		return Err(IllegalArgumentException(format!(r#"Line "{}" has no key"#, line)));
 	}
 
 	Ok((key, value))

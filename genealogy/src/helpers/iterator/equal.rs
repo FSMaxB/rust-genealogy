@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 use std::fmt::Debug;
 
 pub fn equal<Element, Iter>(iterator: Iter) -> Equal<Element, Iter>
@@ -31,7 +31,7 @@ where
 		if &element == previous {
 			Some(Ok(element))
 		} else {
-			Some(Err(IllegalArgument(format!(
+			Some(Err(IllegalArgumentException(format!(
 				"Unequal elements in stream: {:?} vs {:?}",
 				previous, element
 			))))
@@ -41,7 +41,7 @@ where
 
 #[cfg(test)]
 mod test {
-	use crate::helpers::exception::Exception::IllegalArgument;
+	use crate::helpers::exception::Exception::IllegalArgumentException;
 	use crate::helpers::iterator::IteratorExtension;
 
 	#[allow(clippy::unit_arg)]
@@ -70,6 +70,6 @@ mod test {
 	fn non_equal_element_stream_throws_exception() {
 		let iterator = vec!["element", "other element"].into_iter();
 		let result = iterator.equal().collect::<Result<Vec<_>, _>>();
-		assert!(matches!(result, Err(IllegalArgument(_))))
+		assert!(matches!(result, Err(IllegalArgumentException(_))))
 	}
 }

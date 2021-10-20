@@ -1,3 +1,4 @@
+#![allow(clippy::tabs_in_doc_comments)]
 pub mod config;
 pub mod genealogist;
 pub mod genealogy;

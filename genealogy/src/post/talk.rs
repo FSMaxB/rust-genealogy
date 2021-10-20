@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::{IllegalArgument, RuntimeException};
+use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
 use crate::post::factories::raw_post::{RawPost, DATE, DESCRIPTION, SLIDES, SLUG, TAGS, TITLE, VIDEO};
@@ -81,7 +81,8 @@ impl TryFrom<RawPost> for Talk {
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,
 			slug: Slug::from_value(front_matter.value_of(SLUG)?.to_string())?,
-			slides: Url::parse(front_matter.value_of(SLIDES)?).map_err(|error| IllegalArgument(error.to_string()))?,
+			slides: Url::parse(front_matter.value_of(SLIDES)?)
+				.map_err(|error| IllegalArgumentException(error.to_string()))?,
 			video: front_matter
 				.value_of(VIDEO)
 				.ok()

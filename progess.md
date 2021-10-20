@@ -15,7 +15,7 @@
   * TypeGenealogistService.java [ ]
 
 ## Genealogy
-* Config.java [ ]
+* Config.java [x]
 * genealogist [ ]
   * Genealogist.java [ ]
   * GenealogistService.java [ ]

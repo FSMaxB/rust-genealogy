@@ -1,6 +1,6 @@
 use crate::genealogy::score::{Score, WeightedScore};
 use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgument;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 use std::convert::TryFrom;
 use std::ops::Mul;
 
@@ -12,7 +12,7 @@ impl TryFrom<f64> for Weight {
 
 	fn try_from(weight: f64) -> Result<Self, Self::Error> {
 		if !(0.0..=1.0).contains(&weight) {
-			Err(IllegalArgument(format!(
+			Err(IllegalArgumentException(format!(
 				"Weight must be in interval [0; 1]: {}",
 				weight
 			)))

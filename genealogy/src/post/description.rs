@@ -23,7 +23,13 @@ impl Description {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::text_parser_tests::test_text_parser;
+	use crate::text_parser_tests::{test_text_parser, QuotationTests};
+
+	impl QuotationTests for Description {
+		fn parse_create_extract(text: &str) -> Result<String, Exception> {
+			Ok(Description::from_text(text)?.text)
+		}
+	}
 
 	#[test]
 	fn empty_text_exception() {
@@ -32,6 +38,6 @@ mod test {
 
 	#[test]
 	fn quotation_tests() {
-		test_text_parser(|text| Description::from_text(text).map(|descrpiption| descrpiption.text))
+		test_text_parser::<Description>();
 	}
 }

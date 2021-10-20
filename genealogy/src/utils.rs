@@ -169,10 +169,16 @@ macro_rules! concat {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::text_parser_tests::test_text_parser;
+	use crate::text_parser_tests::{test_text_parser, QuotationTests};
+
+	impl QuotationTests for Utils {
+		fn parse_create_extract(text: &str) -> Result<String, Exception> {
+			Utils::remove_outer_quotation_marks(text)
+		}
+	}
 
 	#[test]
 	fn quotation_tests() {
-		test_text_parser(Utils::remove_outer_quotation_marks);
+		test_text_parser::<Utils>();
 	}
 }

@@ -67,5 +67,5 @@
   * TitleTests.java [ ]
 * recommendation [ ]
   * RecommenderTests.java [ ]
-* TextParserTests.java [ ]
+* TextParserTests.java [x]
 * UtilsTests.java [ ]

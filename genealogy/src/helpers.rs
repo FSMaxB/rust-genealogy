@@ -10,3 +10,5 @@ pub mod path;
 pub mod stream;
 pub mod string_extensions;
 pub mod system;
+#[cfg(test)]
+pub mod test;

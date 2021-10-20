@@ -22,7 +22,13 @@ impl Title {
 mod test {
 	use super::*;
 	use crate::helpers::exception::Exception::IllegalArgumentException;
-	use crate::text_parser_tests::test_text_parser;
+	use crate::text_parser_tests::{test_text_parser, QuotationTests};
+
+	impl QuotationTests for Title {
+		fn parse_create_extract(text: &str) -> Result<String, Exception> {
+			Ok(Title::from_text(text)?.text)
+		}
+	}
 
 	#[test]
 	fn empty_text_exception() {
@@ -31,6 +37,6 @@ mod test {
 
 	#[test]
 	fn quotation_tests() {
-		test_text_parser(|text| Title::from_text(text).map(|title| title.text))
+		test_text_parser::<Title>();
 	}
 }

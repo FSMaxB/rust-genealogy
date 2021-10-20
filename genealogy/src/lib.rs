@@ -8,6 +8,11 @@ pub mod process_details;
 pub mod recommendation;
 #[cfg(test)]
 pub mod test_helpers;
+
+/// ```java
+/// public class TextParserTests {
+/// ```
 #[cfg(test)]
 pub mod text_parser_tests;
+
 pub mod utils;

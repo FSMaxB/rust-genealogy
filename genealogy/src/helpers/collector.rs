@@ -3,14 +3,14 @@ use crate::helpers::exception::Exception;
 /// The combiner and characteristics where left out for easier implementation of the collectors.
 /// I don't intend to make this parallel capable anyways.
 pub struct Collector<Input, Accumulated, Reduced> {
-	pub supplier: Box<dyn Fn() -> Result<Accumulated, Exception>>,
+	pub supplier: Box<dyn FnOnce() -> Result<Accumulated, Exception>>,
 	pub accumulator: Box<dyn Fn(&mut Accumulated, Input) -> Result<(), Exception>>,
 	pub finisher: Box<dyn FnOnce(Accumulated) -> Result<Reduced, Exception>>,
 }
 
 impl<Input, Accumulated, Reduced> Collector<Input, Accumulated, Reduced> {
 	pub fn of(
-		supplier: impl Fn() -> Result<Accumulated, Exception> + 'static,
+		supplier: impl FnOnce() -> Result<Accumulated, Exception> + 'static,
 		accumulator: impl Fn(&mut Accumulated, Input) -> Result<(), Exception> + 'static,
 		finisher: impl Fn(Accumulated) -> Result<Reduced, Exception> + 'static,
 	) -> Self {

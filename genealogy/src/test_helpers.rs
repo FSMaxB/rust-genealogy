@@ -1,7 +1,7 @@
 use crate::post::tag::Tag;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
-pub fn btree_set_of_tags(texts: &[&str]) -> BTreeSet<Tag> {
+pub fn hash_set_of_tags(texts: &[&str]) -> HashSet<Tag> {
 	texts
 		.iter()
 		.copied()

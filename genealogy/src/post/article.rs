@@ -11,14 +11,14 @@ use crate::post::title::Title;
 use chrono::NaiveDate;
 use debug_stub_derive::DebugStub;
 use std::cmp::Ordering;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::path::Path;
 
 #[derive(DebugStub)]
 pub struct Article {
 	pub title: Title,
-	pub tags: BTreeSet<Tag>,
+	pub tags: HashSet<Tag>,
 	pub date: NaiveDate,
 	pub description: Description,
 	pub slug: Slug,
@@ -108,7 +108,7 @@ impl TryFrom<RawPost> for Article {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::test_helpers::btree_set_of_tags;
+	use crate::test_helpers::hash_set_of_tags;
 	use chrono::NaiveDate;
 
 	#[test]
@@ -127,7 +127,7 @@ mod test {
 		let post = Article::try_from(file).unwrap();
 
 		assert_eq!("Cool: A blog post", post.title.text);
-		assert_eq!(btree_set_of_tags(&["$TAG", "$TOG"]), post.tags);
+		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags);
 		assert_eq!(NaiveDate::from_ymd(2020, 1, 23), post.date);
 		assert_eq!("Very blog, much post, so wow", post.description.text);
 		assert_eq!("cool-blog-post", post.slug.value);
@@ -149,7 +149,7 @@ mod test {
 		let post = Article::try_from(file).unwrap();
 
 		assert_eq!("A cool blog post", post.title.text);
-		assert_eq!(btree_set_of_tags(&["$TAG", "$TOG"]), post.tags);
+		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags);
 		assert_eq!(NaiveDate::from_ymd(2020, 1, 23), post.date);
 		assert_eq!("Very blog, much post, so wow", post.description.text);
 		assert_eq!("cool-blog-post", post.slug.value);
@@ -175,7 +175,7 @@ mod test {
 		let post = Article::try_from(file).unwrap();
 
 		assert_eq!("A cool blog post", post.title.text);
-		assert_eq!(btree_set_of_tags(&["$TAG", "$TOG"]), post.tags);
+		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags);
 		assert_eq!(NaiveDate::from_ymd(2020, 1, 23), post.date);
 		assert_eq!("Very blog, much post, so wow", post.description.text);
 		assert_eq!("cool-blog-post", post.slug.value);

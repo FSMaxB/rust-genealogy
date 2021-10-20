@@ -6,7 +6,7 @@ use crate::post::talk::Talk;
 use crate::post::title::Title;
 use crate::post::video::Video;
 use chrono::NaiveDate;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 
 pub mod article;
 pub mod content;
@@ -37,7 +37,7 @@ impl Post {
 		}
 	}
 
-	pub fn tags(&self) -> &BTreeSet<Tag> {
+	pub fn tags(&self) -> &HashSet<Tag> {
 		use Post::*;
 		match self {
 			Article(article) => &article.tags,

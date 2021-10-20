@@ -10,14 +10,14 @@ use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
 use chrono::NaiveDate;
 use std::cmp::Ordering;
-use std::collections::BTreeSet;
+use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::path::Path;
 
 #[derive(Debug)]
 pub struct Video {
 	pub title: Title,
-	pub tags: BTreeSet<Tag>,
+	pub tags: HashSet<Tag>,
 	pub date: NaiveDate,
 	pub description: Description,
 	pub slug: Slug,

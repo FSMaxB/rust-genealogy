@@ -3,7 +3,7 @@ Rust Genealogy
 
 This is an in progress rewrite of [java-after-eight](https://github.com/CodeFX-org/java-after-eight) in rust.
 
-Based on commit [10b7f5f15f8223c0667b63c0391f95eef9211138](https://github.com/nipafx/java-after-eight/tree/10b7f5f15f8223c0667b63c0391f95eef9211138)
+Based on commit [b2d090fdd80942bce774662f4507db59614dc393](https://github.com/nipafx/java-after-eight/tree/b2d090fdd80942bce774662f4507db59614dc393)
 
 Roadmap
 -------

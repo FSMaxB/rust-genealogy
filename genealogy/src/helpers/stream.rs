@@ -1,6 +1,6 @@
 use crate::helpers::collector::Collector;
 use crate::helpers::exception::Exception;
-use resiter::{FlatMap, Map};
+use resiter::{Filter, FlatMap, Map};
 use std::convert::identity;
 
 pub struct Stream<Item> {
@@ -11,6 +11,13 @@ impl<Item> Stream<Item>
 where
 	Item: 'static,
 {
+	pub fn map<NewItem>(self, mapper: impl FnMut(Item) -> NewItem + 'static) -> Stream<NewItem>
+	where
+		NewItem: 'static,
+	{
+		self.iterator.map_ok(mapper).into()
+	}
+
 	pub fn flat_map<NewItem>(self, mut mapper: impl FnMut(Item) -> Option<Stream<NewItem>> + 'static) -> Stream<NewItem>
 	where
 		NewItem: 'static,
@@ -19,6 +26,10 @@ where
 			.flat_map_ok(move |item| mapper(item).into_iter().flat_map(|stream| stream.iterator))
 			.map(|result| result.and_then(identity))
 			.into()
+	}
+
+	pub fn filter(self, predicate: impl FnMut(&Item) -> bool + 'static) -> Self {
+		self.iterator.filter_ok(predicate).into()
 	}
 
 	pub fn collect<Accumulated, Reduced>(
@@ -31,6 +42,13 @@ where
 			(collector.accumulator)(&mut accumulated, item)?;
 		}
 		(collector.finisher)(accumulated)
+	}
+
+	pub fn of<Iterable>(iterable: Iterable) -> Stream<Iterable::Item>
+	where
+		Iterable: IntoIterator<Item = Item> + 'static,
+	{
+		iterable.into_iter().map(Result::<_, Exception>::Ok).into()
 	}
 }
 

@@ -1,4 +1,6 @@
 use crate::helpers::exception::Exception;
+use std::collections::HashSet;
+use std::hash::Hash;
 
 /// The combiner and characteristics where left out for easier implementation of the collectors.
 /// I don't intend to make this parallel capable anyways.
@@ -75,6 +77,20 @@ impl Collectors {
 				let reduced2 = (downstream2.finisher)(accumulated2)?;
 				merger(reduced1, reduced2)
 			}),
+		}
+	}
+
+	pub fn to_hash_set<Input>() -> Collector<Input, HashSet<Input>, HashSet<Input>>
+	where
+		Input: Hash + Eq + 'static,
+	{
+		Collector {
+			supplier: Box::new(|| Ok(HashSet::default())),
+			accumulator: Box::new(|set, element| {
+				set.insert(element);
+				Ok(())
+			}),
+			finisher: Box::new(Result::<_, Exception>::Ok),
 		}
 	}
 

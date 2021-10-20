@@ -1,27 +1,46 @@
-use lazy_static::lazy_static;
-use regex::Regex;
+use crate::helpers::collector::Collectors;
+use crate::helpers::exception::Exception;
+use crate::helpers::stream::Stream;
+use crate::helpers::string_extensions::StringExtensions;
 use std::collections::HashSet;
 
+/// ```java
+/// public record Tag(String text) {
+/// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Tag {
 	pub text: String,
 }
 
 impl Tag {
-	pub fn from_text(tags_text: &str) -> HashSet<Tag> {
-		lazy_static! {
-			static ref SQUARE_BRACKET_REGEX: Regex = Regex::new("^\\[|\\]$").unwrap();
-		}
+	/// ```java
+	/// public Tag {
+	/// 	requireNonNull(text);
+	/// }
+	/// ```
+	pub fn new(text: String) -> Tag {
+		Tag { text }
+	}
 
-		SQUARE_BRACKET_REGEX
-			.replace_all(tags_text, "")
-			.as_ref()
-			.split(',')
-			.map(str::trim)
-			.filter(|tag_text| !tag_text.is_empty())
-			.map(str::to_owned)
-			.map(|text| Tag { text })
-			.collect()
+	/// ```java
+	/// public static Set<Tag> from(String tagsText) {
+	///		return Stream.of(tagsText
+	///				.replaceAll("^\\[|\\]$", "")
+	///				.split(","))
+	///				.map(String::strip)
+	///				.filter(not(String::isBlank))
+	///				.map(Tag::new)
+	///				.collect(toUnmodifiableSet());
+	///	}
+	/// ```
+	pub fn from_text(tags_text: &str) -> Result<HashSet<Tag>, Exception> {
+		Stream::of(tags_text.replace_all("^\\[|\\]$", "")?.split(','))
+			.map(|string| string.strip())
+			.filter(|string| !string.is_empty())
+			.map(Tag::new)
+			// An UnmodifiableSet isn't really necessary in rust since it
+			// can only be modified via mutable reference anyways.
+			.collect(Collectors::to_hash_set())
 	}
 }
 
@@ -35,7 +54,7 @@ mod test {
 		let tags_text = "[ ]";
 		let expected_tags = HashSet::default();
 
-		assert_eq!(expected_tags, Tag::from_text(tags_text));
+		assert_eq!(expected_tags, Tag::from_text(tags_text).unwrap());
 	}
 
 	#[test]
@@ -43,7 +62,7 @@ mod test {
 		let tags_text = "[$TAG]";
 		let expected_tags = hash_set_of_tags(&["$TAG"]);
 
-		assert_eq!(expected_tags, Tag::from_text(tags_text));
+		assert_eq!(expected_tags, Tag::from_text(tags_text).unwrap());
 	}
 
 	#[test]
@@ -51,7 +70,7 @@ mod test {
 		let tags_text = "[$TAG,$TOG,$TUG]";
 		let expected_tags = hash_set_of_tags(&["$TAG", "$TOG", "$TUG"]);
 
-		assert_eq!(expected_tags, Tag::from_text(tags_text));
+		assert_eq!(expected_tags, Tag::from_text(tags_text).unwrap());
 	}
 
 	#[test]
@@ -59,7 +78,7 @@ mod test {
 		let tags_text = "[$TAG ,  $TOG , $TUG  ]";
 		let expected_tags = hash_set_of_tags(&["$TAG", "$TOG", "$TUG"]);
 
-		assert_eq!(expected_tags, Tag::from_text(tags_text));
+		assert_eq!(expected_tags, Tag::from_text(tags_text).unwrap());
 	}
 
 	#[test]
@@ -67,7 +86,7 @@ mod test {
 		let tags_text = "[$TAG ,  , $TUG  ]";
 		let expected_tags = hash_set_of_tags(&["$TAG", "$TUG"]);
 
-		assert_eq!(expected_tags, Tag::from_text(tags_text));
+		assert_eq!(expected_tags, Tag::from_text(tags_text).unwrap());
 	}
 
 	#[test]
@@ -75,6 +94,6 @@ mod test {
 		let tags_text = "[$TAG, $TAG]";
 		let expected_tags = hash_set_of_tags(&["$TAG"]);
 
-		assert_eq!(expected_tags, Tag::from_text(tags_text));
+		assert_eq!(expected_tags, Tag::from_text(tags_text).unwrap());
 	}
 }

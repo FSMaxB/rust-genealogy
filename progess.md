@@ -40,7 +40,7 @@
     * VideoFactory.java [ ]
   * Repository.java [ ]
   * Slug.java [ ]
-  * Tag.java [ ]
+  * Tag.java [x]
   * Talk.java [ ]
   * Title.java [ ]
   * Video.java [ ]

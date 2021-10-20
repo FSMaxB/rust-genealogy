@@ -1,7 +1,6 @@
 use crate::genealogist::relation_type::RelationType;
 use crate::genealogy::weight::Weight;
 use std::collections::BTreeMap;
-use std::convert::TryFrom;
 
 #[derive(Debug)]
 pub struct Weights {

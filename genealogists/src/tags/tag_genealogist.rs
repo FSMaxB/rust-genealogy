@@ -5,7 +5,6 @@ use genealogy::genealogy::score::Score;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
 use lazy_static::lazy_static;
-use std::convert::TryFrom;
 use std::sync::Arc;
 
 pub struct TagGenealogist;

@@ -2,7 +2,6 @@ use crate::genealogy::weight::Weight;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::mean::Mean;
-use std::convert::TryFrom;
 use std::iter::FromIterator;
 use std::ops::Mul;
 

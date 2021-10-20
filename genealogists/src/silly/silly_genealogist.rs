@@ -6,7 +6,6 @@ use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
 use lazy_static::lazy_static;
 use std::collections::BTreeSet;
-use std::convert::TryFrom;
 use std::sync::Arc;
 
 pub struct SillyGenealogist;

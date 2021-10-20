@@ -19,7 +19,6 @@ use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
 use resiter::{AndThen, Filter, Map};
-use std::convert::TryFrom;
 use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

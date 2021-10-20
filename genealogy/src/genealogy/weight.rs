@@ -1,7 +1,6 @@
 use crate::genealogy::score::{Score, WeightedScore};
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use std::convert::TryFrom;
 use std::ops::Mul;
 
 #[derive(Clone, Copy, Debug, PartialEq, PartialOrd)]

@@ -4,7 +4,6 @@ use genealogy::genealogist::Genealogist;
 use genealogy::genealogy::score::Score;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
-use std::convert::TryFrom;
 use std::ops::Deref;
 use std::sync::Arc;
 

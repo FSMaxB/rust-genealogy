@@ -60,21 +60,15 @@ impl Collectors {
 		Accumulated2: 'static,
 		Reduced2: 'static,
 	{
-		let supplier1 = downstream1.supplier;
-		let supplier2 = downstream2.supplier;
-		let accumulator1 = downstream1.accumulator;
-		let accumulator2 = downstream2.accumulator;
-		let finisher1 = downstream1.finisher;
-		let finisher2 = downstream2.finisher;
 		Collector {
-			supplier: Box::new(move || (supplier1(), supplier2())),
+			supplier: Box::new(move || ((downstream1.supplier)(), (downstream2.supplier)())),
 			accumulator: Box::new(move |(accumulated1, accumulated2), input| {
-				accumulator1(accumulated1, input.clone())?;
-				accumulator2(accumulated2, input)
+				(downstream1.accumulator)(accumulated1, input.clone())?;
+				(downstream2.accumulator)(accumulated2, input)
 			}),
 			finisher: Box::new(move |(accumulated1, accumulated2)| {
-				let reduced1 = finisher1(accumulated1);
-				let reduced2 = finisher2(accumulated2);
+				let reduced1 = (downstream1.finisher)(accumulated1);
+				let reduced2 = (downstream2.finisher)(accumulated2);
 				merger(reduced1, reduced2)
 			}),
 		}

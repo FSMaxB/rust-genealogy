@@ -14,7 +14,7 @@ use genealogy::post::article::Article;
 use genealogy::post::talk::Talk;
 use genealogy::post::video::Video;
 use genealogy::post::Post;
-use genealogy::process_details;
+use genealogy::process_details::ProcessDetails;
 use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
@@ -26,7 +26,7 @@ use std::sync::Arc;
 mod json;
 
 fn main() -> Result<(), Exception> {
-	println!("{}", process_details::process_details());
+	println!("{}", ProcessDetails::details());
 
 	// NOTE: The first parameter is just the current program, so needs to be skipped.
 	let args = std::env::args().skip(1).collect();

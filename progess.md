@@ -45,7 +45,7 @@
   * Title.java [ ]
   * Video.java [ ]
   * VideoSlug.java [ ]
-* ProcessDetails.java [ ]
+* ProcessDetails.java [x]
 * recommendation [ ]
   * Recommendation.java [ ]
   * Recommender.java [ ]

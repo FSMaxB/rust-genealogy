@@ -190,8 +190,6 @@ impl Config {
 	/// }
 	/// ```
 	fn read_config(working_dir: PathBuf) -> CompletableFuture<Vec<String>> {
-		CompletableFuture::supply_async(move || {
-			Files::read_all_lines(&working_dir)?.collect::<Result<Vec<String>, Exception>>()
-		})
+		CompletableFuture::supply_async(move || Files::read_all_lines(&working_dir)?.to_vector(Vec::with_capacity))
 	}
 }

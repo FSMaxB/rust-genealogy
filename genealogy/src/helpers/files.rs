@@ -14,8 +14,8 @@ impl Files {
 		}
 	}
 
-	pub fn read_all_lines(path: &Path) -> Result<impl Iterator<Item = Result<String, Exception>>, Exception> {
+	pub fn read_all_lines(path: &Path) -> Result<Stream<String>, Exception> {
 		let file = File::open(path)?;
-		Ok(BufReader::new(file).lines().map_err(Exception::from))
+		Ok(BufReader::new(file).lines().map_err(Exception::from).into())
 	}
 }

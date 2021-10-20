@@ -6,3 +6,4 @@ pub mod iterator;
 pub mod mean;
 pub mod path;
 pub mod system;
+pub mod stream;

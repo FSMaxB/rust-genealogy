@@ -68,4 +68,4 @@
 * recommendation [ ]
   * RecommenderTests.java [ ]
 * TextParserTests.java [x]
-* UtilsTests.java [ ]
+* UtilsTests.java [x]

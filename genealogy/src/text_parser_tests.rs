@@ -28,7 +28,7 @@ pub trait QuotationTests {
 
 		let actual = Self::parse_create_extract(text).unwrap();
 
-		assert_that(&actual).is_equal_to(expected);
+		assert_that(actual).is_equal_to(expected);
 	}
 
 	/// ```java
@@ -48,7 +48,7 @@ pub trait QuotationTests {
 
 		let actual = Self::parse_create_extract(text).unwrap();
 
-		assert_that(&actual).is_equal_to(expected);
+		assert_that(actual).is_equal_to(expected);
 	}
 
 	/// ```java
@@ -68,7 +68,7 @@ pub trait QuotationTests {
 
 		let actual = Self::parse_create_extract(text).unwrap();
 
-		assert_that(&actual).is_equal_to(expected);
+		assert_that(actual).is_equal_to(expected);
 	}
 }
 

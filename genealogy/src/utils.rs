@@ -166,12 +166,31 @@ macro_rules! concat {
 	};
 }
 
+/// ```java
+/// class UtilsTests {
+/// ```
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::text_parser_tests::{test_text_parser, QuotationTests};
+	use crate::text_parser_tests::{self, test_text_parser};
 
-	impl QuotationTests for Utils {
+	///```java
+	/// @Nested
+	/// class QuotationTests implements TextParserTests.QuotationTests {
+	/// ```
+	struct QuotationTests;
+
+	///```java
+	/// @Nested
+	/// class QuotationTests implements TextParserTests.QuotationTests {
+	/// ```
+	impl text_parser_tests::QuotationTests for QuotationTests {
+		/// ```java
+		/// @Override
+		/// public String parseCreateExtract(String text) {
+		/// 	return Utils.removeOuterQuotationMarks(text);
+		/// }
+		/// ```
 		fn parse_create_extract(text: &str) -> Result<String, Exception> {
 			Utils::remove_outer_quotation_marks(text)
 		}
@@ -179,6 +198,88 @@ mod test {
 
 	#[test]
 	fn quotation_tests() {
-		test_text_parser::<Utils>();
+		test_text_parser::<QuotationTests>();
+	}
+
+	/// ```java
+	/// @Nested
+	/// class CollectEqualElement {
+	/// ```
+	#[allow(non_snake_case)]
+	mod collect_equal_element {
+		use crate::helpers::exception::Exception::IllegalArgumentException;
+		use crate::helpers::test::assert_that;
+		use crate::stream_of;
+
+		/// ```java
+		/// @Test
+		/// void emptyStream_emptyOptional() {
+		/// 	Optional<Object> element = Stream
+		/// 			.of()
+		/// 			.collect(collectEqualElement());
+		///
+		/// 	assertThat(element).isEmpty();
+		/// }
+		/// ```
+		#[test]
+		fn empty_stream__empty_optional() {
+			let element: Option<i32> = stream_of!().collect(collect_equal_element!()).unwrap();
+
+			assert_that(&element).is_empty();
+		}
+
+		/// ```java
+		/// @Test
+		/// void singleElementStream_optionalWithThatElement() {
+		/// 	Optional<String> element = Stream
+		/// 			.of("element")
+		/// 			.collect(collectEqualElement());
+		///
+		/// 	assertThat(element).contains("element");
+		/// }
+		/// ```
+		#[test]
+		fn single_element_stream__optional_with_that_element() {
+			let element = stream_of!("element").collect(collect_equal_element!()).unwrap();
+
+			assert_that(element).contains("element");
+		}
+
+		/// ```java
+		/// @Test
+		///	void equalElementStream_optionalWithThatElement() {
+		///		Optional<String> element = Stream
+		///				.of("element", "element", "element")
+		///				.collect(collectEqualElement());
+		///
+		///		assertThat(element).contains("element");
+		///	}
+		/// ```
+		#[test]
+		fn equal_element_stream__optional_with_that_element() {
+			let element = stream_of!("element", "element", "element")
+				.collect(collect_equal_element!())
+				.unwrap();
+
+			assert_that(element).contains("element");
+		}
+
+		/// ```java
+		/// @Test
+		///	void nonEqualElementStream_throwsException() {
+		///		Stream<String> stream = Stream.of("element", "other element");
+		///
+		///		assertThatThrownBy(() -> stream.collect(collectEqualElement()))
+		///				.isInstanceOf(IllegalArgumentException.class);
+		///	}
+		/// ```
+		#[test]
+		fn non_equal_element_stream__throws_exception() {
+			let stream = stream_of!("element", "other_element");
+
+			assert_that(move || stream.collect(collect_equal_element!()))
+				.throws()
+				.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)))
+		}
 	}
 }

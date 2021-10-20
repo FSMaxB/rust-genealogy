@@ -1,4 +1,6 @@
-pub fn test_text_parser(parser: impl Fn(&str) -> String) {
+use crate::helpers::exception::Exception;
+
+pub fn test_text_parser(parser: impl Fn(&str) -> Result<String, Exception>) {
 	struct Test {
 		name: &'static str,
 		input: &'static str,
@@ -24,6 +26,6 @@ pub fn test_text_parser(parser: impl Fn(&str) -> String) {
 	];
 
 	for Test { name, input, expected } in tests.iter() {
-		assert_eq!(expected, &parser(input), "Test {} failed.", name);
+		assert_eq!(expected, &parser(input).unwrap(), "Test {} failed.", name);
 	}
 }

@@ -2,7 +2,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
 use crate::post::content::Content;
 use crate::post::factories::raw_front_matter::RawFrontMatter;
-use crate::utils::unchecked_files_read_all_lines;
+use crate::utils::Utils;
 use std::convert::TryFrom;
 use std::path::Path;
 
@@ -27,7 +27,7 @@ impl TryFrom<&Path> for RawPost {
 	type Error = Exception;
 
 	fn try_from(path: &Path) -> Result<Self, Self::Error> {
-		unchecked_files_read_all_lines(path)
+		Utils::unchecked_files_read_all_lines(path)
 			.map_err(|error| {
 				RuntimeException(format!(
 					r#"Creating article failed: "{}", error: {}"#,

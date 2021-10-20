@@ -17,7 +17,7 @@ use genealogy::post::Post;
 use genealogy::process_details;
 use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
-use genealogy::utils::{unchecked_files_list, unchecked_files_write};
+use genealogy::utils::Utils;
 use resiter::{AndThen, Filter, Map};
 use std::convert::TryFrom;
 use std::num::NonZeroUsize;
@@ -38,7 +38,7 @@ fn main() -> Result<(), Exception> {
 	let recommendations = Recommender::recommend(relations, NonZeroUsize::new(3).unwrap())?;
 	let recommendations_as_json = recommendations_to_json(recommendations)?;
 	if let Some(output_file) = &config.output_file {
-		unchecked_files_write(output_file, &recommendations_as_json)?;
+		Utils::unchecked_files_write(output_file, &recommendations_as_json)?;
 	}
 	Ok(())
 }
@@ -46,10 +46,10 @@ fn main() -> Result<(), Exception> {
 fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
-			markdown_files_in(article_folder).and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::Article)),
+			markdown_files_in(article_folder)?.and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::Article)),
 		),
-		Box::new(markdown_files_in(talk_folder).and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::Talk))),
-		Box::new(markdown_files_in(video_folder).and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::Video))),
+		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::Talk))),
+		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::Video))),
 	];
 	let posts = posts
 		.into_iter()
@@ -60,10 +60,12 @@ fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Pa
 	Ok(Genealogy::new(posts, genealogists, Arc::new(Weights::all_equal())))
 }
 
-fn markdown_files_in(folder: &Path) -> impl Iterator<Item = Result<PathBuf, Exception>> {
-	unchecked_files_list(folder)
-		.filter_ok(|path| path.is_file())
-		.filter_ok(|path| path.ends_with(".md"))
+fn markdown_files_in(folder: &Path) -> Result<impl Iterator<Item = Result<PathBuf, Exception>>, Exception> {
+	Ok(
+		Box::<dyn Iterator<Item = _>>::from(Utils::unchecked_files_list(folder)?)
+			.filter_ok(|path| path.is_file())
+			.filter_ok(|path| path.ends_with(".md")),
+	)
 }
 
 fn get_genealogists(posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {

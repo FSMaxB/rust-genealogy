@@ -9,6 +9,7 @@ pub enum Exception {
 	RuntimeException(String),
 	DateTimeException(chrono::format::ParseError),
 	IndexOutOfBoundsException(usize),
+	PatternSyntaxException(regex::Error),
 	SecurityException,
 }
 
@@ -31,6 +32,9 @@ impl Display for Exception {
 			IndexOutOfBoundsException(index) => {
 				write!(formatter, "IndexOutOfBoundsException: {}", index)
 			}
+			PatternSyntaxException(error) => {
+				write!(formatter, "PatternSyntaxException: {}", error)
+			}
 			SecurityException => formatter.write_str("SecurityException"),
 		}
 	}
@@ -50,10 +54,16 @@ impl From<chrono::format::ParseError> for Exception {
 	}
 }
 
+impl From<regex::Error> for Exception {
+	fn from(regex_error: regex::Error) -> Self {
+		Self::PatternSyntaxException(regex_error)
+	}
+}
+
 /// Fake `throw` to emulate `throw new Exception` in Java
 #[macro_export]
 macro_rules! throw {
 	($exception:expr) => {
-		return Err($exception);
+		return Err($exception)
 	};
 }

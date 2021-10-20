@@ -49,7 +49,7 @@
 * recommendation [ ]
   * Recommendation.java [ ]
   * Recommender.java [ ]
-* Utils.java [ ]
+* Utils.java [x]
 
 ### Test
 * genealogy [ ]

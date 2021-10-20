@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::utils::remove_outer_quotation_marks;
+use crate::utils::Utils;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Description {
@@ -9,7 +9,7 @@ pub struct Description {
 
 impl Description {
 	pub fn from_text(text: &str) -> Result<Description, Exception> {
-		let unquoted_text = remove_outer_quotation_marks(text);
+		let unquoted_text = Utils::remove_outer_quotation_marks(text)?;
 		if unquoted_text.trim().is_empty() {
 			Err(IllegalArgumentException(
 				"Description can't have an empty text.".to_string(),
@@ -32,6 +32,6 @@ mod test {
 
 	#[test]
 	fn quotation_tests() {
-		test_text_parser(|text| Description::from_text(text).unwrap().text)
+		test_text_parser(|text| Description::from_text(text).map(|descrpiption| descrpiption.text))
 	}
 }

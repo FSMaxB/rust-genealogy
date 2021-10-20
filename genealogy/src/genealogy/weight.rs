@@ -11,7 +11,7 @@ impl TryFrom<f64> for Weight {
 	type Error = Exception;
 
 	fn try_from(weight: f64) -> Result<Self, Self::Error> {
-		if (weight < 0.0) || (weight > 1.0) {
+		if !(0.0..=1.0).contains(&weight) {
 			Err(IllegalArgument(format!(
 				"Weight must be in interval [0; 1]: {}",
 				weight

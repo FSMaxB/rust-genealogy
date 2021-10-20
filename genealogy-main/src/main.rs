@@ -80,7 +80,7 @@ fn get_genealogists(posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {
 		.collect()
 }
 
-fn recommendations_to_json<'a>(recommendations: impl Iterator<Item = Recommendation>) -> Result<String, Exception> {
+fn recommendations_to_json(recommendations: impl Iterator<Item = Recommendation>) -> Result<String, Exception> {
 	let serialized_recommendations = recommendations.collect::<SerializedRecommendations>();
 	serde_json::to_string(&serialized_recommendations)
 		.map_err(|error| RuntimeException(format!("Failed to serialize JSON: {}", error)))

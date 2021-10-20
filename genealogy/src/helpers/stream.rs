@@ -25,12 +25,12 @@ where
 		self,
 		collector: Collector<Item, Accumulated, Reduced>,
 	) -> Result<Reduced, Exception> {
-		let mut accumulated = (collector.supplier)();
+		let mut accumulated = (collector.supplier)()?;
 		for item in self.iterator {
 			let item = item?;
 			(collector.accumulator)(&mut accumulated, item)?;
 		}
-		Ok((collector.finisher)(accumulated))
+		(collector.finisher)(accumulated)
 	}
 }
 

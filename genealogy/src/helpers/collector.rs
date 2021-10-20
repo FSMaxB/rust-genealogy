@@ -3,16 +3,16 @@ use crate::helpers::exception::Exception;
 /// The combiner and characteristics where left out for easier implementation of the collectors.
 /// I don't intend to make this parallel capable anyways.
 pub struct Collector<Input, Accumulated, Reduced> {
-	pub supplier: Box<dyn Fn() -> Accumulated>,
+	pub supplier: Box<dyn Fn() -> Result<Accumulated, Exception>>,
 	pub accumulator: Box<dyn Fn(&mut Accumulated, Input) -> Result<(), Exception>>,
-	pub finisher: Box<dyn FnOnce(Accumulated) -> Reduced>,
+	pub finisher: Box<dyn FnOnce(Accumulated) -> Result<Reduced, Exception>>,
 }
 
 impl<Input, Accumulated, Reduced> Collector<Input, Accumulated, Reduced> {
 	pub fn of(
-		supplier: impl Fn() -> Accumulated + 'static,
+		supplier: impl Fn() -> Result<Accumulated, Exception> + 'static,
 		accumulator: impl Fn(&mut Accumulated, Input) -> Result<(), Exception> + 'static,
-		finisher: impl Fn(Accumulated) -> Reduced + 'static,
+		finisher: impl Fn(Accumulated) -> Result<Reduced, Exception> + 'static,
 	) -> Self {
 		Self {
 			supplier: Box::new(supplier),
@@ -51,7 +51,7 @@ impl Collectors {
 	pub fn teeing<Input, Accumulated1, Reduced1, Accumulated2, Reduced2, Reduced>(
 		downstream1: Collector<Input, Accumulated1, Reduced1>,
 		downstream2: Collector<Input, Accumulated2, Reduced2>,
-		merger: impl FnOnce(Reduced1, Reduced2) -> Reduced + 'static,
+		merger: impl FnOnce(Reduced1, Reduced2) -> Result<Reduced, Exception> + 'static,
 	) -> Collector<Input, (Accumulated1, Accumulated2), Reduced>
 	where
 		Input: Clone + 'static,
@@ -61,14 +61,18 @@ impl Collectors {
 		Reduced2: 'static,
 	{
 		Collector {
-			supplier: Box::new(move || ((downstream1.supplier)(), (downstream2.supplier)())),
+			supplier: Box::new(move || {
+				let accumulated1 = (downstream1.supplier)()?;
+				let accumulated2 = (downstream2.supplier)()?;
+				Ok((accumulated1, accumulated2))
+			}),
 			accumulator: Box::new(move |(accumulated1, accumulated2), input| {
 				(downstream1.accumulator)(accumulated1, input.clone())?;
 				(downstream2.accumulator)(accumulated2, input)
 			}),
 			finisher: Box::new(move |(accumulated1, accumulated2)| {
-				let reduced1 = (downstream1.finisher)(accumulated1);
-				let reduced2 = (downstream2.finisher)(accumulated2);
+				let reduced1 = (downstream1.finisher)(accumulated1)?;
+				let reduced2 = (downstream2.finisher)(accumulated2)?;
 				merger(reduced1, reduced2)
 			}),
 		}
@@ -120,7 +124,7 @@ impl Collectors {
 		mapper: impl Fn(Input) -> Result<f64, Exception> + 'static,
 	) -> Collector<Input, AccumulatedDoubleAverage, f64> {
 		Collector {
-			supplier: Box::new(AccumulatedDoubleAverage::default),
+			supplier: Box::new(|| Ok(AccumulatedDoubleAverage::default())),
 			accumulator: Box::new(move |accumulated, input| {
 				let double = mapper(input)?;
 				accumulated.sum_with_compensation(double);
@@ -129,11 +133,13 @@ impl Collectors {
 				Ok(())
 			}),
 			finisher: Box::new(|accumulated| {
-				if accumulated.value_count == 0.0 {
+				let average = if accumulated.value_count == 0.0 {
 					0.0
 				} else {
 					accumulated.compute_final_sum() / accumulated.value_count
-				}
+				};
+
+				Ok(average)
 			}),
 		}
 	}

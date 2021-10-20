@@ -4,7 +4,6 @@ use crate::helpers::files::Files;
 use crate::helpers::stream::Stream;
 use crate::helpers::string_extensions::StringExtensions;
 use crate::{list_of, throw};
-use std::convert::identity;
 use std::fmt::Display;
 use std::path::{Path, PathBuf};
 
@@ -121,7 +120,7 @@ impl Utils {
 		Element: Display + 'static,
 	{
 		Collector::of(
-			Option::default,
+			|| Ok(None),
 			move |left, right| {
 				if left.is_some() && !equals(left.as_ref().unwrap(), &right) {
 					throw!(IllegalArgumentException(format!(
@@ -133,7 +132,7 @@ impl Utils {
 				left.replace(right);
 				Ok(())
 			},
-			identity,
+			|option| Ok(option),
 		)
 	}
 }

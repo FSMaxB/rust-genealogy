@@ -24,7 +24,7 @@ impl<Input, Accumulated, Reduced> Collector<Input, Accumulated, Reduced> {
 	}
 }
 
-pub struct Collectors;
+pub enum Collectors {}
 
 impl Collectors {
 	pub fn mapping<Input, DownstreamInput, Accumulated, Reduced>(

@@ -2,7 +2,7 @@ use crate::helpers::exception::Exception::{self, SecurityException};
 use crate::throw;
 use std::ffi::OsString;
 
-pub struct System;
+pub enum System {}
 
 impl System {
 	pub fn get_property(key: &'static str) -> Result<OsString, Exception> {

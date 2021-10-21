@@ -5,7 +5,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::{Path, PathBuf};
 
-pub struct Files;
+pub enum Files {}
 
 impl Files {
 	pub fn is_writable(path: &Path) -> bool {

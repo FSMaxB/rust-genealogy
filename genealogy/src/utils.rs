@@ -15,8 +15,8 @@ use std::path::{Path, PathBuf};
 /// 	}
 /// ```
 ///
-/// Note that making the constructor private isn't really possible, so I'm leaving it out
-pub struct Utils;
+/// The empty enum has the same effect as a private constructor, preventing instantiation.
+pub enum Utils {}
 
 impl Utils {
 	/// ```java

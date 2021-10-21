@@ -8,6 +8,7 @@ use crate::post::video_slug::VideoSlug;
 use crate::post::Post;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
+use std::rc::Rc;
 use url::Url;
 
 /// ```java
@@ -83,7 +84,7 @@ impl Talk {
 /// ```
 impl From<Talk> for Post {
 	fn from(talk: Talk) -> Self {
-		Post::Talk(talk)
+		Post::Talk(Rc::new(talk))
 	}
 }
 

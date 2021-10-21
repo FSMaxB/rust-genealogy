@@ -3,7 +3,6 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::post::Post;
 use crate::throw;
-use std::rc::Rc;
 
 /// ```java
 /// public record TypedRelation(
@@ -14,8 +13,8 @@ use std::rc::Rc;
 /// ```
 #[derive(PartialEq, Eq, Hash)]
 pub struct TypedRelation {
-	pub post1: Rc<Post>,
-	pub post2: Rc<Post>,
+	pub post1: Post,
+	pub post2: Post,
 	pub r#type: RelationType,
 	score: i64,
 }
@@ -30,7 +29,7 @@ impl TypedRelation {
 	///			throw new IllegalArgumentException("Score should be in interval [0; 100]: " + score);
 	///	}
 	/// ```
-	pub fn new(post1: Rc<Post>, post2: Rc<Post>, r#type: RelationType, score: i64) -> Result<Self, Exception> {
+	pub fn new(post1: Post, post2: Post, r#type: RelationType, score: i64) -> Result<Self, Exception> {
 		#[allow(clippy::manual_range_contains)]
 		if (score < 0) || (100 < score) {
 			throw!(IllegalArgumentException(format!(

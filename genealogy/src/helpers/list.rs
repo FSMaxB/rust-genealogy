@@ -5,7 +5,7 @@ impl List {
 	where
 		Element: Clone,
 	{
-		list.iter().cloned().collect()
+		list.to_vec()
 	}
 }
 

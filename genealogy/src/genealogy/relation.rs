@@ -6,17 +6,22 @@ use crate::helpers::iterator::IteratorExtension;
 use crate::helpers::mean::Mean;
 use crate::post::Post;
 use crate::throw;
-use std::rc::Rc;
 
+/// ```java
+/// public record Relation(
+///		Post post1,
+///		Post post2,
+///		long score) {
+/// ```
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
-	pub post1: Rc<Post>,
-	pub post2: Rc<Post>,
+	pub post1: Post,
+	pub post2: Post,
 	pub score: i64,
 }
 
 impl Relation {
-	pub fn new(post1: Rc<Post>, post2: Rc<Post>, score: i64) -> Result<Relation, Exception> {
+	pub fn new(post1: Post, post2: Post, score: i64) -> Result<Relation, Exception> {
 		let relation = Relation { post1, post2, score };
 
 		#[allow(clippy::manual_range_contains)]
@@ -55,7 +60,7 @@ impl Relation {
 			// NOTE: `averagingDouble` was replaced by `Mean`
 			.try_fold((None, Mean::default()), |(_, mean), result| {
 				let (posts, score) = result?;
-				Ok::<_, Exception>((Some(posts), mean.add_number(score.into())))
+				Ok::<_, Exception>((Some(posts), mean.add_number(score)))
 			})?;
 		let (posts, score) = posts
 			.zip(Option::<f64>::from(mean))
@@ -171,9 +176,9 @@ mod test {
 			.unwrap();
 	}
 
-	fn test_posts() -> (Rc<Post>, Rc<Post>) {
+	fn test_posts() -> (Post, Post) {
 		let post_a = PostTestHelper::create_with_slug("a").unwrap();
 		let post_b = PostTestHelper::create_with_slug("b").unwrap();
-		(Rc::new(post_a), Rc::new(post_b))
+		(post_a, post_b)
 	}
 }

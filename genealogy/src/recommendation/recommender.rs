@@ -81,12 +81,11 @@ mod test {
 	use crate::post::test::PostTestHelper;
 	use crate::post::Post;
 	use literally::hset;
-	use std::rc::Rc;
 
 	struct RecommenderTests {
-		post_a: Rc<Post>,
-		post_b: Rc<Post>,
-		post_c: Rc<Post>,
+		post_a: Post,
+		post_b: Post,
+		post_c: Post,
 		relation_ab: Relation,
 		relation_ac: Relation,
 		relation_ba: Relation,
@@ -97,9 +96,9 @@ mod test {
 
 	impl RecommenderTests {
 		fn new() -> Result<Self, Exception> {
-			let post_a = Rc::new(PostTestHelper::create_with_slug("a")?);
-			let post_b = Rc::new(PostTestHelper::create_with_slug("b")?);
-			let post_c = Rc::new(PostTestHelper::create_with_slug("c")?);
+			let post_a = PostTestHelper::create_with_slug("a")?;
+			let post_b = PostTestHelper::create_with_slug("b")?;
+			let post_c = PostTestHelper::create_with_slug("c")?;
 			Ok(Self {
 				post_a: post_a.clone(),
 				post_b: post_b.clone(),
@@ -108,8 +107,8 @@ mod test {
 				relation_ac: RelationTestHelper::create(post_a.clone(), post_c.clone(), 40)?,
 				relation_ba: RelationTestHelper::create(post_b.clone(), post_a.clone(), 50)?,
 				relation_bc: RelationTestHelper::create(post_b.clone(), post_c.clone(), 70)?,
-				relation_ca: RelationTestHelper::create(post_c.clone(), post_a.clone(), 80)?,
-				relation_cb: RelationTestHelper::create(post_c.clone(), post_b.clone(), 60)?,
+				relation_ca: RelationTestHelper::create(post_c.clone(), post_a, 80)?,
+				relation_cb: RelationTestHelper::create(post_c, post_b, 60)?,
 			})
 		}
 
@@ -186,7 +185,7 @@ mod test {
 
 	impl RelationTestHelper {
 		// WTF: Why a static method just to call the constructor with the exact same arguments. WTF x2
-		fn create(post1: Rc<Post>, post2: Rc<Post>, score: i64) -> Result<Relation, Exception> {
+		fn create(post1: Post, post2: Post, score: i64) -> Result<Relation, Exception> {
 			Relation::new(post1, post2, score)
 		}
 	}

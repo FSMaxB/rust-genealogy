@@ -2,7 +2,6 @@ use crate::helpers::exception::Exception;
 use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
 use crate::post::Post;
-use std::rc::Rc;
 
 pub mod recommender;
 
@@ -13,8 +12,8 @@ pub mod recommender;
 /// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Recommendation {
-	pub post: Rc<Post>,
-	pub recommended_posts: Vec<Rc<Post>>,
+	pub post: Post,
+	pub recommended_posts: Vec<Post>,
 }
 
 impl Recommendation {
@@ -24,7 +23,7 @@ impl Recommendation {
 	///		requireNonNull(recommendedPosts);
 	///	}
 	/// ```
-	pub fn new(post: Rc<Post>, recommended_posts: Vec<Rc<Post>>) -> Self {
+	pub fn new(post: Post, recommended_posts: Vec<Post>) -> Self {
 		Self {
 			post,
 			recommended_posts,
@@ -38,8 +37,8 @@ impl Recommendation {
 	///	}
 	/// ```
 	pub fn from(
-		post: Rc<Post>,
-		sorted_recommendations: Stream<Rc<Post>>,
+		post: Post,
+		sorted_recommendations: Stream<Post>,
 		per_post: usize,
 	) -> Result<Recommendation, Exception> {
 		let recommendations = sorted_recommendations.limit(per_post).to_list()?;
@@ -54,7 +53,7 @@ impl Recommendation {
 	///		return List.copyOf(recommendedPosts);
 	///	}
 	/// ```
-	pub fn recommended_posts(&self) -> Vec<Rc<Post>> {
+	pub fn recommended_posts(&self) -> Vec<Post> {
 		List::copy_of(&self.recommended_posts)
 	}
 }

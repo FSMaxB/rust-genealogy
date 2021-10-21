@@ -7,6 +7,7 @@ use crate::post::talk::Talk;
 use crate::post::title::Title;
 use crate::post::video::Video;
 use std::collections::HashSet;
+use std::rc::Rc;
 
 pub mod article;
 pub mod content;
@@ -26,11 +27,11 @@ pub mod video_slug;
 ///
 /// enum instead of sealed interface. The semantics are roughly equivalent
 /// since both are sum types.
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Post {
-	Article(Article),
-	Talk(Talk),
-	Video(Video),
+	Article(Rc<Article>),
+	Talk(Rc<Talk>),
+	Video(Rc<Video>),
 }
 
 use Post::*;

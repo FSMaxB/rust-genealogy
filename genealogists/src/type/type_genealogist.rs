@@ -3,15 +3,13 @@ use genealogy::genealogist::typed_relation::TypedRelation;
 use genealogy::genealogist::Genealogist;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
-use std::ops::Deref;
-use std::rc::Rc;
 
 pub struct TypeGenealogist;
 
 impl Genealogist for TypeGenealogist {
-	fn infer(&self, post1: Rc<Post>, post2: Rc<Post>) -> Result<TypedRelation, Exception> {
+	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		use Post::*;
-		let score = match post2.deref() {
+		let score = match post2 {
 			Article(_) => 50,
 			Video(_) => 90,
 			Talk(_) => 20,

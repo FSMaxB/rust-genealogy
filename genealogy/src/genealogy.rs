@@ -13,13 +13,13 @@ pub mod relation;
 pub mod weights;
 
 pub struct Genealogy {
-	posts: Vec<Rc<Post>>,
+	posts: Vec<Post>,
 	genealogists: Vec<Rc<dyn Genealogist>>,
 	weights: Rc<Weights>,
 }
 
 impl Genealogy {
-	pub fn new(posts: Vec<Rc<Post>>, genealogists: Vec<Rc<dyn Genealogist>>, weights: Rc<Weights>) -> Self {
+	pub fn new(posts: Vec<Post>, genealogists: Vec<Rc<dyn Genealogist>>, weights: Rc<Weights>) -> Self {
 		Self {
 			posts,
 			genealogists,
@@ -55,7 +55,7 @@ impl Genealogy {
 }
 
 fn infer_typed_relations(
-	posts: Vec<Rc<Post>>,
+	posts: Vec<Post>,
 	genealogists: Vec<Rc<dyn Genealogist>>,
 ) -> impl Iterator<Item = Result<TypedRelation, Exception>> {
 	// FIXME: I have to clone quite a lot here. It's just references, but still pretty horrible.
@@ -99,7 +99,7 @@ mod test {
 				tag_genealogist: Rc::new({
 					let posts = posts.clone();
 					let tag_relation = tag_relation.clone();
-					move |post1: Rc<Post>, post2: Rc<Post>| {
+					move |post1: Post, post2: Post| {
 						let score = posts.tag_score(&post1, &post2);
 						Ok(TypedRelation::new(post1, post2, tag_relation.clone(), score)?)
 					}
@@ -107,7 +107,7 @@ mod test {
 				link_genealogist: Rc::new({
 					let posts = posts.clone();
 					let link_relation = link_relation.clone();
-					move |post1: Rc<Post>, post2: Rc<Post>| {
+					move |post1: Post, post2: Post| {
 						let score = posts.link_score(&post1, &post2);
 						Ok(TypedRelation::new(post1, post2, link_relation.clone(), score)?)
 					}
@@ -228,9 +228,9 @@ mod test {
 
 	#[derive(Clone)]
 	struct Posts {
-		a: Rc<Post>,
-		b: Rc<Post>,
-		c: Rc<Post>,
+		a: Post,
+		b: Post,
+		c: Post,
 		tag_weight: f64,
 		link_weight: f64,
 	}
@@ -249,17 +249,17 @@ mod test {
 		fn tag_score(&self, post1: &Post, post2: &Post) -> i64 {
 			if post1 == post2 {
 				100
-			} else if (post1 == self.a.as_ref()) && (post2 == self.b.as_ref()) {
+			} else if (post1 == &self.a) && (post2 == &self.b) {
 				80
-			} else if (post1 == self.a.as_ref()) && (post2 == self.c.as_ref()) {
+			} else if (post1 == &self.a) && (post2 == &self.c) {
 				60
-			} else if (post1 == self.b.as_ref()) && (post2 == self.a.as_ref()) {
+			} else if (post1 == &self.b) && (post2 == &self.a) {
 				70
-			} else if (post1 == self.b.as_ref()) && (post2 == self.c.as_ref()) {
+			} else if (post1 == &self.b) && (post2 == &self.c) {
 				50
-			} else if (post1 == self.c.as_ref()) && (post2 == self.a.as_ref()) {
+			} else if (post1 == &self.c) && (post2 == &self.a) {
 				50
-			} else if (post1 == self.c.as_ref()) && (post2 == self.b.as_ref()) {
+			} else if (post1 == &self.c) && (post2 == &self.b) {
 				40
 			} else {
 				0
@@ -273,17 +273,17 @@ mod test {
 		fn link_score(&self, post1: &Post, post2: &Post) -> i64 {
 			if post1 == post2 {
 				100
-			} else if (post1 == self.a.as_ref()) && (post2 == self.b.as_ref()) {
+			} else if (post1 == &self.a) && (post2 == &self.b) {
 				60
-			} else if (post1 == self.a.as_ref()) && (post2 == self.c.as_ref()) {
+			} else if (post1 == &self.a) && (post2 == &self.c) {
 				40
-			} else if (post1 == self.b.as_ref()) && (post2 == self.a.as_ref()) {
+			} else if (post1 == &self.b) && (post2 == &self.a) {
 				50
-			} else if (post1 == self.b.as_ref()) && (post2 == self.c.as_ref()) {
+			} else if (post1 == &self.b) && (post2 == &self.c) {
 				30
-			} else if (post1 == self.c.as_ref()) && (post2 == self.a.as_ref()) {
+			} else if (post1 == &self.c) && (post2 == &self.a) {
 				30
-			} else if (post1 == self.c.as_ref()) && (post2 == self.b.as_ref()) {
+			} else if (post1 == &self.c) && (post2 == &self.b) {
 				20
 			} else {
 				0

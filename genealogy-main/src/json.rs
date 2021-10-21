@@ -2,7 +2,6 @@ use genealogy::post::Post;
 use genealogy::recommendation::Recommendation;
 use serde::Serialize;
 use std::iter::FromIterator;
-use std::ops::Deref;
 
 #[derive(Serialize)]
 pub struct SerializedRecommendations {
@@ -33,7 +32,6 @@ impl From<&Recommendation> for SerializedRecommendation {
 		let recommendations = recommendation
 			.recommended_posts()
 			.iter()
-			.map(Deref::deref)
 			.map(SerializedPost::from)
 			.collect();
 		Self {

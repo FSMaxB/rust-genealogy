@@ -10,6 +10,7 @@ use crate::post::Post;
 use debug_stub_derive::DebugStub;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
+use std::rc::Rc;
 
 /// ```java
 /// public record Article(
@@ -85,7 +86,7 @@ impl Article {
 /// ```
 impl From<Article> for Post {
 	fn from(article: Article) -> Self {
-		Post::Article(article)
+		Post::Article(Rc::new(article))
 	}
 }
 

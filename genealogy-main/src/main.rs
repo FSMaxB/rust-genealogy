@@ -18,7 +18,7 @@ use genealogy::process_details::ProcessDetails;
 use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
-use resiter::{AndThen, Filter, Map};
+use resiter::{AndThen, Filter};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
@@ -44,16 +44,12 @@ fn main() -> Result<(), Exception> {
 fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
-			markdown_files_in(article_folder)?.and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::Article)),
+			markdown_files_in(article_folder)?.and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::from)),
 		),
-		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::Talk))),
-		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::Video))),
+		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::from))),
+		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::from))),
 	];
-	let posts = posts
-		.into_iter()
-		.flatten()
-		.map_ok(Rc::new)
-		.collect::<Result<Vec<_>, _>>()?;
+	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());
 	Ok(Genealogy::new(posts, genealogists, Rc::new(Weights::all_equal())))
 }
@@ -66,7 +62,7 @@ fn markdown_files_in(folder: &Path) -> Result<impl Iterator<Item = Result<PathBu
 	)
 }
 
-fn get_genealogists(posts: Vec<Rc<Post>>) -> Vec<Rc<dyn Genealogist>> {
+fn get_genealogists(posts: Vec<Post>) -> Vec<Rc<dyn Genealogist>> {
 	// NOTE: Not quite dynamic class loading, but hey, that's just not possible in Rust
 	let genealogist_services: Vec<Box<dyn GenealogistService>> = vec![
 		Box::new(SillyGenealogistService),

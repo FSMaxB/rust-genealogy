@@ -8,7 +8,7 @@ use std::rc::Rc;
 pub struct TypeGenealogistService;
 
 impl GenealogistService for TypeGenealogistService {
-	fn procure(&self, _posts: Box<dyn Iterator<Item = Rc<Post>>>) -> Result<Rc<dyn Genealogist>, Exception> {
+	fn procure(&self, _posts: Box<dyn Iterator<Item = Post>>) -> Result<Rc<dyn Genealogist>, Exception> {
 		Ok(Rc::new(TypeGenealogist))
 	}
 }

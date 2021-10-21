@@ -9,6 +9,7 @@ use crate::post::video_slug::VideoSlug;
 use crate::post::Post;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
+use std::rc::Rc;
 
 /// ```java
 /// public record Video(
@@ -84,7 +85,7 @@ impl Video {
 /// ```
 impl From<Video> for Post {
 	fn from(video: Video) -> Self {
-		Post::Video(video)
+		Post::Video(Rc::new(video))
 	}
 }
 

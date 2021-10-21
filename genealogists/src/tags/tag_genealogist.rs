@@ -3,7 +3,6 @@ use genealogy::genealogist::typed_relation::TypedRelation;
 use genealogy::genealogist::Genealogist;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
-use std::rc::Rc;
 
 pub struct TagGenealogist {
 	r#type: RelationType,
@@ -18,7 +17,7 @@ impl TagGenealogist {
 }
 
 impl Genealogist for TagGenealogist {
-	fn infer(&self, post1: Rc<Post>, post2: Rc<Post>) -> Result<TypedRelation, Exception> {
+	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		let post2_tags = post2.tags();
 		let number_of_shared_tags = post1.tags().iter().filter(|tag| post2_tags.contains(tag)).count() as u64;
 		let number_of_post1_tags = post1.tags().len() as u64;

@@ -56,7 +56,7 @@
   * GenealogyTests.java [ ]
   * RelationTestHelper.java [ ]
   * RelationTests.java [ ]
-  * WeightsTests.java [ ]
+  * WeightsTests.java [x]
 * post [ ]
   * DescriptionTests.java [x]
   * factories [ ]

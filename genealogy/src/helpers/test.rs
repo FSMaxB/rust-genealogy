@@ -6,19 +6,19 @@ pub fn assert_that<Value>(value: Value) -> AssertThat<Value> {
 	AssertThat { value }
 }
 
-pub struct AssertThat<Value: ?Sized> {
+pub struct AssertThat<Value> {
 	value: Value,
 }
 
 impl<Value> AssertThat<Value> {
 	#[track_caller]
-	pub fn is_equal_to<RightHandSide>(&self, other: &RightHandSide)
+	pub fn is_equal_to<RightHandSide>(&self, other: RightHandSide)
 	where
 		Value: PartialEq<RightHandSide> + Debug,
-		RightHandSide: Debug + ?Sized,
+		RightHandSide: Debug,
 	{
-		if !self.value.eq(other) {
-			panic!("{:#?} is not equal to {:#?}", self.value, other);
+		if !self.value.eq(&other) {
+			panic!("{:#?} is not equal to {:#?}", self.value, &other);
 		}
 	}
 

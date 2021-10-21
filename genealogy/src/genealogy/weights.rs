@@ -43,31 +43,93 @@ impl Weights {
 	}
 }
 
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use crate::genealogist::relation_type::RelationType;
 	use crate::genealogy::weights::Weights;
+	use crate::helpers::test::assert_that;
+	use crate::map_of;
 	use lazy_static::lazy_static;
-	use literally::hmap;
 
-	lazy_static! {
-		static ref TAG_TYPE: RelationType = RelationType::new("tag".to_string()).unwrap();
-		static ref LIST_TYPE: RelationType = RelationType::new("list".to_string()).unwrap();
+	/// ```java
+	/// class WeightsTests {
+	/// ```
+	pub struct WeightsTests;
+
+	impl WeightsTests {
+		/// ```java
+		/// public static final RelationType TAG_TYPE = new RelationType("tag");
+		/// ```
+		fn tag_type() -> RelationType {
+			lazy_static! {
+				static ref TAG_TYPE: RelationType = RelationType::new("tag".into()).unwrap();
+			};
+			TAG_TYPE.clone()
+		}
+
+		/// ```java
+		/// public static final RelationType LIST_TYPE = new RelationType("list");
+		/// ```
+		fn list_type() -> RelationType {
+			lazy_static! {
+				static ref LIST_TYPE: RelationType = RelationType::new("list".into()).unwrap();
+			};
+			LIST_TYPE.clone()
+		}
+
+		// NOTE: The following tests are omitted because there is no `null` in rust:
+		//
+		// 	@Test
+		// 	void nullRelationType_throwsException() {
+		// 		var weightMap = new HashMap<RelationType, Double>();
+		// 		weightMap.put(null, 1.0);
+		// 		assertThatThrownBy(() -> new Weights(weightMap, 0.5)).isInstanceOf(NullPointerException.class);
+		// 	}
+		//
+		// 	@Test
+		// 	void nullWeight_throwsException() {
+		// 		var weightMap = new HashMap<RelationType, Double>();
+		// 		weightMap.put(TAG_TYPE, null);
+		// 		assertThatThrownBy(() -> new Weights(weightMap, 0.5)).isInstanceOf(NullPointerException.class);
+		// 	}
+
+		/// ```java
+		///	@Test
+		///	void knownRelationType_returnsWeight() {
+		///		var weights = new Weights(Map.of(TAG_TYPE, 0.42), 0.5);
+		///
+		///		assertThat(weights.weightOf(TAG_TYPE)).isEqualTo(0.42);
+		///	}
+		/// ```
+		fn known_relation_type__returns_weight() {
+			let weights = Weights::new(&map_of!(Self::tag_type(), 0.42), 0.5);
+
+			assert_that(weights.weight_of(&Self::tag_type())).is_equal_to(0.42);
+		}
+
+		/// ```java
+		/// @Test
+		///	void unknownRelationType_returnsDefaultWeight() {
+		///		var weights = new Weights(Map.of(TAG_TYPE, 0.42), 0.5);
+		///
+		///		assertThat(weights.weightOf(LIST_TYPE)).isEqualTo(0.5);
+		///	}
+		/// ```
+		fn unknown_relation_type__returns_default_weight() {
+			let weights = Weights::new(&map_of!(Self::tag_type(), 0.42), 0.5);
+
+			assert_that(weights.weight_of(&Self::list_type())).is_equal_to(0.5);
+		}
 	}
 
-	// NOTE: The following tests are omitted because there is no `null` in rust:
-	// * nullRelationType_throwsException
-	// * nullWeight_throwsException
-
 	#[test]
-	fn known_relation_type_returns_weight() {
-		let weights = Weights::new(&hmap! {TAG_TYPE.clone() => 0.42}, 0.5);
-		assert_eq!(0.42, weights.weight_of(&TAG_TYPE));
+	fn known_relation_type__returns_weight() {
+		WeightsTests::known_relation_type__returns_weight();
 	}
 
 	#[test]
-	fn unknown_relation_type_returns_default_weight() {
-		let weights = Weights::new(&hmap! {TAG_TYPE.clone() => 0.42}, 0.5);
-		assert_eq!(0.5, weights.weight_of(&LIST_TYPE));
+	fn unknown_relation_type__returns_default_weight() {
+		WeightsTests::unknown_relation_type__returns_default_weight();
 	}
 }

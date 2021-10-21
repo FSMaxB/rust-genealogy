@@ -7,7 +7,7 @@ use std::collections::HashSet;
 /// ```java
 /// public record Tag(String text) {
 /// ```
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Tag {
 	pub text: String,
 }

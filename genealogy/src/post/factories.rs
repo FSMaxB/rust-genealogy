@@ -1,6 +1,7 @@
 use crate::helpers::exception::Exception;
 use chrono::NaiveDate;
 
+pub mod article_factory;
 mod raw_front_matter;
 pub mod raw_post;
 

@@ -17,12 +17,18 @@ use std::path::Path;
 #[derive(Debug)]
 pub struct Video {
 	pub title: Title,
-	pub tags: HashSet<Tag>,
+	tags: HashSet<Tag>,
 	pub date: NaiveDate,
 	pub description: Description,
 	pub slug: Slug,
 	pub video: VideoSlug,
 	pub repository: Option<Repository>,
+}
+
+impl Video {
+	pub fn tags(&self) -> HashSet<Tag> {
+		self.tags.clone()
+	}
 }
 
 impl PartialEq for Video {

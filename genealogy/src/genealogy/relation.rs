@@ -8,7 +8,7 @@ use crate::helpers::mean::Mean;
 use crate::post::Post;
 use std::sync::Arc;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
 	pub post1: Arc<Post>,
 	pub post2: Arc<Post>,
@@ -61,7 +61,7 @@ mod test {
 	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::post_with_slug;
 	use lazy_static::lazy_static;
-	use literally::bmap;
+	use literally::hmap;
 	use std::convert::TryInto;
 
 	lazy_static! {
@@ -70,7 +70,7 @@ mod test {
 		static ref TAG_RELATION: RelationType = RelationType::from_value("tag".to_string()).unwrap();
 		static ref LINK_RELATION: RelationType = RelationType::from_value("link".to_string()).unwrap();
 		static ref WEIGHTS: Weights = Weights::new(
-			bmap! {
+			hmap! {
 				TAG_RELATION.clone() => *TAG_WEIGHT,
 				LINK_RELATION.clone() => *LINK_WEIGHT,
 			},

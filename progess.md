@@ -27,7 +27,7 @@
   * Weights.java [ ]
 * Main.java [ ]
 * post [ ]
-  * Article.java [ ]
+  * Article.java [x]
   * Content.java [x]
   * Description.java [x]
   * Post.java [ ]

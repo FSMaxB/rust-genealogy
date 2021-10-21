@@ -12,3 +12,4 @@ pub mod string_extensions;
 pub mod system;
 #[cfg(test)]
 pub mod test;
+pub mod time;

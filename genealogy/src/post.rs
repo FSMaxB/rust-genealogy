@@ -20,7 +20,7 @@ pub mod title;
 pub mod video;
 pub mod video_slug;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum Post {
 	Article(Article),
 	Talk(Talk),
@@ -37,12 +37,12 @@ impl Post {
 		}
 	}
 
-	pub fn tags(&self) -> &HashSet<Tag> {
+	pub fn tags(&self) -> HashSet<Tag> {
 		use Post::*;
 		match self {
-			Article(article) => &article.tags,
-			Talk(talk) => &talk.tags,
-			Video(video) => &video.tags,
+			Article(article) => article.tags(),
+			Talk(talk) => talk.tags(),
+			Video(video) => video.tags(),
 		}
 	}
 
@@ -80,15 +80,15 @@ pub mod test {
 	use crate::helpers::exception::Exception;
 
 	pub fn post_with_slug(slug: &str) -> Result<Post, Exception> {
-		let article = Article {
-			title: Title::new("title")?,
-			tags: Tag::from("[Tag]")?,
-			date: chrono::offset::Local::today().naive_local(),
-			description: Description::new("description")?,
-			slug: Slug::new(slug.to_string())?,
-			repository: None,
-			content: Box::new(|| std::iter::once(Ok::<_, Exception>("".to_string())).into()),
-		};
+		let article = Article::new(
+			Title::new("title")?,
+			Tag::from("[Tag]")?,
+			chrono::offset::Local::today().naive_local(),
+			Description::new("description")?,
+			Slug::new(slug.to_string())?,
+			None,
+			Box::new(|| std::iter::once(Ok::<_, Exception>("".to_string())).into()),
+		);
 		Ok(Post::Article(article))
 	}
 }

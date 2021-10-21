@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 pub mod recommender;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Recommendation {
 	post: Arc<Post>,
 	recommended_posts: Vec<Arc<Post>>,

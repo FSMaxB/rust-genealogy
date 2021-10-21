@@ -52,14 +52,14 @@ where
 	}
 }
 
-impl<Iterable, Item, Error> From<Iterable> for Stream<Item>
+impl<Iter, Item, Error> From<Iter> for Stream<Item>
 where
-	Iterable: IntoIterator<Item = Result<Item, Error>> + 'static,
+	Iter: Iterator<Item = Result<Item, Error>> + 'static,
 	Error: Into<Exception> + 'static,
 {
-	fn from(iterable: Iterable) -> Self {
+	fn from(iterator: Iter) -> Self {
 		Self {
-			iterator: Box::new(iterable.into_iter().map_err(Into::into)),
+			iterator: Box::new(iterator.map_err(Into::into)),
 		}
 	}
 }
@@ -67,6 +67,15 @@ where
 impl<Item> From<Stream<Item>> for Box<dyn Iterator<Item = Result<Item, Exception>>> {
 	fn from(stream: Stream<Item>) -> Self {
 		stream.iterator
+	}
+}
+
+impl<Item> IntoIterator for Stream<Item> {
+	type Item = Result<Item, Exception>;
+	type IntoIter = Box<dyn Iterator<Item = Self::Item>>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.iterator
 	}
 }
 

@@ -17,12 +17,18 @@ use url::Url;
 #[derive(Debug)]
 pub struct Talk {
 	pub title: Title,
-	pub tags: HashSet<Tag>,
+	tags: HashSet<Tag>,
 	pub date: NaiveDate,
 	pub description: Description,
 	pub slug: Slug,
 	pub slides: Url,
 	pub video: Option<VideoSlug>,
+}
+
+impl Talk {
+	pub fn tags(&self) -> HashSet<Tag> {
+		self.tags.clone()
+	}
 }
 
 impl PartialEq for Talk {

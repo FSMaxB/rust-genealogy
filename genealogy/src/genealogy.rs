@@ -6,7 +6,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::iterator::result_iterator::ResultIteratorExtension;
 use crate::post::Post;
 use resiter::Map;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::sync::Arc;
 
 pub mod relation;
@@ -37,10 +37,10 @@ impl Genealogy {
 		&self,
 		mut typed_relations: impl Iterator<Item = Result<TypedRelation, Exception>>,
 	) -> impl Iterator<Item = Result<Relation, Exception>> {
-		let sorted_typed_relations = typed_relations.try_fold(BTreeMap::new(), |mut map, result| {
+		let sorted_typed_relations = typed_relations.try_fold(HashMap::new(), |mut map, result| {
 			let relation = result?;
 			map.entry(relation.post1.clone())
-				.or_insert_with(BTreeMap::new)
+				.or_insert_with(HashMap::new)
 				.entry(relation.post2.clone())
 				.or_insert_with(Vec::new)
 				.push(relation);
@@ -83,8 +83,8 @@ mod test {
 	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::post_with_slug;
 	use lazy_static::lazy_static;
-	use literally::{bmap, bset};
-	use std::collections::BTreeSet;
+	use literally::{hmap, hset};
+	use std::collections::HashSet;
 
 	lazy_static! {
 		static ref TAG_WEIGHT: Weight = weight(1.0);
@@ -115,7 +115,7 @@ mod test {
 				})
 			});
 		static ref WEIGHTS: Arc<Weights> = Arc::new(Weights::new(
-			bmap! {
+			hmap! {
 				TAG_RELATION.clone() => *TAG_WEIGHT,
 				LINK_RELATION.clone() => *LINK_WEIGHT,
 			},
@@ -181,7 +181,7 @@ mod test {
 		);
 
 		let relations = genealogy.infer_relations().collect::<Result<_, _>>().unwrap();
-		let expected_relations = bset! {
+		let expected_relations = hset! {
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_B.clone(),
@@ -205,7 +205,7 @@ mod test {
 		);
 
 		let relations = genealogy.infer_relations().collect::<Result<_, _>>().unwrap();
-		let expected_relations = bset! {
+		let expected_relations = hset! {
 			Relation {
 				post1: POST_A.clone(),
 				post2: POST_B.clone(),
@@ -242,7 +242,7 @@ mod test {
 			let score = weighted_tag_score(&post1, &post2).into();
 			Relation { post1, post2, score }
 		})
-		.collect::<BTreeSet<_>>();
+		.collect::<HashSet<_>>();
 
 		assert_eq!(expected_relations, relations);
 	}
@@ -269,7 +269,7 @@ mod test {
 			let score = link_and_tag_score(&post1, &post2).into();
 			Relation { post1, post2, score }
 		})
-		.collect::<BTreeSet<_>>();
+		.collect::<HashSet<_>>();
 
 		assert_eq!(expected_relations, relations);
 	}

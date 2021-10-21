@@ -18,7 +18,7 @@ impl<Value> AssertThat<Value> {
 		RightHandSide: Debug + ?Sized,
 	{
 		if !self.value.eq(other) {
-			panic!("{:?} is not equal to {:?}", self.value, other);
+			panic!("{:#?} is not equal to {:#?}", self.value, other);
 		}
 	}
 
@@ -53,7 +53,7 @@ impl<Value> AssertThat<Value> {
 				return;
 			}
 		}
-		panic!("Doesn't contain the element {:?}", element);
+		panic!("Doesn't contain the element {:#?}", element);
 	}
 
 	#[track_caller]
@@ -63,7 +63,7 @@ impl<Value> AssertThat<Value> {
 		OkType: Debug,
 	{
 		match (self.value)() {
-			Ok(value) => panic!("Didn't throw, got {:?} instead", value),
+			Ok(value) => panic!("Didn't throw, got {:#?} instead", value),
 			Err(exception) => AssertThat { value: exception },
 		}
 	}
@@ -76,29 +76,37 @@ impl<Value> AssertThat<Value> {
 	}
 }
 
-impl<Element> AssertThat<Vec<Element>> {
+impl<Value> AssertThat<Value>
+where
+	Value: IntoIterator,
+{
 	#[track_caller]
 	pub fn contains_exactly_in_any_order<ExpectedValues>(self, expected_values: ExpectedValues)
 	where
 		ExpectedValues: IntoIterator,
-		ExpectedValues::Item: Debug + PartialEq<Element>,
-		Element: Debug,
+		ExpectedValues::Item: Debug + PartialEq<Value::Item>,
+		Value::Item: Debug,
 	{
 		let expected_values = expected_values.into_iter().collect::<Vec<ExpectedValues::Item>>();
-		if expected_values.len() != self.value.len() {
+		let actual_values = self.value.into_iter().collect::<Vec<Value::Item>>();
+
+		if expected_values.len() != actual_values.len() {
 			panic!(
-				"The amount of values differs, expected {:?}, got {:?}.",
-				expected_values, self.value,
+				"The amount of values differs, expected {:#?}, got {:#?}.",
+				expected_values, actual_values,
 			)
 		}
 
 		'outer: for expected_value in &expected_values {
-			for actual_value in &self.value {
+			for actual_value in &actual_values {
 				if expected_value == actual_value {
 					continue 'outer;
 				}
 			}
-			panic!("Didn't find expected value {:?} in {:?}", expected_value, self.value)
+			panic!(
+				"Didn't find expected value {:#?} in {:#?}",
+				expected_value, actual_values
+			);
 		}
 	}
 }

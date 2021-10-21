@@ -43,7 +43,7 @@
   * Tag.java [x]
   * Talk.java [ ]
   * Title.java [x]
-  * Video.java [ ]
+  * Video.java [x]
   * VideoSlug.java [x]
 * ProcessDetails.java [x]
 * recommendation [ ]

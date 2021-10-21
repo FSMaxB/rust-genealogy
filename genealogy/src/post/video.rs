@@ -1,24 +1,34 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::RuntimeException;
+use crate::helpers::time::LocalDate;
 use crate::post::description::Description;
-use crate::post::factories::parse_date;
-use crate::post::factories::raw_post::{RawPost, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE, VIDEO};
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
-use chrono::NaiveDate;
-use std::cmp::Ordering;
+use crate::post::Post;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
-use std::path::Path;
 
+/// ```java
+/// public record Video(
+///		Title title,
+///		Set<Tag> tags,
+///		LocalDate date,
+///		Description description,
+///		Slug slug,
+///		VideoSlug video,
+///		Optional<Repository> repository) implements Post {
+///
+/// ```
+///
+/// The `implements Post` can't be emulated directly since there is no
+/// inheritance in rust and traits cannot be `sealed`. Therefore [`Post`]
+/// is an enum instead and the `implements` is emulated by a [`From`] implementation.
 #[derive(Debug)]
 pub struct Video {
 	pub title: Title,
 	tags: HashSet<Tag>,
-	pub date: NaiveDate,
+	pub date: LocalDate,
 	pub description: Description,
 	pub slug: Slug,
 	pub video: VideoSlug,
@@ -26,73 +36,95 @@ pub struct Video {
 }
 
 impl Video {
+	/// ```java
+	/// public Video {
+	///		requireNonNull(title);
+	///		requireNonNull(tags);
+	///		requireNonNull(date);
+	///		requireNonNull(description);
+	///		requireNonNull(slug);
+	///		requireNonNull(video);
+	///		requireNonNull(repository);
+	///	}
+	/// ```
+	pub fn new(
+		title: Title,
+		tags: HashSet<Tag>,
+		date: LocalDate,
+		description: Description,
+		slug: Slug,
+		video: VideoSlug,
+		repository: Option<Repository>,
+	) -> Self {
+		Self {
+			title,
+			tags,
+			date,
+			description,
+			slug,
+			video,
+			repository,
+		}
+	}
+
+	/// ```java
+	/// @Override
+	///	public Set<Tag> tags() {
+	///		return Set.copyOf(tags);
+	///	}
+	/// ```
 	pub fn tags(&self) -> HashSet<Tag> {
 		self.tags.clone()
 	}
 }
 
+/// ```java
+/// public record Video(...) implements Post
+/// ```
+impl From<Video> for Post {
+	fn from(video: Video) -> Self {
+		Post::Video(video)
+	}
+}
+
+/// ```java
+/// @Override
+///	public boolean equals(Object o) {
+///		if (this == o)
+///			return true;
+///		if (o == null || getClass() != o.getClass())
+///			return false;
+///		Video video = (Video) o;
+///		return slug.equals(video.slug);
+///	}
+/// ```
 impl PartialEq for Video {
 	fn eq(&self, other: &Self) -> bool {
 		self.slug.eq(&other.slug)
 	}
 }
 
-// NOTE: Not part of the original, but very helpful.
-impl PartialOrd for Video {
-	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		Some(self.cmp(other))
-	}
-}
-
-// NOTE: Not part of the original, but very helpful.
-impl Ord for Video {
-	fn cmp(&self, other: &Self) -> Ordering {
-		self.slug.cmp(&other.slug)
-	}
-}
-
+/// ```java
+/// @Override
+///	public boolean equals(Object o) {
+///		if (this == o)
+///			return true;
+///		if (o == null || getClass() != o.getClass())
+///			return false;
+///		Video video = (Video) o;
+///		return slug.equals(video.slug);
+///	}
+/// ```
 impl Eq for Video {}
 
+/// ```java
+/// @Override
+///	public int hashCode() {
+///		return Objects.hash(slug);
+///	}
+/// ```
 impl Hash for Video {
 	fn hash<H: Hasher>(&self, state: &mut H) {
 		self.slug.hash(state)
-	}
-}
-
-impl TryFrom<&Path> for Video {
-	type Error = Exception;
-
-	fn try_from(path: &Path) -> Result<Self, Self::Error> {
-		RawPost::try_from(path)
-			.map_err(|error| {
-				RuntimeException(format!(
-					r#"Creating video failed: "{}", error: {}"#,
-					path.to_string_lossy(),
-					error
-				))
-			})
-			.and_then(Video::try_from)
-	}
-}
-
-impl TryFrom<RawPost> for Video {
-	type Error = Exception;
-
-	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
-		let front_matter = raw_post.front_matter;
-		Ok(Video {
-			title: Title::new(front_matter.value_of(TITLE)?)?,
-			tags: Tag::from(front_matter.value_of(TAGS)?)?,
-			date: parse_date(front_matter.value_of(DATE)?)?,
-			description: Description::new(front_matter.value_of(DESCRIPTION)?)?,
-			slug: Slug::new(front_matter.value_of(SLUG)?.to_string())?,
-			video: VideoSlug::new(front_matter.value_of(VIDEO)?.to_string())?,
-			repository: front_matter
-				.value_of(REPOSITORY)
-				.ok()
-				.map(str::to_string)
-				.map(Repository::new)
-				.transpose()?,
-		})
 	}
 }

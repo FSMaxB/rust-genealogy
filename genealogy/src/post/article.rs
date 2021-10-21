@@ -89,7 +89,7 @@ impl TryFrom<RawPost> for Article {
 		// put the constants in it as associated const so they can be used by
 		// dynamic code for lookup in the front matter.
 		Ok(Article {
-			title: Title::from_text(front_matter.value_of(TITLE)?)?,
+			title: Title::new(front_matter.value_of(TITLE)?)?,
 			tags: Tag::from(front_matter.value_of(TAGS)?)?,
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,

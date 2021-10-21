@@ -1,20 +1,34 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
+use crate::helpers::string_extensions::StringExtensions;
+use crate::throw;
 use crate::utils::Utils;
 
+/// ```java
+/// public record Title(String text) {
+/// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Title {
 	pub text: String,
 }
 
 impl Title {
-	pub fn from_text(text: &str) -> Result<Title, Exception> {
+	/// ```java
+	/// public Title {
+	///		requireNonNull(text);
+	///		var unquotedText = Utils.removeOuterQuotationMarks(text);
+	///		if (unquotedText.isBlank())
+	///			throw new IllegalArgumentException("Titles can't have an empty text.");
+	///		text = unquotedText;
+	///	}
+	/// ```
+	pub fn new(text: &str) -> Result<Title, Exception> {
 		let unquoted_text = Utils::remove_outer_quotation_marks(text)?;
-		if unquoted_text.trim().is_empty() {
-			Err(IllegalArgumentException("Titles can't have an empty text.".to_string()))
-		} else {
-			Ok(Title { text: unquoted_text })
+		if unquoted_text.is_blank() {
+			throw!(IllegalArgumentException("Titles can't have an empty text.".to_string()));
 		}
+
+		Ok(Title { text: unquoted_text })
 	}
 }
 
@@ -26,13 +40,13 @@ mod test {
 
 	impl QuotationTests for Title {
 		fn parse_create_extract(text: &str) -> Result<String, Exception> {
-			Ok(Title::from_text(text)?.text)
+			Ok(Title::new(text)?.text)
 		}
 	}
 
 	#[test]
 	fn empty_text_exception() {
-		assert!(matches!(Title::from_text(""), Err(IllegalArgumentException(_))))
+		assert!(matches!(Title::new(""), Err(IllegalArgumentException(_))))
 	}
 
 	#[test]

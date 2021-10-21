@@ -75,7 +75,7 @@ impl TryFrom<RawPost> for Video {
 	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
 		let front_matter = raw_post.front_matter;
 		Ok(Video {
-			title: Title::from_text(front_matter.value_of(TITLE)?)?,
+			title: Title::new(front_matter.value_of(TITLE)?)?,
 			tags: Tag::from(front_matter.value_of(TAGS)?)?,
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,

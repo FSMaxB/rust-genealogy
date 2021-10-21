@@ -42,7 +42,7 @@
   * Slug.java [x]
   * Tag.java [x]
   * Talk.java [ ]
-  * Title.java [ ]
+  * Title.java [x]
   * Video.java [ ]
   * VideoSlug.java [ ]
 * ProcessDetails.java [x]

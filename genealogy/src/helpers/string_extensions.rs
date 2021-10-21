@@ -11,6 +11,8 @@ pub trait StringExtensions {
 	fn split(&self, separator: char) -> Vec<String>;
 
 	fn strip(&self) -> String;
+
+	fn is_blank(&self) -> bool;
 }
 
 impl<StringType> StringExtensions for StringType
@@ -32,5 +34,9 @@ where
 
 	fn strip(&self) -> String {
 		self.as_ref().trim().to_string()
+	}
+
+	fn is_blank(&self) -> bool {
+		self.as_ref().trim().is_empty()
 	}
 }

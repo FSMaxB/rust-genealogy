@@ -39,7 +39,7 @@
     * TalkFactory.java [ ]
     * VideoFactory.java [ ]
   * Repository.java [ ]
-  * Slug.java [ ]
+  * Slug.java [x]
   * Tag.java [x]
   * Talk.java [ ]
   * Title.java [ ]

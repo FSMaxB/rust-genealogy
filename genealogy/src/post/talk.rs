@@ -79,7 +79,7 @@ impl TryFrom<RawPost> for Talk {
 			tags: Tag::from(front_matter.value_of(TAGS)?)?,
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,
-			slug: Slug::from_value(front_matter.value_of(SLUG)?.to_string())?,
+			slug: Slug::new(front_matter.value_of(SLUG)?.to_string())?,
 			slides: Url::parse(front_matter.value_of(SLIDES)?)
 				.map_err(|error| IllegalArgumentException(error.to_string()))?,
 			video: front_matter

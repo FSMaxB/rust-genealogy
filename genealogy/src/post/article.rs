@@ -93,7 +93,7 @@ impl TryFrom<RawPost> for Article {
 			tags: Tag::from(front_matter.value_of(TAGS)?)?,
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,
-			slug: Slug::from_value(front_matter.value_of(SLUG)?.to_string())?,
+			slug: Slug::new(front_matter.value_of(SLUG)?.to_string())?,
 			repository: front_matter
 				.value_of(REPOSITORY)
 				.ok()

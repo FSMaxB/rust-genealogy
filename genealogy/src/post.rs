@@ -84,7 +84,7 @@ pub mod test {
 			title: Title::new("title")?,
 			tags: Tag::from("[Tag]")?,
 			date: chrono::offset::Local::today().naive_local(),
-			description: Description::from_text("description")?,
+			description: Description::new("description")?,
 			slug: Slug::new(slug.to_string())?,
 			repository: None,
 			content: Box::new(|| Box::new(std::iter::once("".to_string()))),

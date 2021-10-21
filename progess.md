@@ -29,7 +29,7 @@
 * post [ ]
   * Article.java [ ]
   * Content.java [ ]
-  * Description.java [ ]
+  * Description.java [x]
   * Post.java [ ]
   * factories [ ]
     * ArticleFactory.java [ ]

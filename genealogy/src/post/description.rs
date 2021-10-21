@@ -1,22 +1,35 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
+use crate::helpers::string_extensions::StringExtensions;
+use crate::throw;
 use crate::utils::Utils;
 
+/// ```java
+/// public record Description(String text) {
+/// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Description {
 	pub text: String,
 }
 
 impl Description {
-	pub fn from_text(text: &str) -> Result<Description, Exception> {
-		let unquoted_text = Utils::remove_outer_quotation_marks(text)?;
-		if unquoted_text.trim().is_empty() {
-			Err(IllegalArgumentException(
-				"Description can't have an empty text.".to_string(),
-			))
-		} else {
-			Ok(Description { text: unquoted_text })
+	/// ```java
+	/// public Description {
+	///		requireNonNull(text);
+	///		text = Utils.removeOuterQuotationMarks(text).strip();
+	///		if (text.isBlank())
+	///			throw new IllegalArgumentException("Description can't have an empty text.");
+	///	}
+	/// ```
+	pub fn new(text: &str) -> Result<Description, Exception> {
+		let text = Utils::remove_outer_quotation_marks(text)?;
+		if text.is_blank() {
+			throw!(IllegalArgumentException(
+				"Description can't have an empty text.".to_string()
+			));
 		}
+
+		Ok(Description { text })
 	}
 }
 
@@ -27,13 +40,13 @@ mod test {
 
 	impl QuotationTests for Description {
 		fn parse_create_extract(text: &str) -> Result<String, Exception> {
-			Ok(Description::from_text(text)?.text)
+			Ok(Description::new(text)?.text)
 		}
 	}
 
 	#[test]
 	fn empty_text_exception() {
-		assert!(matches!(Description::from_text(""), Err(IllegalArgumentException(_))))
+		assert!(matches!(Description::new(""), Err(IllegalArgumentException(_))))
 	}
 
 	#[test]

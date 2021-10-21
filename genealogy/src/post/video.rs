@@ -85,7 +85,7 @@ impl TryFrom<RawPost> for Video {
 				.value_of(REPOSITORY)
 				.ok()
 				.map(str::to_string)
-				.map(Repository::from_identifier)
+				.map(Repository::new)
 				.transpose()?,
 		})
 	}

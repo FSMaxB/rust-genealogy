@@ -38,7 +38,7 @@
     * RawPost.java [ ]
     * TalkFactory.java [ ]
     * VideoFactory.java [ ]
-  * Repository.java [ ]
+  * Repository.java [x]
   * Slug.java [x]
   * Tag.java [x]
   * Talk.java [ ]

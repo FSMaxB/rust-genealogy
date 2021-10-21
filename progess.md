@@ -58,7 +58,7 @@
   * RelationTests.java [ ]
   * WeightsTests.java [ ]
 * post [ ]
-  * DescriptionTests.java [ ]
+  * DescriptionTests.java [x]
   * factories [ ]
     * ArticleFactoryTests.java [ ]
   * PostTestHelper.java [ ]

@@ -33,24 +33,53 @@ impl Description {
 	}
 }
 
+/// ```java
+/// class DescriptionTests {
+/// ```
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::text_parser_tests::{test_text_parser, QuotationTests};
+	use crate::helpers::test::assert_that;
+	use crate::text_parser_tests::{self, test_text_parser};
 
-	impl QuotationTests for Description {
+	/// ```java
+	/// @Test
+	///	void emptyText_exception() {
+	///		assertThatThrownBy(() -> new Description("")).isInstanceOf(IllegalArgumentException.class);
+	///	}
+	/// ```
+	#[test]
+	fn empty_text_exception() {
+		assert_that(|| Description::new(""))
+			.throws()
+			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
+	}
+
+	/// ```java
+	/// 	@Nested
+	///	class QuotationTests implements TextParserTests.QuotationTests {
+	/// ```
+	struct Quotationtests;
+
+	/// ```java
+	/// 	@Nested
+	///	class QuotationTests implements TextParserTests.QuotationTests {
+	/// ```
+	impl text_parser_tests::QuotationTests for Quotationtests {
+		/// ```java
+		/// @Override
+		///	public String parseCreateExtract(String text) {
+		///		return new Description(text).text();
+		///	}
+		/// ```
 		fn parse_create_extract(text: &str) -> Result<String, Exception> {
 			Ok(Description::new(text)?.text)
 		}
 	}
 
 	#[test]
-	fn empty_text_exception() {
-		assert!(matches!(Description::new(""), Err(IllegalArgumentException(_))))
-	}
-
-	#[test]
 	fn quotation_tests() {
-		test_text_parser::<Description>();
+		test_text_parser::<Quotationtests>();
 	}
 }

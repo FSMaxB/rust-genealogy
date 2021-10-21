@@ -86,7 +86,7 @@ impl TryFrom<RawPost> for Talk {
 				.value_of(VIDEO)
 				.ok()
 				.map(str::to_string)
-				.map(VideoSlug::from_value)
+				.map(VideoSlug::new)
 				.transpose()?,
 		})
 	}

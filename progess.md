@@ -44,7 +44,7 @@
   * Talk.java [ ]
   * Title.java [x]
   * Video.java [ ]
-  * VideoSlug.java [ ]
+  * VideoSlug.java [x]
 * ProcessDetails.java [x]
 * recommendation [ ]
   * Recommendation.java [ ]

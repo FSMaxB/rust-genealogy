@@ -30,7 +30,7 @@
   * Article.java [x]
   * Content.java [x]
   * Description.java [x]
-  * Post.java [ ]
+  * Post.java [x]
   * factories [ ]
     * ArticleFactory.java [ ]
     * PostFactory.java [ ]

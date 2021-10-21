@@ -1,3 +1,4 @@
+use crate::helpers::time::LocalDate;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::slug::Slug;
@@ -5,7 +6,6 @@ use crate::post::tag::Tag;
 use crate::post::talk::Talk;
 use crate::post::title::Title;
 use crate::post::video::Video;
-use chrono::NaiveDate;
 use std::collections::HashSet;
 
 pub mod article;
@@ -20,6 +20,12 @@ pub mod title;
 pub mod video;
 pub mod video_slug;
 
+/// ```java
+/// public sealed interface Post permits Article, Talk, Video
+/// ```
+///
+/// enum instead of sealed interface. The semantics are roughly equivalent
+/// since both are sum types.
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum Post {
 	Article(Article),
@@ -27,9 +33,13 @@ pub enum Post {
 	Video(Video),
 }
 
+use Post::*;
+
 impl Post {
+	/// ```java
+	/// Title title();
+	/// ```
 	pub fn title(&self) -> &Title {
-		use Post::*;
 		match self {
 			Article(article) => &article.title,
 			Talk(talk) => &talk.title,
@@ -37,8 +47,10 @@ impl Post {
 		}
 	}
 
+	/// ```java
+	/// Set<Tag> tags();
+	/// ```
 	pub fn tags(&self) -> HashSet<Tag> {
-		use Post::*;
 		match self {
 			Article(article) => article.tags(),
 			Talk(talk) => talk.tags(),
@@ -46,8 +58,10 @@ impl Post {
 		}
 	}
 
-	pub fn date(&self) -> NaiveDate {
-		use Post::*;
+	/// ```java
+	/// LocalDate date();
+	/// ```
+	pub fn date(&self) -> LocalDate {
 		match self {
 			Article(article) => article.date,
 			Talk(talk) => talk.date,
@@ -55,8 +69,10 @@ impl Post {
 		}
 	}
 
+	/// ```java
+	/// Description description();
+	/// ```
 	pub fn description(&self) -> &Description {
-		use Post::*;
 		match self {
 			Article(article) => &article.description,
 			Talk(talk) => &talk.description,
@@ -64,8 +80,10 @@ impl Post {
 		}
 	}
 
+	/// ```java
+	/// Slug slug();
+	/// ```
 	pub fn slug(&self) -> &Slug {
-		use Post::*;
 		match self {
 			Article(article) => &article.slug,
 			Talk(talk) => &talk.slug,

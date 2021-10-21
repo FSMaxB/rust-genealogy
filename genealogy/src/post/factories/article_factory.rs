@@ -62,7 +62,6 @@ impl TryFrom<RawPost> for Article {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::helpers::collector::Collectors;
 	use crate::helpers::time::LocalDate;
 	use crate::test_helpers::hash_set_of_tags;
 
@@ -134,7 +133,7 @@ mod test {
 		assert_eq!(LocalDate::from_ymd(2020, 1, 23), post.date);
 		assert_eq!("Very blog, much post, so wow", post.description.text);
 		assert_eq!("cool-blog-post", post.slug.value);
-		let content = (post.content)().collect(Collectors::to_vector()).unwrap();
+		let content = (post.content)().to_list().unwrap();
 		let expected_content = line_vector(&[
 			"",
 			"Lorem ipsum dolor sit amet.",

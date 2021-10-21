@@ -37,7 +37,7 @@ impl From<&Recommendation> for SerializedRecommendation {
 			.map(SerializedPost::from)
 			.collect();
 		Self {
-			title: recommendation.post().title().text.clone(),
+			title: recommendation.post.title().text.clone(),
 			recommendations,
 		}
 	}

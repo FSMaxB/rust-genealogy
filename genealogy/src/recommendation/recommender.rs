@@ -4,7 +4,6 @@ use crate::recommendation::Recommendation;
 use resiter::Map;
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-use std::num::NonZeroUsize;
 use std::ops::Deref;
 
 pub struct Recommender;
@@ -12,8 +11,8 @@ pub struct Recommender;
 impl Recommender {
 	pub fn recommend(
 		relations: impl Iterator<Item = Result<Relation, Exception>>,
-		per_post: NonZeroUsize,
-	) -> Result<impl Iterator<Item = Recommendation>, Exception> {
+		per_post: usize,
+	) -> Result<impl Iterator<Item = Result<Recommendation, Exception>>, Exception> {
 		let by_post = relations
 			.map_ok(RelationSortedByPostThenByDecreasingScore::from)
 			.map_ok(|relation| (relation.post1.clone(), relation))
@@ -25,9 +24,12 @@ impl Recommender {
 			})?;
 
 		Ok(by_post.into_iter().map(move |(post, sorted_relations)| {
-			Recommendation::new(
+			Recommendation::from(
 				post,
-				sorted_relations.into_iter().map(|relation| relation.post2.clone()),
+				sorted_relations
+					.into_iter()
+					.map(|relation| Ok::<_, Exception>(relation.post2.clone()))
+					.into(),
 				per_post,
 			)
 		}))
@@ -112,11 +114,8 @@ mod test {
 		}
 
 		fn for_one_post_one_relation(&self) -> Result<(), Exception> {
-			let recommendations = Recommender::recommend(
-				vec![self.relation_ac.clone()].into_iter().map(Ok),
-				NonZeroUsize::new(1).unwrap(),
-			)?
-			.collect::<HashSet<_>>();
+			let recommendations = Recommender::recommend(vec![self.relation_ac.clone()].into_iter().map(Ok), 1)?
+				.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations =
 				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_c.clone()]}};
 			assert_eq!(expected_recommendations, recommendations);
@@ -128,9 +127,9 @@ mod test {
 				vec![self.relation_ab.clone(), self.relation_ac.clone()]
 					.into_iter()
 					.map(Ok),
-				NonZeroUsize::new(1).unwrap(),
+				1,
 			)?
-			.collect::<HashSet<_>>();
+			.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations =
 				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_b.clone()]}};
 			assert_eq!(expected_recommendations, recommendations);
@@ -146,9 +145,9 @@ mod test {
 				]
 				.into_iter()
 				.map(Ok),
-				NonZeroUsize::new(1).unwrap(),
+				1,
 			)?
-			.collect::<HashSet<_>>();
+			.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations = hset! {
 				Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_c.clone()]},
 				Recommendation {post: self.post_b.clone(), recommended_posts: vec![self.post_c.clone()]},
@@ -170,9 +169,9 @@ mod test {
 				]
 				.into_iter()
 				.map(Ok),
-				NonZeroUsize::new(1).unwrap(),
+				1,
 			)?
-			.collect::<HashSet<_>>();
+			.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations = hset! {
 				Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_b.clone()]},
 				Recommendation {post: self.post_b.clone(), recommended_posts: vec![self.post_c.clone()]},

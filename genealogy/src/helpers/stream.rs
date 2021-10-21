@@ -50,6 +50,14 @@ where
 	{
 		iterable.into_iter().map(Result::<_, Exception>::Ok).into()
 	}
+
+	pub fn limit(self, limit: usize) -> Self {
+		self.iterator.take(limit).into()
+	}
+
+	pub fn to_list(self) -> Result<Vec<Item>, Exception> {
+		self.iterator.collect()
+	}
 }
 
 impl<Iter, Item, Error> From<Iter> for Stream<Item>

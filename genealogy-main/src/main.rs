@@ -19,7 +19,6 @@ use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
 use resiter::{AndThen, Filter, Map};
-use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
@@ -34,7 +33,7 @@ fn main() -> Result<(), Exception> {
 	let genealogy = create_genealogy(&config.article_folder, &config.talk_folder, &config.video_folder)?;
 
 	let relations = genealogy.infer_relations();
-	let recommendations = Recommender::recommend(relations, NonZeroUsize::new(3).unwrap())?;
+	let recommendations = Recommender::recommend(relations, 3)?;
 	let recommendations_as_json = recommendations_to_json(recommendations)?;
 	if let Some(output_file) = &config.output_file {
 		Utils::unchecked_files_write(output_file, &recommendations_as_json)?;
@@ -81,8 +80,10 @@ fn get_genealogists(posts: Vec<Rc<Post>>) -> Vec<Rc<dyn Genealogist>> {
 		.collect()
 }
 
-fn recommendations_to_json(recommendations: impl Iterator<Item = Recommendation>) -> Result<String, Exception> {
-	let serialized_recommendations = recommendations.collect::<SerializedRecommendations>();
+fn recommendations_to_json(
+	recommendations: impl Iterator<Item = Result<Recommendation, Exception>>,
+) -> Result<String, Exception> {
+	let serialized_recommendations = recommendations.collect::<Result<SerializedRecommendations, Exception>>()?;
 	serde_json::to_string(&serialized_recommendations)
 		.map_err(|error| RuntimeException(format!("Failed to serialize JSON: {}", error)))
 }

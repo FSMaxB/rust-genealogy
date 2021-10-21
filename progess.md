@@ -63,7 +63,7 @@
     * ArticleFactoryTests.java [ ]
   * PostTestHelper.java [ ]
   * SlugTests.java [ ]
-  * TagTests.java [ ]
+  * TagTests.java [x]
   * TitleTests.java [ ]
 * recommendation [ ]
   * RecommenderTests.java [ ]

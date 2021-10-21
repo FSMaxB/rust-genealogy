@@ -90,7 +90,7 @@ impl TryFrom<RawPost> for Article {
 		// dynamic code for lookup in the front matter.
 		Ok(Article {
 			title: Title::from_text(front_matter.value_of(TITLE)?)?,
-			tags: Tag::from_text(front_matter.value_of(TAGS)?)?,
+			tags: Tag::from(front_matter.value_of(TAGS)?)?,
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,
 			slug: Slug::from_value(front_matter.value_of(SLUG)?.to_string())?,

@@ -33,11 +33,20 @@ impl<Value> AssertThat<Value> {
 		}
 	}
 
-	#[track_caller]
-	pub fn contains(self, element: Value::Item)
+	pub fn extracting<Extracted>(self, extractor: impl FnMut(Value::Item) -> Extracted) -> AssertThat<Vec<Extracted>>
 	where
 		Value: IntoIterator,
-		<Value as IntoIterator>::Item: PartialEq + Debug,
+	{
+		AssertThat {
+			value: self.value.into_iter().map(extractor).collect(),
+		}
+	}
+
+	#[track_caller]
+	pub fn contains(self, element: impl PartialEq<Value::Item> + Debug)
+	where
+		Value: IntoIterator,
+		Value::Item: PartialEq + Debug,
 	{
 		for current_element in self.value {
 			if element == current_element {
@@ -63,6 +72,33 @@ impl<Value> AssertThat<Value> {
 	pub fn and_satisfies(self, predicate: impl FnOnce(Value) -> bool) {
 		if !predicate(self.value) {
 			panic!("Value doesn't satisfy the given predicate.");
+		}
+	}
+}
+
+impl<Element> AssertThat<Vec<Element>> {
+	#[track_caller]
+	pub fn contains_exactly_in_any_order<ExpectedValues>(self, expected_values: ExpectedValues)
+	where
+		ExpectedValues: IntoIterator,
+		ExpectedValues::Item: Debug + PartialEq<Element>,
+		Element: Debug,
+	{
+		let expected_values = expected_values.into_iter().collect::<Vec<ExpectedValues::Item>>();
+		if expected_values.len() != self.value.len() {
+			panic!(
+				"The amount of values differs, expected {:?}, got {:?}.",
+				expected_values, self.value,
+			)
+		}
+
+		'outer: for expected_value in &expected_values {
+			for actual_value in &self.value {
+				if expected_value == actual_value {
+					continue 'outer;
+				}
+			}
+			panic!("Didn't find expected value {:?} in {:?}", expected_value, self.value)
 		}
 	}
 }

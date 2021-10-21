@@ -76,7 +76,7 @@ impl TryFrom<RawPost> for Video {
 		let front_matter = raw_post.front_matter;
 		Ok(Video {
 			title: Title::from_text(front_matter.value_of(TITLE)?)?,
-			tags: Tag::from_text(front_matter.value_of(TAGS)?)?,
+			tags: Tag::from(front_matter.value_of(TAGS)?)?,
 			date: parse_date(front_matter.value_of(DATE)?)?,
 			description: Description::from_text(front_matter.value_of(DESCRIPTION)?)?,
 			slug: Slug::from_value(front_matter.value_of(SLUG)?.to_string())?,

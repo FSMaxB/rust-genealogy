@@ -82,7 +82,7 @@ pub mod test {
 	pub fn post_with_slug(slug: &str) -> Result<Post, Exception> {
 		let article = Article {
 			title: Title::from_text("title")?,
-			tags: Tag::from_text("[Tag]")?,
+			tags: Tag::from("[Tag]")?,
 			date: chrono::offset::Local::today().naive_local(),
 			description: Description::from_text("description")?,
 			slug: Slug::from_value(slug.to_string())?,

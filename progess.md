@@ -20,7 +20,7 @@
   * Genealogist.java [ ]
   * GenealogistService.java [ ]
   * RelationType.java [x]
-  * TypedRelation.java [ ]
+  * TypedRelation.java [x]
 * genealogy [ ]
   * Genealogy.java [ ]
   * Relation.java [ ]

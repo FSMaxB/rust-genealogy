@@ -1,21 +1,35 @@
 use crate::genealogist::typed_relation::TypedRelation;
-use crate::genealogy::score::Score;
 use crate::genealogy::weights::Weights;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::iterator::IteratorExtension;
 use crate::helpers::mean::Mean;
 use crate::post::Post;
-use std::sync::Arc;
+use crate::throw;
+use std::rc::Rc;
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
-	pub post1: Arc<Post>,
-	pub post2: Arc<Post>,
-	pub score: Score,
+	pub post1: Rc<Post>,
+	pub post2: Rc<Post>,
+	pub score: i64,
 }
 
 impl Relation {
+	pub fn new(post1: Rc<Post>, post2: Rc<Post>, score: i64) -> Result<Relation, Exception> {
+		let relation = Relation { post1, post2, score };
+
+		#[allow(clippy::manual_range_contains)]
+		if (score < 0) || (100 < score) {
+			throw!(IllegalArgumentException(format!(
+				"Score should be in interval [0; 100]: {:?}",
+				relation
+			)));
+		}
+
+		Ok(relation)
+	}
+
 	pub(crate) fn aggregate<'relations>(
 		typed_relations: impl Iterator<Item = &'relations TypedRelation>,
 		weights: &Weights,
@@ -25,7 +39,7 @@ impl Relation {
 			.map(|relation| {
 				(
 					(&relation.post1, &relation.post2),
-					(relation.score, &relation.relation_type),
+					(relation.score(), &relation.r#type),
 				)
 			})
 			// NOTE: Split the `Iterator` into two instead of what the `tee` collector in Java does.
@@ -48,7 +62,7 @@ impl Relation {
 		Ok(Relation {
 			post1: posts.0.clone(),
 			post2: posts.1.clone(),
-			score: Score::try_from(score)?,
+			score: score as i64,
 		})
 	}
 }
@@ -57,95 +71,112 @@ impl Relation {
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
-	use crate::genealogy::score::score;
 	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::PostTestHelper;
-	use lazy_static::lazy_static;
 	use literally::hmap;
-	use std::convert::TryInto;
 
-	lazy_static! {
-		static ref TAG_WEIGHT: Weight = weight(1.0);
-		static ref LINK_WEIGHT: Weight = weight(1.0);
-		static ref TAG_RELATION: RelationType = RelationType::new("tag".to_string()).unwrap();
-		static ref LINK_RELATION: RelationType = RelationType::new("link".to_string()).unwrap();
-		static ref WEIGHTS: Weights = Weights::new(
-			hmap! {
-				TAG_RELATION.clone() => *TAG_WEIGHT,
-				LINK_RELATION.clone() => *LINK_WEIGHT,
-			},
-			weight(0.5),
-		);
+	struct RelationTests {
+		tag_weight: Weight,
+		link_weight: Weight,
+		tag_relation: RelationType,
+		link_relation: RelationType,
+		weights: Weights,
+	}
+
+	impl RelationTests {
+		fn new() -> Result<RelationTests, Exception> {
+			let tag_weight = weight(1.0);
+			let link_weight = weight(1.0);
+			let tag_relation = RelationType::new("tag".to_string())?;
+			let link_relation = RelationType::new("link".to_string())?;
+			Ok(Self {
+				tag_weight,
+				link_weight,
+				tag_relation: tag_relation.clone(),
+				link_relation: link_relation.clone(),
+				weights: Weights::new(
+					hmap! {
+										tag_relation.clone() => tag_weight,
+										link_relation.clone() => link_weight,
+					},
+					weight(0.5),
+				),
+			})
+		}
+
+		fn single_typed_relation_weight_one_same_posts_and_score(&self) -> Result<(), Exception> {
+			let score = 60;
+			let (post_a, post_b) = test_posts();
+			let typed_relations = [TypedRelation::new(
+				post_a.clone(),
+				post_b.clone(),
+				self.tag_relation.clone(),
+				score,
+			)?];
+
+			let relation = Relation::aggregate(typed_relations.iter(), &self.weights)?;
+			assert_eq!(post_a, relation.post1);
+			assert_eq!(post_b, relation.post2);
+			assert_eq!(score, relation.score);
+			Ok(())
+		}
+
+		fn two_typed_relations_with_one_averaged_score(&self) -> Result<(), Exception> {
+			let (post_a, post_b) = test_posts();
+			let typed_relations = [
+				TypedRelation::new(post_a.clone(), post_b.clone(), self.tag_relation.clone(), 40)?,
+				TypedRelation::new(post_a, post_b, self.tag_relation.clone(), 80)?,
+			];
+
+			let relation = Relation::aggregate(typed_relations.iter(), &self.weights)?;
+			assert_eq!((40 + 80) / 2, relation.score);
+			Ok(())
+		}
+
+		fn two_typed_relations_differing_weight_weighted_score(&self) -> Result<(), Exception> {
+			let (post_a, post_b) = test_posts();
+			let typed_relations = [
+				TypedRelation::new(post_a.clone(), post_b.clone(), self.tag_relation.clone(), 40)?,
+				TypedRelation::new(post_a, post_b, self.link_relation.clone(), 80)?,
+			];
+
+			let relation = Relation::aggregate(typed_relations.iter(), &self.weights)?;
+			let expected_score = vec![40 * self.tag_weight, 80 * self.link_weight]
+				.into_iter()
+				.collect::<Option<i64>>()
+				.unwrap();
+			assert_eq!(expected_score, relation.score);
+			Ok(())
+		}
 	}
 
 	#[test]
 	fn single_typed_relation_weight_one_same_posts_and_score() {
-		let score = score(60);
-		let (post_a, post_b) = test_posts();
-		let typed_relations = [TypedRelation {
-			post1: post_a.clone(),
-			post2: post_b.clone(),
-			relation_type: TAG_RELATION.clone(),
-			score,
-		}];
-
-		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		assert_eq!(post_a, relation.post1);
-		assert_eq!(post_b, relation.post2);
-		assert_eq!(score, relation.score);
+		RelationTests::new()
+			.unwrap()
+			.single_typed_relation_weight_one_same_posts_and_score()
+			.unwrap();
 	}
 
 	#[test]
-	fn two_typed_relations_weith_one_averaged_score() {
-		let (post_a, post_b) = test_posts();
-		let typed_relations = [
-			TypedRelation {
-				post1: post_a.clone(),
-				post2: post_b.clone(),
-				relation_type: TAG_RELATION.clone(),
-				score: score(40),
-			},
-			TypedRelation {
-				post1: post_a,
-				post2: post_b,
-				relation_type: TAG_RELATION.clone(),
-				score: score(80),
-			},
-		];
-
-		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		assert_eq!(Score::try_from((40 + 80) / 2).unwrap(), relation.score);
+	fn two_typed_relations_with_one_averaged_score() {
+		RelationTests::new()
+			.unwrap()
+			.two_typed_relations_with_one_averaged_score()
+			.unwrap();
 	}
 
 	#[test]
 	fn two_typed_relations_differing_weight_weighted_score() {
-		let (post_a, post_b) = test_posts();
-		let typed_relations = [
-			TypedRelation {
-				post1: post_a.clone(),
-				post2: post_b.clone(),
-				relation_type: TAG_RELATION.clone(),
-				score: 40.try_into().unwrap(),
-			},
-			TypedRelation {
-				post1: post_a,
-				post2: post_b,
-				relation_type: LINK_RELATION.clone(),
-				score: 80.try_into().unwrap(),
-			},
-		];
-
-		let relation = Relation::aggregate(typed_relations.iter(), &WEIGHTS).unwrap();
-		let expected_score = vec![score(40) * *TAG_WEIGHT, score(80) * *LINK_WEIGHT]
-			.into_iter()
-			.collect::<Option<Score>>()
+		RelationTests::new()
+			.unwrap()
+			.two_typed_relations_differing_weight_weighted_score()
 			.unwrap();
-		assert_eq!(expected_score, relation.score);
 	}
 
-	fn test_posts() -> (Arc<Post>, Arc<Post>) {
+	fn test_posts() -> (Rc<Post>, Rc<Post>) {
 		let post_a = PostTestHelper::create_with_slug("a").unwrap();
 		let post_b = PostTestHelper::create_with_slug("b").unwrap();
-		(Arc::new(post_a), Arc::new(post_b))
+		(Rc::new(post_a), Rc::new(post_b))
 	}
 }

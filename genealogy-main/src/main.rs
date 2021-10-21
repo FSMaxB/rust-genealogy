@@ -21,7 +21,7 @@ use genealogy::utils::Utils;
 use resiter::{AndThen, Filter, Map};
 use std::num::NonZeroUsize;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::rc::Rc;
 
 mod json;
 
@@ -53,10 +53,10 @@ fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Pa
 	let posts = posts
 		.into_iter()
 		.flatten()
-		.map_ok(Arc::new)
+		.map_ok(Rc::new)
 		.collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());
-	Ok(Genealogy::new(posts, genealogists, Arc::new(Weights::all_equal())))
+	Ok(Genealogy::new(posts, genealogists, Rc::new(Weights::all_equal())))
 }
 
 fn markdown_files_in(folder: &Path) -> Result<impl Iterator<Item = Result<PathBuf, Exception>>, Exception> {
@@ -67,7 +67,7 @@ fn markdown_files_in(folder: &Path) -> Result<impl Iterator<Item = Result<PathBu
 	)
 }
 
-fn get_genealogists(posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {
+fn get_genealogists(posts: Vec<Rc<Post>>) -> Vec<Rc<dyn Genealogist>> {
 	// NOTE: Not quite dynamic class loading, but hey, that's just not possible in Rust
 	let genealogist_services: Vec<Box<dyn GenealogistService>> = vec![
 		Box::new(SillyGenealogistService),
@@ -77,7 +77,7 @@ fn get_genealogists(posts: Vec<Arc<Post>>) -> Vec<Arc<dyn Genealogist>> {
 	];
 	genealogist_services
 		.into_iter()
-		.map(move |service| service.procure(Box::new(posts.clone().into_iter())))
+		.map(move |service| service.procure(Box::new(posts.clone().into_iter())).unwrap())
 		.collect()
 }
 

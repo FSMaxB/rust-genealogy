@@ -60,16 +60,11 @@ impl From<WeightedScore> for f64 {
 	}
 }
 
-#[cfg(test)]
-pub fn score(score: u8) -> Score {
-	Score::try_from(score).unwrap()
-}
-
 pub struct WeightedScore(f64);
 
-impl From<WeightedScore> for Score {
+impl From<WeightedScore> for i64 {
 	fn from(weighted_score: WeightedScore) -> Self {
-		Score(weighted_score.0.round() as u8)
+		weighted_score.0.round() as i64
 	}
 }
 
@@ -81,13 +76,21 @@ impl Mul<Weight> for Score {
 	}
 }
 
-impl FromIterator<WeightedScore> for Option<Score> {
+impl Mul<Weight> for i64 {
+	type Output = WeightedScore;
+
+	fn mul(self, weight: Weight) -> Self::Output {
+		WeightedScore((self as f64) * f64::from(weight))
+	}
+}
+
+impl FromIterator<WeightedScore> for Option<i64> {
 	fn from_iter<WeightedScoreIterator: IntoIterator<Item = WeightedScore>>(iterator: WeightedScoreIterator) -> Self {
 		let mean = iterator.into_iter().map(f64::from).collect::<Mean>();
 		Option::<f64>::from(mean)
 			// clamping to [0; 1] to account for possible floating point inaccuracies
 			.map(|value| value.max(0.0).min(100.0))
 			.map(WeightedScore)
-			.map(Score::from)
+			.map(i64::from)
 	}
 }

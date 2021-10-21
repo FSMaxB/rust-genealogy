@@ -1,19 +1,19 @@
 use crate::post::Post;
 use std::num::NonZeroUsize;
-use std::sync::Arc;
+use std::rc::Rc;
 
 pub mod recommender;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Recommendation {
-	post: Arc<Post>,
-	recommended_posts: Vec<Arc<Post>>,
+	post: Rc<Post>,
+	recommended_posts: Vec<Rc<Post>>,
 }
 
 impl Recommendation {
 	pub fn new(
-		post: Arc<Post>,
-		sorted_recommendations: impl Iterator<Item = Arc<Post>>,
+		post: Rc<Post>,
+		sorted_recommendations: impl Iterator<Item = Rc<Post>>,
 		per_post: NonZeroUsize,
 	) -> Recommendation {
 		let recommendations = sorted_recommendations.take(per_post.get()).collect();
@@ -23,11 +23,11 @@ impl Recommendation {
 		}
 	}
 
-	pub fn post(&self) -> &Arc<Post> {
+	pub fn post(&self) -> &Rc<Post> {
 		&self.post
 	}
 
-	pub fn recommended_posts(&self) -> &Vec<Arc<Post>> {
+	pub fn recommended_posts(&self) -> &Vec<Rc<Post>> {
 		&self.recommended_posts
 	}
 }

@@ -76,108 +76,147 @@ impl Ord for RelationSortedByPostThenByDecreasingScore {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::genealogy::score::Score;
 	use crate::post::test::PostTestHelper;
 	use crate::post::Post;
-	use lazy_static::lazy_static;
 	use literally::hset;
-	use std::sync::Arc;
+	use std::rc::Rc;
 
-	lazy_static! {
-		static ref POST_A: Arc<Post> = Arc::new(PostTestHelper::create_with_slug("a").unwrap());
-		static ref POST_B: Arc<Post> = Arc::new(PostTestHelper::create_with_slug("b").unwrap());
-		static ref POST_C: Arc<Post> = Arc::new(PostTestHelper::create_with_slug("c").unwrap());
-		static ref RELATION_AB: Relation =
-			RelationTestHelper::create(POST_A.clone(), POST_B.clone(), 60.try_into().unwrap());
-		static ref RELATION_AC: Relation =
-			RelationTestHelper::create(POST_A.clone(), POST_C.clone(), 40.try_into().unwrap());
-		static ref RELATION_BA: Relation =
-			RelationTestHelper::create(POST_B.clone(), POST_A.clone(), 50.try_into().unwrap());
-		static ref RELATION_BC: Relation =
-			RelationTestHelper::create(POST_B.clone(), POST_C.clone(), 70.try_into().unwrap());
-		static ref RELATION_CA: Relation =
-			RelationTestHelper::create(POST_C.clone(), POST_A.clone(), 80.try_into().unwrap());
-		static ref RELATION_CB: Relation =
-			RelationTestHelper::create(POST_C.clone(), POST_B.clone(), 60.try_into().unwrap());
+	struct RecommenderTests {
+		post_a: Rc<Post>,
+		post_b: Rc<Post>,
+		post_c: Rc<Post>,
+		relation_ab: Relation,
+		relation_ac: Relation,
+		relation_ba: Relation,
+		relation_bc: Relation,
+		relation_ca: Relation,
+		relation_cb: Relation,
+	}
+
+	impl RecommenderTests {
+		fn new() -> Result<Self, Exception> {
+			let post_a = Rc::new(PostTestHelper::create_with_slug("a")?);
+			let post_b = Rc::new(PostTestHelper::create_with_slug("b")?);
+			let post_c = Rc::new(PostTestHelper::create_with_slug("c")?);
+			Ok(Self {
+				post_a: post_a.clone(),
+				post_b: post_b.clone(),
+				post_c: post_c.clone(),
+				relation_ab: RelationTestHelper::create(post_a.clone(), post_b.clone(), 60)?,
+				relation_ac: RelationTestHelper::create(post_a.clone(), post_c.clone(), 40)?,
+				relation_ba: RelationTestHelper::create(post_b.clone(), post_a.clone(), 50)?,
+				relation_bc: RelationTestHelper::create(post_b.clone(), post_c.clone(), 70)?,
+				relation_ca: RelationTestHelper::create(post_c.clone(), post_a.clone(), 80)?,
+				relation_cb: RelationTestHelper::create(post_c.clone(), post_b.clone(), 60)?,
+			})
+		}
+
+		fn for_one_post_one_relation(&self) -> Result<(), Exception> {
+			let recommendations = Recommender::recommend(
+				vec![self.relation_ac.clone()].into_iter().map(Ok),
+				NonZeroUsize::new(1).unwrap(),
+			)?
+			.collect::<HashSet<_>>();
+			let expected_recommendations =
+				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_c.clone()]}};
+			assert_eq!(expected_recommendations, recommendations);
+			Ok(())
+		}
+
+		fn for_one_post_two_relations(&self) -> Result<(), Exception> {
+			let recommendations = Recommender::recommend(
+				vec![self.relation_ab.clone(), self.relation_ac.clone()]
+					.into_iter()
+					.map(Ok),
+				NonZeroUsize::new(1).unwrap(),
+			)?
+			.collect::<HashSet<_>>();
+			let expected_recommendations =
+				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_b.clone()]}};
+			assert_eq!(expected_recommendations, recommendations);
+			Ok(())
+		}
+
+		fn for_many_posts_one_relation_each(&self) -> Result<(), Exception> {
+			let recommendations = Recommender::recommend(
+				vec![
+					self.relation_ac.clone(),
+					self.relation_bc.clone(),
+					self.relation_cb.clone(),
+				]
+				.into_iter()
+				.map(Ok),
+				NonZeroUsize::new(1).unwrap(),
+			)?
+			.collect::<HashSet<_>>();
+			let expected_recommendations = hset! {
+				Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_c.clone()]},
+				Recommendation {post: self.post_b.clone(), recommended_posts: vec![self.post_c.clone()]},
+				Recommendation {post: self.post_c.clone(), recommended_posts: vec![self.post_b.clone()]},
+			};
+			assert_eq!(expected_recommendations, recommendations);
+			Ok(())
+		}
+
+		fn for_many_posts_two_relations_each(&self) -> Result<(), Exception> {
+			let recommendations = Recommender::recommend(
+				vec![
+					self.relation_ab.clone(),
+					self.relation_ac.clone(),
+					self.relation_ba.clone(),
+					self.relation_bc.clone(),
+					self.relation_ca.clone(),
+					self.relation_cb.clone(),
+				]
+				.into_iter()
+				.map(Ok),
+				NonZeroUsize::new(1).unwrap(),
+			)?
+			.collect::<HashSet<_>>();
+			let expected_recommendations = hset! {
+				Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_b.clone()]},
+				Recommendation {post: self.post_b.clone(), recommended_posts: vec![self.post_c.clone()]},
+				Recommendation {post: self.post_c.clone(), recommended_posts: vec![self.post_a.clone()]},
+			};
+			assert_eq!(expected_recommendations, recommendations);
+			Ok(())
+		}
 	}
 
 	struct RelationTestHelper;
 
 	impl RelationTestHelper {
 		// WTF: Why a static method just to call the constructor with the exact same arguments. WTF x2
-		fn create(post1: Arc<Post>, post2: Arc<Post>, score: Score) -> Relation {
-			Relation { post1, post2, score }
+		fn create(post1: Rc<Post>, post2: Rc<Post>, score: i64) -> Result<Relation, Exception> {
+			Relation::new(post1, post2, score)
 		}
 	}
 
 	#[test]
 	fn for_one_post_one_relation() {
-		let recommendations = Recommender::recommend(
-			vec![RELATION_AC.clone()].into_iter().map(Ok),
-			NonZeroUsize::new(1).unwrap(),
-		)
-		.unwrap()
-		.collect::<HashSet<_>>();
-		let expected_recommendations =
-			hset! {Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_C.clone()]}};
-		assert_eq!(expected_recommendations, recommendations);
+		RecommenderTests::new().unwrap().for_one_post_one_relation().unwrap();
 	}
 
 	#[ignore]
 	#[test]
 	fn for_one_post_two_relations() {
-		let recommendations = Recommender::recommend(
-			vec![RELATION_AB.clone(), RELATION_AC.clone()].into_iter().map(Ok),
-			NonZeroUsize::new(1).unwrap(),
-		)
-		.unwrap()
-		.collect::<HashSet<_>>();
-		let expected_recommendations =
-			hset! {Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_B.clone()]}};
-		assert_eq!(expected_recommendations, recommendations);
+		RecommenderTests::new().unwrap().for_one_post_two_relations().unwrap();
 	}
 
 	#[test]
 	fn for_many_posts_one_relation_each() {
-		let recommendations = Recommender::recommend(
-			vec![RELATION_AC.clone(), RELATION_BC.clone(), RELATION_CB.clone()]
-				.into_iter()
-				.map(Ok),
-			NonZeroUsize::new(1).unwrap(),
-		)
-		.unwrap()
-		.collect::<HashSet<_>>();
-		let expected_recommendations = hset! {
-			Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_C.clone()]},
-			Recommendation {post: POST_B.clone(), recommended_posts: vec![POST_C.clone()]},
-			Recommendation {post: POST_C.clone(), recommended_posts: vec![POST_B.clone()]},
-		};
-		assert_eq!(expected_recommendations, recommendations);
+		RecommenderTests::new()
+			.unwrap()
+			.for_many_posts_one_relation_each()
+			.unwrap();
 	}
 
 	#[ignore]
 	#[test]
 	fn for_many_posts_two_relations_each() {
-		let recommendations = Recommender::recommend(
-			vec![
-				RELATION_AB.clone(),
-				RELATION_AC.clone(),
-				RELATION_BA.clone(),
-				RELATION_BC.clone(),
-				RELATION_CA.clone(),
-				RELATION_CB.clone(),
-			]
-			.into_iter()
-			.map(Ok),
-			NonZeroUsize::new(1).unwrap(),
-		)
-		.unwrap()
-		.collect::<HashSet<_>>();
-		let expected_recommendations = hset! {
-			Recommendation {post: POST_A.clone(), recommended_posts: vec![POST_B.clone()]},
-			Recommendation {post: POST_B.clone(), recommended_posts: vec![POST_C.clone()]},
-			Recommendation {post: POST_C.clone(), recommended_posts: vec![POST_A.clone()]},
-		};
-		assert_eq!(expected_recommendations, recommendations);
+		RecommenderTests::new()
+			.unwrap()
+			.for_many_posts_two_relations_each()
+			.unwrap();
 	}
 }

@@ -96,17 +96,38 @@ impl Post {
 pub mod test {
 	use super::*;
 	use crate::helpers::exception::Exception;
+	use crate::helpers::time::LocalDateExtension;
+	use crate::stream_of;
 
-	pub fn post_with_slug(slug: &str) -> Result<Post, Exception> {
-		let article = Article::new(
-			Title::new("title")?,
-			Tag::from("[Tag]")?,
-			chrono::offset::Local::today().naive_local(),
-			Description::new("description")?,
-			Slug::new(slug.to_string())?,
-			None,
-			Box::new(|| std::iter::once(Ok::<_, Exception>("".to_string())).into()),
-		);
-		Ok(Post::Article(article))
+	/// ```java
+	/// public class PostTestHelper {
+	/// ```
+	pub struct PostTestHelper;
+
+	impl PostTestHelper {
+		/// ```java
+		/// public static Post createWithSlug(String slug) {
+		///		return new Article(
+		///				new Title("Title"),
+		///				Tag.from("[Tag]"),
+		///				LocalDate.now(),
+		///				new Description("description"),
+		///				new Slug(slug),
+		///				Optional.empty(),
+		///				() -> Stream.of(""));
+		///	}
+		/// ```
+		pub fn create_with_slug(slug: &str) -> Result<Post, Exception> {
+			Ok(Article::new(
+				Title::new("Title")?,
+				Tag::from("[Tag]")?,
+				LocalDate::today(),
+				Description::new("description")?,
+				Slug::new(slug.into())?,
+				None,
+				Box::new(|| stream_of!("".to_string())),
+			)
+			.into())
+		}
 	}
 }

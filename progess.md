@@ -61,7 +61,7 @@
   * DescriptionTests.java [x]
   * factories [ ]
     * ArticleFactoryTests.java [ ]
-  * PostTestHelper.java [ ]
+  * PostTestHelper.java [x]
   * SlugTests.java [x]
   * TagTests.java [x]
   * TitleTests.java [x]

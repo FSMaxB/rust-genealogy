@@ -59,7 +59,7 @@ mod test {
 	use crate::genealogist::relation_type::RelationType;
 	use crate::genealogy::score::score;
 	use crate::genealogy::weight::{weight, Weight};
-	use crate::post::test::post_with_slug;
+	use crate::post::test::PostTestHelper;
 	use lazy_static::lazy_static;
 	use literally::hmap;
 	use std::convert::TryInto;
@@ -144,8 +144,8 @@ mod test {
 	}
 
 	fn test_posts() -> (Arc<Post>, Arc<Post>) {
-		let post_a = post_with_slug("a").unwrap();
-		let post_b = post_with_slug("b").unwrap();
+		let post_a = PostTestHelper::create_with_slug("a").unwrap();
+		let post_b = PostTestHelper::create_with_slug("b").unwrap();
 		(Arc::new(post_a), Arc::new(post_b))
 	}
 }

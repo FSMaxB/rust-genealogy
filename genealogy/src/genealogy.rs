@@ -81,7 +81,7 @@ mod test {
 	use crate::genealogist::relation_type::RelationType;
 	use crate::genealogy::score::{score, Score, WeightedScore};
 	use crate::genealogy::weight::{weight, Weight};
-	use crate::post::test::post_with_slug;
+	use crate::post::test::PostTestHelper;
 	use lazy_static::lazy_static;
 	use literally::{hmap, hset};
 	use std::collections::HashSet;
@@ -89,9 +89,9 @@ mod test {
 	lazy_static! {
 		static ref TAG_WEIGHT: Weight = weight(1.0);
 		static ref LINK_WEIGHT: Weight = weight(0.75);
-		static ref POST_A: Arc<Post> = post_with_slug("a").unwrap().into();
-		static ref POST_B: Arc<Post> = post_with_slug("b").unwrap().into();
-		static ref POST_C: Arc<Post> = post_with_slug("c").unwrap().into();
+		static ref POST_A: Arc<Post> = PostTestHelper::create_with_slug("a").unwrap().into();
+		static ref POST_B: Arc<Post> = PostTestHelper::create_with_slug("b").unwrap().into();
+		static ref POST_C: Arc<Post> = PostTestHelper::create_with_slug("c").unwrap().into();
 		static ref TAG_RELATION: RelationType = RelationType::from_value("tag".to_string()).unwrap();
 		static ref LINK_RELATION: RelationType = RelationType::from_value("link".to_string()).unwrap();
 		static ref TAG_GENEALOGIST: Arc<dyn Genealogist + Send + Sync> =

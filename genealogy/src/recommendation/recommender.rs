@@ -77,16 +77,16 @@ impl Ord for RelationSortedByPostThenByDecreasingScore {
 mod test {
 	use super::*;
 	use crate::genealogy::score::Score;
-	use crate::post::test::post_with_slug;
+	use crate::post::test::PostTestHelper;
 	use crate::post::Post;
 	use lazy_static::lazy_static;
 	use literally::hset;
 	use std::sync::Arc;
 
 	lazy_static! {
-		static ref POST_A: Arc<Post> = Arc::new(post_with_slug("a").unwrap());
-		static ref POST_B: Arc<Post> = Arc::new(post_with_slug("b").unwrap());
-		static ref POST_C: Arc<Post> = Arc::new(post_with_slug("c").unwrap());
+		static ref POST_A: Arc<Post> = Arc::new(PostTestHelper::create_with_slug("a").unwrap());
+		static ref POST_B: Arc<Post> = Arc::new(PostTestHelper::create_with_slug("b").unwrap());
+		static ref POST_C: Arc<Post> = Arc::new(PostTestHelper::create_with_slug("c").unwrap());
 		static ref RELATION_AB: Relation =
 			RelationTestHelper::create(POST_A.clone(), POST_B.clone(), 60.try_into().unwrap());
 		static ref RELATION_AC: Relation =

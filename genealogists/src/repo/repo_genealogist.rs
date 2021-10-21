@@ -16,7 +16,7 @@ impl Genealogist for RepoGenealogist {
 		Ok(TypedRelation {
 			post1,
 			post2,
-			relation_type: RelationType::from_value("repo".to_string())?,
+			relation_type: RelationType::new("repo".to_string())?,
 			score,
 		})
 	}

@@ -11,7 +11,7 @@ use std::sync::Arc;
 pub struct SillyGenealogist;
 
 lazy_static! {
-	static ref TYPE: RelationType = RelationType::from_value("silly".to_string()).unwrap();
+	static ref TYPE: RelationType = RelationType::new("silly".to_string()).unwrap();
 }
 
 impl Genealogist for SillyGenealogist {

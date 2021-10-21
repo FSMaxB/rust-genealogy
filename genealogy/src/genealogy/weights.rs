@@ -40,8 +40,8 @@ mod test {
 	use literally::hmap;
 
 	lazy_static! {
-		static ref TAG_TYPE: RelationType = RelationType::from_value("tag".to_string()).unwrap();
-		static ref LIST_TYPE: RelationType = RelationType::from_value("list".to_string()).unwrap();
+		static ref TAG_TYPE: RelationType = RelationType::new("tag".to_string()).unwrap();
+		static ref LIST_TYPE: RelationType = RelationType::new("list".to_string()).unwrap();
 	}
 
 	// NOTE: The following tests are omitted because there is no `null` in rust:

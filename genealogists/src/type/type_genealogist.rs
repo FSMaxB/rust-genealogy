@@ -22,7 +22,7 @@ impl Genealogist for TypeGenealogist {
 		Ok(TypedRelation {
 			post1,
 			post2,
-			relation_type: RelationType::from_value("type".to_string())?,
+			relation_type: RelationType::new("type".to_string())?,
 			score,
 		})
 	}

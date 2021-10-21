@@ -92,8 +92,8 @@ mod test {
 		static ref POST_A: Arc<Post> = PostTestHelper::create_with_slug("a").unwrap().into();
 		static ref POST_B: Arc<Post> = PostTestHelper::create_with_slug("b").unwrap().into();
 		static ref POST_C: Arc<Post> = PostTestHelper::create_with_slug("c").unwrap().into();
-		static ref TAG_RELATION: RelationType = RelationType::from_value("tag".to_string()).unwrap();
-		static ref LINK_RELATION: RelationType = RelationType::from_value("link".to_string()).unwrap();
+		static ref TAG_RELATION: RelationType = RelationType::new("tag".to_string()).unwrap();
+		static ref LINK_RELATION: RelationType = RelationType::new("link".to_string()).unwrap();
 		static ref TAG_GENEALOGIST: Arc<dyn Genealogist + Send + Sync> =
 			Arc::new(|post1: Arc<Post>, post2: Arc<Post>| {
 				let score = tag_score(&post1, &post2);

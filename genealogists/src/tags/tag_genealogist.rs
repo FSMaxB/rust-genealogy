@@ -10,7 +10,7 @@ use std::sync::Arc;
 pub struct TagGenealogist;
 
 lazy_static! {
-	static ref TYPE: RelationType = RelationType::from_value("tag".to_string()).unwrap();
+	static ref TYPE: RelationType = RelationType::new("tag".to_string()).unwrap();
 }
 
 impl Genealogist for TagGenealogist {

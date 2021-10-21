@@ -67,8 +67,8 @@ mod test {
 	lazy_static! {
 		static ref TAG_WEIGHT: Weight = weight(1.0);
 		static ref LINK_WEIGHT: Weight = weight(1.0);
-		static ref TAG_RELATION: RelationType = RelationType::from_value("tag".to_string()).unwrap();
-		static ref LINK_RELATION: RelationType = RelationType::from_value("link".to_string()).unwrap();
+		static ref TAG_RELATION: RelationType = RelationType::new("tag".to_string()).unwrap();
+		static ref LINK_RELATION: RelationType = RelationType::new("link".to_string()).unwrap();
 		static ref WEIGHTS: Weights = Weights::new(
 			hmap! {
 				TAG_RELATION.clone() => *TAG_WEIGHT,

@@ -64,7 +64,7 @@
   * PostTestHelper.java [ ]
   * SlugTests.java [x]
   * TagTests.java [x]
-  * TitleTests.java [ ]
+  * TitleTests.java [x]
 * recommendation [ ]
   * RecommenderTests.java [ ]
 * TextParserTests.java [x]

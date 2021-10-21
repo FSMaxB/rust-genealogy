@@ -10,8 +10,6 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 pub mod relation;
-pub mod score;
-pub mod weight;
 pub mod weights;
 
 pub struct Genealogy {
@@ -79,8 +77,6 @@ fn infer_typed_relations(
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
-	use crate::genealogy::score::WeightedScore;
-	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::PostTestHelper;
 	use literally::{hmap, hset};
 	use std::collections::HashSet;
@@ -117,11 +113,11 @@ mod test {
 					}
 				}),
 				weights: Rc::new(Weights::new(
-					hmap! {
+					&hmap! {
 						tag_relation.clone() => posts.tag_weight,
 						link_relation.clone() => posts.link_weight,
 					},
-					weight(0.5),
+					0.5,
 				)),
 			})
 		}
@@ -138,12 +134,12 @@ mod test {
 				Relation {
 					post1: self.posts.a.clone(),
 					post2: self.posts.b.clone(),
-					score: self.posts.weighted_tag_score(&self.posts.a, &self.posts.b).into(),
+					score: self.posts.weighted_tag_score(&self.posts.a, &self.posts.b) as i64,
 				},
 				Relation {
 					post1: self.posts.b.clone(),
 					post2: self.posts.a.clone(),
-					score: self.posts.weighted_tag_score(&self.posts.b, &self.posts.a).into(),
+					score: self.posts.weighted_tag_score(&self.posts.b, &self.posts.a) as i64,
 				},
 			};
 			assert_eq!(expected_relations, relations);
@@ -162,12 +158,12 @@ mod test {
 				Relation {
 					post1: self.posts.a.clone(),
 					post2: self.posts.b.clone(),
-					score: self.posts.weighted_link_score(&self.posts.a, &self.posts.b).into(),
+					score: self.posts.weighted_link_score(&self.posts.a, &self.posts.b) as i64,
 				},
 				Relation {
 					post1: self.posts.b.clone(),
 					post2: self.posts.a.clone(),
-					score: self.posts.weighted_link_score(&self.posts.b, &self.posts.a).into(),
+					score: self.posts.weighted_link_score(&self.posts.b, &self.posts.a) as i64,
 				},
 			};
 			assert_eq!(expected_relations, relations);
@@ -193,7 +189,7 @@ mod test {
 			]
 			.into_iter()
 			.map(|(post1, post2)| {
-				let score = self.posts.weighted_tag_score(&post1, &post2).into();
+				let score = self.posts.weighted_tag_score(&post1, &post2) as i64;
 				Relation::new(post1, post2, score).unwrap()
 			})
 			.collect::<HashSet<_>>();
@@ -235,8 +231,8 @@ mod test {
 		a: Rc<Post>,
 		b: Rc<Post>,
 		c: Rc<Post>,
-		tag_weight: Weight,
-		link_weight: Weight,
+		tag_weight: f64,
+		link_weight: f64,
 	}
 
 	impl Posts {
@@ -245,8 +241,8 @@ mod test {
 				a: PostTestHelper::create_with_slug("a")?.into(),
 				b: PostTestHelper::create_with_slug("b")?.into(),
 				c: PostTestHelper::create_with_slug("c")?.into(),
-				tag_weight: weight(1.0),
-				link_weight: weight(0.75),
+				tag_weight: 1.0,
+				link_weight: 0.75,
 			})
 		}
 
@@ -270,8 +266,8 @@ mod test {
 			}
 		}
 
-		fn weighted_tag_score(&self, post1: &Post, post2: &Post) -> WeightedScore {
-			self.tag_score(post1, post2) * self.tag_weight
+		fn weighted_tag_score(&self, post1: &Post, post2: &Post) -> f64 {
+			(self.tag_score(post1, post2) as f64) * self.tag_weight
 		}
 
 		fn link_score(&self, post1: &Post, post2: &Post) -> i64 {
@@ -294,18 +290,12 @@ mod test {
 			}
 		}
 
-		fn weighted_link_score(&self, post1: &Post, post2: &Post) -> WeightedScore {
-			self.link_score(post1, post2) * self.link_weight
+		fn weighted_link_score(&self, post1: &Post, post2: &Post) -> f64 {
+			(self.link_score(post1, post2) as f64) * self.link_weight
 		}
 
 		fn link_and_tag_score(&self, post1: &Post, post2: &Post) -> i64 {
-			vec![
-				self.weighted_tag_score(post1, post2),
-				self.weighted_link_score(post1, post2),
-			]
-			.into_iter()
-			.collect::<Option<i64>>()
-			.unwrap()
+			((self.weighted_tag_score(post1, post2) + self.weighted_link_score(post1, post2)) / 2.0) as i64
 		}
 	}
 

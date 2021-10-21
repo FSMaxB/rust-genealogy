@@ -1,3 +1,14 @@
+pub enum List {}
+
+impl List {
+	pub fn copy_of<Element>(list: &[Element]) -> Vec<Element>
+	where
+		Element: Clone,
+	{
+		list.iter().cloned().collect()
+	}
+}
+
 #[macro_export]
 macro_rules! list_of {
 	() => {

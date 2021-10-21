@@ -1,3 +1,4 @@
+use crate::helpers::set::Set;
 use crate::helpers::time::LocalDate;
 use crate::post::content::Content;
 use crate::post::description::Description;
@@ -75,7 +76,7 @@ impl Article {
 	///	}
 	/// ```
 	pub fn tags(&self) -> HashSet<Tag> {
-		self.tags.clone()
+		Set::copy_of(&self.tags)
 	}
 }
 

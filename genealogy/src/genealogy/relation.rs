@@ -46,7 +46,8 @@ impl Relation {
 			.split_pair();
 		// NOTE: Replacement for `collectEqual`
 		let posts_iterator = posts_iterator.equal();
-		let score_iterator = score_iterator.map(|(score, relation_type)| score * weights.weight_of(relation_type));
+		let score_iterator =
+			score_iterator.map(|(score, relation_type)| (score as f64) * weights.weight_of(relation_type));
 
 		let (posts, mean) = posts_iterator
 			.zip(score_iterator)
@@ -71,13 +72,12 @@ impl Relation {
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
-	use crate::genealogy::weight::{weight, Weight};
 	use crate::post::test::PostTestHelper;
 	use literally::hmap;
 
 	struct RelationTests {
-		tag_weight: Weight,
-		link_weight: Weight,
+		tag_weight: f64,
+		link_weight: f64,
 		tag_relation: RelationType,
 		link_relation: RelationType,
 		weights: Weights,
@@ -85,8 +85,8 @@ mod test {
 
 	impl RelationTests {
 		fn new() -> Result<RelationTests, Exception> {
-			let tag_weight = weight(1.0);
-			let link_weight = weight(1.0);
+			let tag_weight = 1.0;
+			let link_weight = 1.0;
 			let tag_relation = RelationType::new("tag".to_string())?;
 			let link_relation = RelationType::new("link".to_string())?;
 			Ok(Self {
@@ -95,11 +95,11 @@ mod test {
 				tag_relation: tag_relation.clone(),
 				link_relation: link_relation.clone(),
 				weights: Weights::new(
-					hmap! {
+					&hmap! {
 										tag_relation.clone() => tag_weight,
 										link_relation.clone() => link_weight,
 					},
-					weight(0.5),
+					0.5,
 				),
 			})
 		}
@@ -141,10 +141,7 @@ mod test {
 			];
 
 			let relation = Relation::aggregate(typed_relations.iter(), &self.weights)?;
-			let expected_score = vec![40 * self.tag_weight, 80 * self.link_weight]
-				.into_iter()
-				.collect::<Option<i64>>()
-				.unwrap();
+			let expected_score = ((40.0 * self.tag_weight + 80.0 * self.link_weight) / 2.0) as i64;
 			assert_eq!(expected_score, relation.score);
 			Ok(())
 		}

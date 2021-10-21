@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
 use crate::post::Post;
 use std::rc::Rc;
@@ -54,6 +55,6 @@ impl Recommendation {
 	///	}
 	/// ```
 	pub fn recommended_posts(&self) -> Vec<Rc<Post>> {
-		self.recommended_posts.clone()
+		List::copy_of(&self.recommended_posts)
 	}
 }

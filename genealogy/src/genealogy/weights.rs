@@ -1,40 +1,51 @@
 use crate::genealogist::relation_type::RelationType;
-use crate::genealogy::weight::Weight;
+use crate::helpers::map::{Map, MapExtension};
+use crate::map_of;
 use std::collections::HashMap;
 
+/// ```java
+/// public class Weights {
+///
+/// 	private final Map<RelationType, Double> weights;
+/// 	private final double defaultWeight;
+/// ```
 #[derive(Debug)]
 pub struct Weights {
-	weights: HashMap<RelationType, Weight>,
-	default_weight: Weight,
+	weights: HashMap<RelationType, f64>,
+	default_weight: f64,
 }
 
 impl Weights {
-	pub fn new(weights: HashMap<RelationType, Weight>, default_weight: Weight) -> Self {
+	/// ```java
+	/// public Weights(Map<RelationType, Double> weights, double defaultWeight) {
+	///		this.weights = Map.copyOf(weights);
+	///		this.defaultWeight = defaultWeight;
+	///	}
+	/// ```
+	pub fn new(weights: &HashMap<RelationType, f64>, default_weight: f64) -> Self {
 		Self {
-			weights,
+			weights: Map::copy_of(weights),
 			default_weight,
 		}
 	}
 
+	/// ```java
+	/// public static Weights allEqual() {
+	///		return new Weights(Map.of(), 1);
+	///	}
+	/// ```
 	pub fn all_equal() -> Self {
-		Self {
-			weights: Default::default(),
-			default_weight: Weight::try_from(1.0).unwrap(),
-		}
+		Weights::new(&map_of!(), 1.0)
 	}
 
-	pub fn weight_of(&self, genealogist_type: &RelationType) -> Weight {
-		self.weights
-			.get(genealogist_type)
-			.copied()
-			.unwrap_or(self.default_weight)
+	pub fn weight_of(&self, genealogist_type: &RelationType) -> f64 {
+		self.weights.get_or_default(genealogist_type, self.default_weight)
 	}
 }
 
 #[cfg(test)]
 mod test {
 	use crate::genealogist::relation_type::RelationType;
-	use crate::genealogy::weight::weight;
 	use crate::genealogy::weights::Weights;
 	use lazy_static::lazy_static;
 	use literally::hmap;
@@ -50,13 +61,13 @@ mod test {
 
 	#[test]
 	fn known_relation_type_returns_weight() {
-		let weights = Weights::new(hmap! {TAG_TYPE.clone() => weight(0.42)}, weight(0.5));
+		let weights = Weights::new(&hmap! {TAG_TYPE.clone() => 0.42}, 0.5);
 		assert_eq!(0.42, weights.weight_of(&TAG_TYPE));
 	}
 
 	#[test]
 	fn unknown_relation_type_returns_default_weight() {
-		let weights = Weights::new(hmap! {TAG_TYPE.clone() => weight(0.42)}, weight(0.5));
+		let weights = Weights::new(&hmap! {TAG_TYPE.clone() => 0.42}, 0.5);
 		assert_eq!(0.5, weights.weight_of(&LIST_TYPE));
 	}
 }

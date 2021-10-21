@@ -91,112 +91,170 @@ impl Relation {
 	}
 }
 
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
+	use crate::helpers::test::assert_that;
 	use crate::post::test::PostTestHelper;
-	use literally::hmap;
+	use crate::{map_of, stream_of};
 
+	/// ```java
+	/// class RelationTests {
+	/// ```
 	struct RelationTests {
-		tag_weight: f64,
-		link_weight: f64,
+		post_a: Post,
+		post_b: Post,
 		tag_relation: RelationType,
 		link_relation: RelationType,
 		weights: Weights,
 	}
 
 	impl RelationTests {
+		/// ```java
+		/// private static final double TAG_WEIGHT = 1.0;
+		/// ```
+		const TAG_WEIGHT: f64 = 1.0;
+		/// ```java
+		///	private static final double LINK_WEIGHT = 0.25;
+		/// ```
+		const LINK_WEIGHT: f64 = 1.0;
+
+		/// ```java
+		/// private final Post postA = PostTestHelper.createWithSlug("a");
+		///	private final Post postB = PostTestHelper.createWithSlug("b");
+		///
+		///	private final RelationType tagRelation = new RelationType("tag");
+		///	private final RelationType linkRelation = new RelationType("link");
+		///
+		///	private final Weights weights = new Weights(
+		///			Map.of(
+		///					tagRelation, TAG_WEIGHT,
+		///					linkRelation, LINK_WEIGHT),
+		///			0.5);
+		/// ```
 		fn new() -> Result<RelationTests, Exception> {
-			let tag_weight = 1.0;
-			let link_weight = 1.0;
-			let tag_relation = RelationType::new("tag".to_string())?;
-			let link_relation = RelationType::new("link".to_string())?;
+			let tag_relation = RelationType::new("tag".into())?;
+			let link_relation = RelationType::new("link".into())?;
 			Ok(Self {
-				tag_weight,
-				link_weight,
+				post_a: PostTestHelper::create_with_slug("a")?,
+				post_b: PostTestHelper::create_with_slug("b")?,
 				tag_relation: tag_relation.clone(),
 				link_relation: link_relation.clone(),
 				weights: Weights::new(
-					&hmap! {
-						tag_relation => tag_weight,
-						link_relation => link_weight,
-					},
+					&map_of!(tag_relation, Self::TAG_WEIGHT, link_relation, Self::LINK_WEIGHT,),
 					0.5,
 				),
 			})
 		}
 
-		fn single_typed_relation_weight_one_same_posts_and_score(&self) -> Result<(), Exception> {
+		/// ```java
+		/// 	@Test
+		///	void singleTypedRelation_weightOne_samePostsAndScore() {
+		///		int score = 60;
+		///		var typedRelations = Stream.of(
+		///				new TypedRelation(postA, postB, tagRelation, score)
+		///		);
+		///
+		///		var relation = Relation.aggregate(typedRelations, weights);
+		///
+		///		assertThat(relation.post1()).isEqualTo(postA);
+		///		assertThat(relation.post2()).isEqualTo(postB);
+		///		assertThat(relation.score()).isEqualTo(score);
+		///	}
+		/// ```
+		pub(super) fn single_typed_relation__weight_one__same_posts_and_score(&self) -> Result<(), Exception> {
 			let score = 60;
-			let (post_a, post_b) = test_posts();
-			let typed_relations = [TypedRelation::new(
-				post_a.clone(),
-				post_b.clone(),
+			let typed_relations = stream_of!(TypedRelation::new(
+				self.post_a.clone(),
+				self.post_b.clone(),
 				self.tag_relation.clone(),
 				score,
-			)?];
+			)?);
 
-			let relation = Relation::aggregate(Stream::of(typed_relations), self.weights.clone())?;
-			assert_eq!(post_a, relation.post1);
-			assert_eq!(post_b, relation.post2);
-			assert_eq!(score, relation.score);
+			let relation = Relation::aggregate(typed_relations, self.weights.clone())?;
+
+			assert_that(&relation.post1).is_equal_to(&self.post_a);
+			assert_that(&relation.post2).is_equal_to(&self.post_b);
+			assert_that(relation.score).is_equal_to(score);
 			Ok(())
 		}
 
-		fn two_typed_relations_with_one_averaged_score(&self) -> Result<(), Exception> {
-			let (post_a, post_b) = test_posts();
-			let typed_relations = [
-				TypedRelation::new(post_a.clone(), post_b.clone(), self.tag_relation.clone(), 40)?,
-				TypedRelation::new(post_a, post_b, self.tag_relation.clone(), 80)?,
-			];
+		/// ```java
+		/// @Test
+		///	void twoTypedRelation_weightOne_averagedScore() {
+		///		var typedRelations = Stream.of(
+		///				new TypedRelation(postA, postB, tagRelation, 40),
+		///				new TypedRelation(postA, postB, tagRelation, 80)
+		///		);
+		///
+		///		var relation = Relation.aggregate(typedRelations, weights);
+		///
+		///		assertThat(relation.score()).isEqualTo((40 + 80) / 2);
+		///	}
+		/// ```
+		pub(super) fn two_typed_relations__weight_one__averaged_score(&self) -> Result<(), Exception> {
+			let typed_relations = stream_of!(
+				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.tag_relation.clone(), 40)?,
+				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.tag_relation.clone(), 80)?,
+			);
 
-			let relation = Relation::aggregate(Stream::of(typed_relations), self.weights.clone())?;
-			assert_eq!((40 + 80) / 2, relation.score);
+			let relation = Relation::aggregate(typed_relations, self.weights.clone())?;
+
+			assert_that(relation.score).is_equal_to((40 + 80) / 2);
 			Ok(())
 		}
 
-		fn two_typed_relations_differing_weight_weighted_score(&self) -> Result<(), Exception> {
-			let (post_a, post_b) = test_posts();
-			let typed_relations = [
-				TypedRelation::new(post_a.clone(), post_b.clone(), self.tag_relation.clone(), 40)?,
-				TypedRelation::new(post_a, post_b, self.link_relation.clone(), 80)?,
-			];
+		/// ```java
+		/// @Test
+		///	void twoTypedRelation_differingWeight_weightedScore() {
+		///		var typedRelations = Stream.of(
+		///				new TypedRelation(postA, postB, tagRelation, 40),
+		///				new TypedRelation(postA, postB, linkRelation, 80)
+		///		);
+		///
+		///		var relation = Relation.aggregate(typedRelations, weights);
+		///
+		///		double expectedScore = (40 * TAG_WEIGHT + 80 * LINK_WEIGHT) / 2;
+		///		assertThat(relation.score()).isEqualTo(round(expectedScore));
+		///	}
+		/// ```
+		pub(super) fn two_typed_relation__differing_weight__weighted_score(&self) -> Result<(), Exception> {
+			let typed_relations = stream_of!(
+				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.tag_relation.clone(), 40)?,
+				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.link_relation.clone(), 80)?,
+			);
 
-			let relation = Relation::aggregate(Stream::of(typed_relations), self.weights.clone())?;
-			let expected_score = ((40.0 * self.tag_weight + 80.0 * self.link_weight) / 2.0) as i64;
-			assert_eq!(expected_score, relation.score);
+			let relation = Relation::aggregate(typed_relations, self.weights.clone())?;
+
+			let expected_score = (40.0 * Self::TAG_WEIGHT + 80.0 * Self::LINK_WEIGHT) / 2.0;
+			assert_that(relation.score).is_equal_to(expected_score.round() as i64);
 			Ok(())
 		}
 	}
 
 	#[test]
-	fn single_typed_relation_weight_one_same_posts_and_score() {
+	fn single_typed_relation__weight_one__same_posts_and_score() {
 		RelationTests::new()
 			.unwrap()
-			.single_typed_relation_weight_one_same_posts_and_score()
+			.single_typed_relation__weight_one__same_posts_and_score()
 			.unwrap();
 	}
 
 	#[test]
-	fn two_typed_relations_with_one_averaged_score() {
+	fn two_typed_relations__weight_one__averaged_score() {
 		RelationTests::new()
 			.unwrap()
-			.two_typed_relations_with_one_averaged_score()
+			.two_typed_relations__weight_one__averaged_score()
 			.unwrap();
 	}
 
 	#[test]
-	fn two_typed_relations_differing_weight_weighted_score() {
+	fn two_typed_relation__differing_weight__weighted_score() {
 		RelationTests::new()
 			.unwrap()
-			.two_typed_relations_differing_weight_weighted_score()
+			.two_typed_relation__differing_weight__weighted_score()
 			.unwrap();
-	}
-
-	fn test_posts() -> (Post, Post) {
-		let post_a = PostTestHelper::create_with_slug("a").unwrap();
-		let post_b = PostTestHelper::create_with_slug("b").unwrap();
-		(post_a, post_b)
 	}
 }

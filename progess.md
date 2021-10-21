@@ -62,7 +62,7 @@
   * factories [ ]
     * ArticleFactoryTests.java [ ]
   * PostTestHelper.java [ ]
-  * SlugTests.java [ ]
+  * SlugTests.java [x]
   * TagTests.java [x]
   * TitleTests.java [ ]
 * recommendation [ ]

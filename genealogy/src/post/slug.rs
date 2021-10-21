@@ -34,12 +34,25 @@ impl Slug {
 	}
 }
 
+/// ```java
+/// class SlugTests {
+/// ```
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::helpers::test::assert_that;
 
+	/// ```java
+	/// @Test
+	///	void emptyText_exception() {
+	///		assertThatThrownBy(() -> new Slug("")).isInstanceOf(IllegalArgumentException.class);
+	///	}
+	/// ```
 	#[test]
-	fn empty_text_exception() {
-		assert!(matches!(Slug::new("".to_string()), Err(IllegalArgumentException(_))))
+	fn empty_text__exception() {
+		assert_that(|| Slug::new("".to_string()))
+			.throws()
+			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}
 }

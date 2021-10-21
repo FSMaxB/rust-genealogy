@@ -132,7 +132,7 @@ impl Utils {
 				left.replace(right);
 				Ok(())
 			},
-			|option| Ok(option),
+			Ok,
 		)
 	}
 }

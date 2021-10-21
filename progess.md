@@ -41,7 +41,7 @@
   * Repository.java [x]
   * Slug.java [x]
   * Tag.java [x]
-  * Talk.java [ ]
+  * Talk.java [x]
   * Title.java [x]
   * Video.java [x]
   * VideoSlug.java [x]

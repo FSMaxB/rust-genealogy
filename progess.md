@@ -23,7 +23,7 @@
   * TypedRelation.java [x]
 * genealogy [ ]
   * Genealogy.java [ ]
-  * Relation.java [ ]
+  * Relation.java [x]
   * Weights.java [x]
 * Main.java [ ]
 * post [ ]

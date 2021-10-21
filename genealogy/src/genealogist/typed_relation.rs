@@ -11,7 +11,7 @@ use crate::throw;
 ///		RelationType type,
 ///		long score) {
 /// ```
-#[derive(PartialEq, Eq, Hash)]
+#[derive(PartialEq, Eq, Hash, Clone)] // FIXME: Clone or Inner with Rc?
 pub struct TypedRelation {
 	pub post1: Post,
 	pub post2: Post,

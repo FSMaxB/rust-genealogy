@@ -7,6 +7,7 @@ pub mod iterator;
 pub mod list;
 pub mod map;
 pub mod mean;
+pub mod option_extensions;
 pub mod path;
 pub mod set;
 pub mod stream;

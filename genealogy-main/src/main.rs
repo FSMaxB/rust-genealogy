@@ -51,7 +51,7 @@ fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Pa
 	];
 	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());
-	Ok(Genealogy::new(posts, genealogists, Rc::new(Weights::all_equal())))
+	Ok(Genealogy::new(posts, genealogists, Weights::all_equal()))
 }
 
 fn markdown_files_in(folder: &Path) -> Result<impl Iterator<Item = Result<PathBuf, Exception>>, Exception> {

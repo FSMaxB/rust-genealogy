@@ -2,6 +2,7 @@ use crate::genealogist::relation_type::RelationType;
 use crate::helpers::map::{Map, MapExtension};
 use crate::map_of;
 use std::collections::HashMap;
+use std::rc::Rc;
 
 /// ```java
 /// public class Weights {
@@ -9,9 +10,9 @@ use std::collections::HashMap;
 /// 	private final Map<RelationType, Double> weights;
 /// 	private final double defaultWeight;
 /// ```
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Weights {
-	weights: HashMap<RelationType, f64>,
+	weights: Rc<HashMap<RelationType, f64>>,
 	default_weight: f64,
 }
 
@@ -24,7 +25,7 @@ impl Weights {
 	/// ```
 	pub fn new(weights: &HashMap<RelationType, f64>, default_weight: f64) -> Self {
 		Self {
-			weights: Map::copy_of(weights),
+			weights: Rc::new(Map::copy_of(weights)),
 			default_weight,
 		}
 	}

@@ -4,6 +4,7 @@ use crate::genealogy::relation::Relation;
 use crate::genealogy::weights::Weights;
 use crate::helpers::exception::Exception;
 use crate::helpers::iterator::result_iterator::ResultIteratorExtension;
+use crate::helpers::stream::Stream;
 use crate::post::Post;
 use resiter::Map;
 use std::collections::HashMap;
@@ -15,11 +16,11 @@ pub mod weights;
 pub struct Genealogy {
 	posts: Vec<Post>,
 	genealogists: Vec<Rc<dyn Genealogist>>,
-	weights: Rc<Weights>,
+	weights: Weights,
 }
 
 impl Genealogy {
-	pub fn new(posts: Vec<Post>, genealogists: Vec<Rc<dyn Genealogist>>, weights: Rc<Weights>) -> Self {
+	pub fn new(posts: Vec<Post>, genealogists: Vec<Rc<dyn Genealogist>>, weights: Weights) -> Self {
 		Self {
 			posts,
 			genealogists,
@@ -49,7 +50,7 @@ impl Genealogy {
 			.into_result_iterator()
 			.map_ok(|(_, value)| value)
 			.flat_map(|post_with_relations| post_with_relations.into_result_iterator().map_ok(|(_, value)| value))
-			.map_ok(move |relations| Relation::aggregate(relations.iter(), &weights))
+			.map_ok(move |relations| Relation::aggregate(Stream::of(relations), weights.clone()))
 			.map(|result| result.and_then(std::convert::identity))
 	}
 }
@@ -86,7 +87,7 @@ mod test {
 		posts: Posts,
 		tag_genealogist: Rc<dyn Genealogist>,
 		link_genealogist: Rc<dyn Genealogist>,
-		weights: Rc<Weights>,
+		weights: Weights,
 	}
 
 	impl GenealogyTests {
@@ -101,7 +102,7 @@ mod test {
 					let tag_relation = tag_relation.clone();
 					move |post1: Post, post2: Post| {
 						let score = posts.tag_score(&post1, &post2);
-						Ok(TypedRelation::new(post1, post2, tag_relation.clone(), score)?)
+						TypedRelation::new(post1, post2, tag_relation.clone(), score)
 					}
 				}),
 				link_genealogist: Rc::new({
@@ -109,16 +110,16 @@ mod test {
 					let link_relation = link_relation.clone();
 					move |post1: Post, post2: Post| {
 						let score = posts.link_score(&post1, &post2);
-						Ok(TypedRelation::new(post1, post2, link_relation.clone(), score)?)
+						TypedRelation::new(post1, post2, link_relation.clone(), score)
 					}
 				}),
-				weights: Rc::new(Weights::new(
+				weights: Weights::new(
 					&hmap! {
-						tag_relation.clone() => posts.tag_weight,
-						link_relation.clone() => posts.link_weight,
+						tag_relation => posts.tag_weight,
+						link_relation => posts.link_weight,
 					},
 					0.5,
-				)),
+				),
 			})
 		}
 
@@ -216,7 +217,7 @@ mod test {
 			]
 			.into_iter()
 			.map(|(post1, post2)| {
-				let score = self.posts.link_and_tag_score(&post1, &post2).into();
+				let score = self.posts.link_and_tag_score(&post1, &post2);
 				Relation::new(post1, post2, score).unwrap()
 			})
 			.collect::<HashSet<_>>();
@@ -238,9 +239,9 @@ mod test {
 	impl Posts {
 		pub fn new() -> Result<Posts, Exception> {
 			Ok(Self {
-				a: PostTestHelper::create_with_slug("a")?.into(),
-				b: PostTestHelper::create_with_slug("b")?.into(),
-				c: PostTestHelper::create_with_slug("c")?.into(),
+				a: PostTestHelper::create_with_slug("a")?,
+				b: PostTestHelper::create_with_slug("b")?,
+				c: PostTestHelper::create_with_slug("c")?,
 				tag_weight: 1.0,
 				link_weight: 0.75,
 			})

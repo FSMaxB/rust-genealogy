@@ -4,7 +4,7 @@ use crate::helpers::files::Files;
 use crate::helpers::stream::Stream;
 use crate::helpers::string_extensions::StringExtensions;
 use crate::{list_of, throw};
-use std::fmt::Display;
+use std::fmt::Debug;
 use std::path::{Path, PathBuf};
 
 /// ```java
@@ -87,7 +87,7 @@ impl Utils {
 	/// ```
 	pub fn collect_equal_element<Element>() -> Collector<Element, Option<Element>, Option<Element>>
 	where
-		Element: Display + PartialEq + 'static,
+		Element: Debug + PartialEq + 'static,
 	{
 		Self::collect_equal_element_with_predicate(Element::eq)
 	}
@@ -117,14 +117,14 @@ impl Utils {
 		equals: impl Fn(&Element, &Element) -> bool + 'static,
 	) -> Collector<Element, Option<Element>, Option<Element>>
 	where
-		Element: Display + 'static,
+		Element: Debug + 'static,
 	{
 		Collector::of(
 			|| Ok(None),
 			move |left, right| {
 				if left.is_some() && !equals(left.as_ref().unwrap(), &right) {
 					throw!(IllegalArgumentException(format!(
-						"Unequal elements in stream: {} vs {}",
+						"Unequal elements in stream: {:?} vs {:?}",
 						left.as_ref().unwrap(),
 						&right
 					)));

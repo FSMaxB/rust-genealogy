@@ -87,7 +87,7 @@ pub mod test {
 			description: Description::new("description")?,
 			slug: Slug::new(slug.to_string())?,
 			repository: None,
-			content: Box::new(|| Box::new(std::iter::once("".to_string()))),
+			content: Box::new(|| std::iter::once(Ok::<_, Exception>("".to_string())).into()),
 		};
 		Ok(Post::Article(article))
 	}

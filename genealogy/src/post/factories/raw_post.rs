@@ -1,5 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
+use crate::helpers::stream::Stream;
 use crate::post::content::Content;
 use crate::post::factories::raw_front_matter::RawFrontMatter;
 use crate::utils::Utils;
@@ -83,16 +84,16 @@ fn key_value_pair_from(line: String) -> Result<(String, String), Exception> {
 	Ok((key, value))
 }
 
-fn extract_content(markdown_file: Vec<String>) -> Box<dyn Iterator<Item = String>> {
-	Box::new(
-		markdown_file
-			.into_iter()
-			.map(|line| line.trim().to_string())
-			.skip_while(|line| line != FRONT_MATTER_SEPARATOR)
-			.skip(1)
-			.skip_while(|line| line != FRONT_MATTER_SEPARATOR)
-			.skip(1),
-	)
+fn extract_content(markdown_file: Vec<String>) -> Stream<String> {
+	markdown_file
+		.into_iter()
+		.map(|line| line.trim().to_string())
+		.skip_while(|line| line != FRONT_MATTER_SEPARATOR)
+		.skip(1)
+		.skip_while(|line| line != FRONT_MATTER_SEPARATOR)
+		.skip(1)
+		.map(Result::<_, Exception>::Ok)
+		.into()
 }
 
 const FRONT_MATTER_SEPARATOR: &str = "---";

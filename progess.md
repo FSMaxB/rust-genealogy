@@ -28,7 +28,7 @@
 * Main.java [ ]
 * post [ ]
   * Article.java [ ]
-  * Content.java [ ]
+  * Content.java [x]
   * Description.java [x]
   * Post.java [ ]
   * factories [ ]

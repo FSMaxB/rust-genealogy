@@ -94,6 +94,20 @@ impl Collectors {
 		}
 	}
 
+	pub fn to_vector<Input>() -> Collector<Input, Vec<Input>, Vec<Input>>
+	where
+		Input: 'static,
+	{
+		Collector {
+			supplier: Box::new(|| Ok(Vec::default())),
+			accumulator: Box::new(|vector, element| {
+				vector.push(element);
+				Ok(())
+			}),
+			finisher: Box::new(Result::<_, Exception>::Ok),
+		}
+	}
+
 	/// ```java
 	///
 	/// /**

@@ -36,15 +36,17 @@ impl VideoSlug {
 	}
 }
 
+/// No original Java code here, but identical to the slug tests.
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::helpers::test::assert_that;
 
 	#[test]
-	fn empty_text_exception() {
-		assert!(matches!(
-			VideoSlug::new("".to_string()),
-			Err(IllegalArgumentException(_))
-		))
+	fn empty_text__exception() {
+		assert_that(|| VideoSlug::new("".to_string()))
+			.throws()
+			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}
 }

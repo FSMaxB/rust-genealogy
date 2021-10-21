@@ -67,7 +67,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn empty_element_array__empty_tag() {
+	pub(super) fn empty_element_array__empty_tag() {
 		let tags_text = "[ ]";
 		let expected_tags: [&str; 0] = [];
 
@@ -92,7 +92,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn single_element_array__single_tag() {
+	pub(super) fn single_element_array__single_tag() {
 		let tags_text = "[$TAG]";
 		let expected_tags = ["$TAG"];
 
@@ -117,7 +117,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn multiple_elements_array__multiple_tags() {
+	pub(super) fn multiple_elements_array__multiple_tags() {
 		let tags_text = "[$TAG,$TOG,$TUG]";
 		let expected_tags = ["$TAG", "$TOG", "$TUG"];
 
@@ -142,7 +142,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn multiple_elements_array_with_spaces_multiple__tags_without_spaces() {
+	pub(super) fn multiple_elements_array_with_spaces_multiple__tags_without_spaces() {
 		let tags_text = "[$TAG ,  $TOG , $TUG  ]";
 		let expected_tags = ["$TAG", "$TOG", "$TUG"];
 
@@ -167,7 +167,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn multiple_elements_array_with_just_spaces_tag__empty_tag_is_ignored() {
+	pub(super) fn multiple_elements_array_with_just_spaces_tag__empty_tag_is_ignored() {
 		let tags_text = "[$TAG ,  , $TUG  ]";
 		let expected_tags = ["$TAG", "$TUG"];
 
@@ -192,7 +192,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn multiple_elements_array_with_empty_tag__empty_tag_is_ignored() {
+	pub(super) fn multiple_elements_array_with_empty_tag__empty_tag_is_ignored() {
 		let tags_text = "[$TAG ,, $TUG ]";
 		let expected_tags = ["$TAG", "$TUG"];
 
@@ -217,7 +217,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn multiple_elements_array_duplicate_tags_duplicate_tag_is_ignored() {
+	pub(super) fn multiple_elements_array_duplicate_tags_duplicate_tag_is_ignored() {
 		let tags_text = "[$TAG, $TAG]";
 		let expected_tags = ["$TAG"];
 

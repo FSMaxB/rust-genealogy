@@ -59,7 +59,7 @@ impl Relation {
 	///				.orElseThrow(() -> new IllegalArgumentException("Can't create relation from zero typed relations."));
 	///	}
 	/// ```
-	pub(crate) fn aggregate(typed_relations: Stream<TypedRelation>, weights: Weights) -> Result<Relation, Exception> {
+	pub(super) fn aggregate(typed_relations: Stream<TypedRelation>, weights: Weights) -> Result<Relation, Exception> {
 		#[derive(Debug, PartialEq, Eq)]
 		struct Posts {
 			post1: Post,

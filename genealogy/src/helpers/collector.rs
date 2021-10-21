@@ -191,7 +191,7 @@ impl AccumulatedDoubleAverage {
 	/// 	return intermediateSum;
 	/// }
 	/// ```
-	fn sum_with_compensation(&mut self, value: f64) {
+	pub(super) fn sum_with_compensation(&mut self, value: f64) {
 		let tmp = value - self.low_order_bits;
 		let sum = self.high_order_bits;
 		let velvel = sum + tmp; // Little wolf of rounding error
@@ -215,7 +215,7 @@ impl AccumulatedDoubleAverage {
 	/// 		return tmp;
 	/// }
 	/// ```
-	fn compute_final_sum(&self) -> f64 {
+	pub(super) fn compute_final_sum(&self) -> f64 {
 		// Better error bounds to add both terms as the final sum
 		let tmp = self.high_order_bits + self.low_order_bits;
 		if tmp.is_nan() && self.simple_sum.is_finite() {

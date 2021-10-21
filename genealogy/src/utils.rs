@@ -222,7 +222,7 @@ mod test {
 		/// }
 		/// ```
 		#[test]
-		fn empty_stream__empty_optional() {
+		pub(super) fn empty_stream__empty_optional() {
 			let element: Option<i32> = stream_of!().collect(collect_equal_element!()).unwrap();
 
 			assert_that(&element).is_empty();
@@ -239,7 +239,7 @@ mod test {
 		/// }
 		/// ```
 		#[test]
-		fn single_element_stream__optional_with_that_element() {
+		pub(super) fn single_element_stream__optional_with_that_element() {
 			let element = stream_of!("element").collect(collect_equal_element!()).unwrap();
 
 			assert_that(element).contains("element");
@@ -256,7 +256,7 @@ mod test {
 		///	}
 		/// ```
 		#[test]
-		fn equal_element_stream__optional_with_that_element() {
+		pub(super) fn equal_element_stream__optional_with_that_element() {
 			let element = stream_of!("element", "element", "element")
 				.collect(collect_equal_element!())
 				.unwrap();
@@ -274,7 +274,7 @@ mod test {
 		///	}
 		/// ```
 		#[test]
-		fn non_equal_element_stream__throws_exception() {
+		pub(super) fn non_equal_element_stream__throws_exception() {
 			let stream = stream_of!("element", "other_element");
 
 			assert_that(move || stream.collect(collect_equal_element!()))

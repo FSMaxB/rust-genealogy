@@ -50,7 +50,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn empty_text_exception() {
+	pub(super) fn empty_text_exception() {
 		assert_that(|| Description::new(""))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));

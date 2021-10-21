@@ -50,7 +50,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn empty_text__exception() {
+	pub(super) fn empty_text__exception() {
 		assert_that(|| Slug::new("".to_string()))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));

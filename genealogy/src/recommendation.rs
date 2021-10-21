@@ -36,7 +36,7 @@ impl Recommendation {
 	///		return new Recommendation(requireNonNull(post), recommendations);
 	///	}
 	/// ```
-	pub fn from(
+	pub(super) fn from(
 		post: Post,
 		sorted_recommendations: Stream<Post>,
 		per_post: usize,

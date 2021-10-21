@@ -103,7 +103,7 @@ mod test {
 		///		assertThat(weights.weightOf(TAG_TYPE)).isEqualTo(0.42);
 		///	}
 		/// ```
-		fn known_relation_type__returns_weight() {
+		pub(super) fn known_relation_type__returns_weight() {
 			let weights = Weights::new(&map_of!(Self::tag_type(), 0.42), 0.5);
 
 			assert_that(weights.weight_of(&Self::tag_type())).is_equal_to(0.42);
@@ -117,7 +117,7 @@ mod test {
 		///		assertThat(weights.weightOf(LIST_TYPE)).isEqualTo(0.5);
 		///	}
 		/// ```
-		fn unknown_relation_type__returns_default_weight() {
+		pub(super) fn unknown_relation_type__returns_default_weight() {
 			let weights = Weights::new(&map_of!(Self::tag_type(), 0.42), 0.5);
 
 			assert_that(weights.weight_of(&Self::list_type())).is_equal_to(0.5);

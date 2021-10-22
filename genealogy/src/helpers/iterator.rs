@@ -1,47 +1,54 @@
-use crate::helpers::iterator::equal::Equal;
-use crate::helpers::iterator::split_pair::{SplitPairLeft, SplitPairRight};
-use std::fmt::Debug;
-use std::iter::Iterator;
-
-pub mod equal;
-pub mod result_iterator;
-pub mod split_pair;
-
-pub trait IteratorExtension: Sized {
-	// NOTE: This roughly works as an equivalent to the `tee` collector in the original code base
-	fn split_pair<ElementLeft, ElementRight>(
-		self,
-	) -> (
-		SplitPairLeft<ElementLeft, ElementRight, Self>,
-		SplitPairRight<ElementLeft, ElementRight, Self>,
-	)
-	where
-		Self: Iterator<Item = (ElementLeft, ElementRight)>;
-
-	fn equal<Element>(self) -> Equal<Element, Self>
-	where
-		Self: Iterator<Item = Element>,
-		Element: Clone + Debug + Eq;
+pub trait ResultIteratorExtension<OkIterator, Error> {
+	fn into_result_iterator(self) -> ResultIterator<OkIterator, Error>;
 }
 
-impl<T> IteratorExtension for T {
-	fn split_pair<ElementLeft, ElementRight>(
-		self,
-	) -> (
-		SplitPairLeft<ElementLeft, ElementRight, Self>,
-		SplitPairRight<ElementLeft, ElementRight, Self>,
-	)
-	where
-		Self: Iterator<Item = (ElementLeft, ElementRight)>,
-	{
-		split_pair::split_pair(self)
+impl<IntoOkIterator, OkIterator, OkType, Error> ResultIteratorExtension<OkIterator, Error>
+	for Result<IntoOkIterator, Error>
+where
+	IntoOkIterator: IntoIterator<Item = OkType, IntoIter = OkIterator>,
+	OkIterator: Iterator<Item = OkType>,
+{
+	/// Convert a `Result<Iterator<Item = Element>, Error>` to `Iterator<Item = Result<Element, Error>>`
+	fn into_result_iterator(self) -> ResultIterator<OkIterator, Error> {
+		match self {
+			Ok(iterator) => ResultIterator::Ok(iterator.into_iter()),
+			Err(error) => ResultIterator::Err(error),
+		}
 	}
+}
 
-	fn equal<Element>(self) -> Equal<Element, Self>
-	where
-		Self: Iterator<Item = Element>,
-		Element: Clone + Debug + Eq,
-	{
-		equal::equal(self)
+pub enum ResultIterator<OkIterator, Error> {
+	Ok(OkIterator),
+	Err(Error),
+	Finished,
+}
+
+impl<OkIterator, Error> Default for ResultIterator<OkIterator, Error> {
+	fn default() -> Self {
+		Self::Finished
+	}
+}
+
+impl<OkIterator, OkType, Error> Iterator for ResultIterator<OkIterator, Error>
+where
+	OkIterator: Iterator<Item = OkType>,
+{
+	type Item = Result<OkType, Error>;
+
+	fn next(&mut self) -> Option<Self::Item> {
+		let mut iterator = match std::mem::take(self) {
+			Self::Ok(iterator) => iterator,
+			Self::Err(error) => {
+				return Some(Err(error));
+			}
+			Self::Finished => {
+				return None;
+			}
+		};
+
+		let next = iterator.next()?;
+
+		*self = Self::Ok(iterator);
+		Some(Ok(next))
 	}
 }

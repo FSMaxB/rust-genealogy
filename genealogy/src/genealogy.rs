@@ -3,7 +3,7 @@ use crate::genealogist::Genealogist;
 use crate::genealogy::relation::Relation;
 use crate::genealogy::weights::Weights;
 use crate::helpers::exception::Exception;
-use crate::helpers::iterator::result_iterator::ResultIteratorExtension;
+use crate::helpers::iterator::ResultIteratorExtension;
 use crate::helpers::stream::Stream;
 use crate::post::Post;
 use resiter::Map;

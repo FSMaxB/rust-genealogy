@@ -41,7 +41,7 @@ impl Tag {
 	/// ```
 	pub fn from(tags_text: &str) -> Result<HashSet<Tag>, Exception> {
 		Stream::of(tags_text.replace_all("^\\[|\\]$", "")?.split(','))
-			.map(|string| Ok(string.strip()))
+			.map(|string| Ok(string.strip().to_string()))
 			.filter(|string| !string.is_empty())
 			.map(|string| Ok(Tag::new(string)))
 			// An UnmodifiableSet isn't really necessary in rust since it

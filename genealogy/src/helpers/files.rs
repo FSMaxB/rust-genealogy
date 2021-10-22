@@ -25,7 +25,7 @@ impl Files {
 		Ok(BufReader::new(file).lines().map_err(Exception::from).into())
 	}
 
-	pub fn list(directory: &Path) -> Result<Stream<PathBuf>, Exception> {
+	pub fn list(directory: &Path) -> Result<Stream<'static, PathBuf>, Exception> {
 		Ok(directory.read_dir()?.map_ok(|dir_entry| dir_entry.path()).into())
 	}
 

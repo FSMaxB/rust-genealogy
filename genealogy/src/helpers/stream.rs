@@ -3,26 +3,29 @@ use crate::helpers::exception::Exception;
 use resiter::{Filter, FlatMap, Map};
 use std::convert::identity;
 
-pub struct Stream<Item> {
-	iterator: Box<dyn Iterator<Item = Result<Item, Exception>>>,
+pub struct Stream<'a, Item> {
+	iterator: Box<dyn Iterator<Item = Result<Item, Exception>> + 'a>,
 }
 
-impl<Item> Stream<Item>
+impl<'a, Item> Stream<'a, Item>
 where
-	Item: 'static,
+	Item: 'a,
 {
-	pub fn map<NewItem>(self, mut mapper: impl FnMut(Item) -> Result<NewItem, Exception> + 'static) -> Stream<NewItem>
+	pub fn map<NewItem>(self, mut mapper: impl FnMut(Item) -> Result<NewItem, Exception> + 'a) -> Stream<'a, NewItem>
 	where
-		NewItem: 'static,
+		NewItem: 'a,
 	{
 		self.iterator
 			.map(move |result| result.map(|item| (&mut mapper)(item)).and_then(identity))
 			.into()
 	}
 
-	pub fn flat_map<NewItem>(self, mut mapper: impl FnMut(Item) -> Option<Stream<NewItem>> + 'static) -> Stream<NewItem>
+	pub fn flat_map<NewItem>(
+		self,
+		mut mapper: impl FnMut(Item) -> Option<Stream<'a, NewItem>> + 'a,
+	) -> Stream<'a, NewItem>
 	where
-		NewItem: 'static,
+		NewItem: 'a,
 	{
 		self.iterator
 			.flat_map_ok(move |item| mapper(item).into_iter().flat_map(|stream| stream.iterator))
@@ -30,7 +33,7 @@ where
 			.into()
 	}
 
-	pub fn filter(self, predicate: impl FnMut(&Item) -> bool + 'static) -> Self {
+	pub fn filter(self, predicate: impl FnMut(&Item) -> bool + 'a) -> Self {
 		self.iterator.filter_ok(predicate).into()
 	}
 
@@ -46,9 +49,9 @@ where
 		(collector.finisher)(accumulated)
 	}
 
-	pub fn of<Iterable>(iterable: Iterable) -> Stream<Iterable::Item>
+	pub fn of<Iterable>(iterable: Iterable) -> Stream<'a, Iterable::Item>
 	where
-		Iterable: IntoIterator<Item = Item> + 'static,
+		Iterable: IntoIterator<Item = Item> + 'a,
 	{
 		iterable.into_iter().map(Result::<_, Exception>::Ok).into()
 	}
@@ -61,13 +64,13 @@ where
 		self.iterator.collect()
 	}
 
-	pub fn drop_while(self, predicate: impl Fn(&Item) -> bool + 'static) -> Self {
+	pub fn drop_while(self, predicate: impl Fn(&Item) -> bool + 'a) -> Self {
 		self.iterator
 			.skip_while(move |result| result.as_ref().map(|item| (&predicate)(item)).unwrap_or(false))
 			.into()
 	}
 
-	pub fn take_while(self, predicate: impl Fn(&Item) -> bool + 'static) -> Self {
+	pub fn take_while(self, predicate: impl Fn(&Item) -> bool + 'a) -> Self {
 		self.iterator
 			.take_while(move |result| result.as_ref().map(|item| (&predicate)(item)).unwrap_or(false))
 			.into()
@@ -78,9 +81,9 @@ where
 	}
 }
 
-impl<Iter, Item, Error> From<Iter> for Stream<Item>
+impl<'a, Iter, Item, Error> From<Iter> for Stream<'a, Item>
 where
-	Iter: Iterator<Item = Result<Item, Error>> + 'static,
+	Iter: Iterator<Item = Result<Item, Error>> + 'a,
 	Error: Into<Exception> + 'static,
 {
 	fn from(iterator: Iter) -> Self {
@@ -90,35 +93,46 @@ where
 	}
 }
 
-impl<Item> From<Stream<Item>> for Box<dyn Iterator<Item = Result<Item, Exception>>> {
-	fn from(stream: Stream<Item>) -> Self {
+impl<'a, Item> From<Stream<'a, Item>> for Box<dyn Iterator<Item = Result<Item, Exception>> + 'a> {
+	fn from(stream: Stream<'a, Item>) -> Self {
 		stream.iterator
 	}
 }
 
-impl<Item> IntoIterator for Stream<Item> {
+impl<'a, Item> IntoIterator for Stream<'a, Item> {
 	type Item = Result<Item, Exception>;
-	type IntoIter = Box<dyn Iterator<Item = Self::Item>>;
+	type IntoIter = Box<dyn Iterator<Item = Self::Item> + 'a>;
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.iterator
 	}
 }
 
-pub trait StreamExtensions {
+pub trait StreamExtensions<'a> {
 	type Item;
 
-	fn stream(self) -> Stream<Self::Item>;
+	fn stream(self) -> Stream<'a, Self::Item>;
 }
 
-impl<Item> StreamExtensions for Vec<Item>
+impl<'a, Item> StreamExtensions<'a> for Vec<Item>
 where
-	Item: 'static,
+	Item: 'a,
 {
 	type Item = Item;
 
-	fn stream(self) -> Stream<Self::Item> {
+	fn stream(self) -> Stream<'a, Self::Item> {
 		Stream::of(self)
+	}
+}
+
+impl<'a, Item> StreamExtensions<'a> for &'a [Item]
+where
+	Item: 'a,
+{
+	type Item = &'a Item;
+
+	fn stream(self) -> Stream<'a, Self::Item> {
+		Stream::of(self.iter())
 	}
 }
 

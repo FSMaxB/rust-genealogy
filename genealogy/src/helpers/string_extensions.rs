@@ -12,7 +12,7 @@ pub trait StringExtensions {
 
 	fn split_limit(&self, separator: char, limit: usize) -> Vec<String>;
 
-	fn strip(&self) -> String;
+	fn strip(&self) -> &str;
 
 	fn is_blank(&self) -> bool;
 }
@@ -38,8 +38,8 @@ where
 		self.as_ref().splitn(limit, separator).map(str::to_owned).collect()
 	}
 
-	fn strip(&self) -> String {
-		self.as_ref().trim().to_string()
+	fn strip(&self) -> &str {
+		self.as_ref().trim()
 	}
 
 	fn is_blank(&self) -> bool {

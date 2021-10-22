@@ -37,7 +37,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_list(dir: &Path) -> Result<Stream<PathBuf>, Exception> {
+	pub fn unchecked_files_list(dir: &Path) -> Result<Stream<'static, PathBuf>, Exception> {
 		Files::list(dir)
 	}
 

@@ -1,7 +1,6 @@
 use crate::helpers::collector::Collectors;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
-use crate::helpers::extensions::Extensions;
 use crate::helpers::indexing::index;
 use crate::helpers::stream::{Stream, StreamExtensions};
 use crate::helpers::string_extensions::StringExtensions;
@@ -94,7 +93,7 @@ impl PostFactory {
 	///	}
 	/// ```
 	pub fn read_post(file_lines: Vec<String>) -> Result<RawPost, Exception> {
-		let front_matter = Self::extract_front_matter(file_lines.clone())?;
+		let front_matter = Self::extract_front_matter(&file_lines)?;
 		let content = Box::new(move || Self::extract_content(file_lines));
 		Ok(RawPost::new(front_matter, content))
 	}
@@ -108,10 +107,10 @@ impl PostFactory {
 	///		return new RawFrontMatter(frontMatter);
 	///	}
 	/// ```
-	fn extract_front_matter(file_lines: Vec<String>) -> Result<RawFrontMatter, Exception> {
+	fn extract_front_matter(file_lines: &[String]) -> Result<RawFrontMatter, Exception> {
 		let front_matter = Self::read_front_matter(file_lines)
-			.filter(|line| !line.starts_with("#"))
-			.map(|string| PostFactory::key_value_pair_from(&string))
+			.filter(|line| !line.starts_with('#'))
+			.map(|string| PostFactory::key_value_pair_from(string))
 			.collect(Collectors::to_map(FrontMatterLine::key, FrontMatterLine::value))?;
 		Ok(RawFrontMatter::new(front_matter))
 	}
@@ -125,13 +124,13 @@ impl PostFactory {
 	///				.takeWhile(not(FRONT_MATTER_SEPARATOR::equals));
 	///	}
 	/// ```
-	fn read_front_matter(markdown_file: Vec<String>) -> Stream<String> {
+	fn read_front_matter(markdown_file: &[String]) -> Stream<&str> {
 		markdown_file
 			.stream()
 			.map(|string| Ok(string.strip()))
-			.drop_while(|string| string != Self::FRONT_MATTER_SEPARATOR)
+			.drop_while(|&string| string != Self::FRONT_MATTER_SEPARATOR)
 			.skip(1)
-			.take_while(|string| string != Self::FRONT_MATTER_SEPARATOR)
+			.take_while(|&string| string != Self::FRONT_MATTER_SEPARATOR)
 	}
 
 	/// ```java
@@ -161,7 +160,7 @@ impl PostFactory {
 		}
 
 		let value = index(&pair, 1)?.strip();
-		Ok(FrontMatterLine::new(key, value))
+		Ok(FrontMatterLine::new(key.into(), value.into()))
 	}
 
 	/// ```java
@@ -173,12 +172,12 @@ impl PostFactory {
 	///				.skip(1);
 	///	}
 	/// ```
-	fn extract_content(markdown_file: Vec<String>) -> Stream<String> {
+	fn extract_content(markdown_file: Vec<String>) -> Stream<'static, String> {
 		markdown_file
 			.stream()
-			.drop_while(|line| !line.strip().equals(Self::FRONT_MATTER_SEPARATOR))
+			.drop_while(|line| line.strip() != Self::FRONT_MATTER_SEPARATOR)
 			.skip(1)
-			.drop_while(|line| !line.strip().equals(Self::FRONT_MATTER_SEPARATOR))
+			.drop_while(|line| line.strip() != Self::FRONT_MATTER_SEPARATOR)
 			.skip(1)
 	}
 }

@@ -4,7 +4,7 @@ use crate::helpers::files::Files;
 use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
 use crate::helpers::string::JString;
-use crate::{list_of, throw};
+use crate::throw;
 use std::fmt::Debug;
 use std::path::{Path, PathBuf};
 
@@ -52,7 +52,7 @@ impl Utils {
 	/// }
 	/// ```
 	pub fn unchecked_files_write(path: &Path, content: JString) -> Result<(), Exception> {
-		Files::write(path, list_of!(content))
+		Files::write(path, List::of([content]))
 	}
 
 	/// ```java
@@ -79,6 +79,19 @@ impl Utils {
 	/// ```
 	pub fn unchecked_files_lines(file: &Path) -> Result<Stream<JString>, Exception> {
 		Files::lines(file)
+	}
+
+	/// ```java
+	/// @SuppressWarnings("unchecked")
+	/// public static <ELEMENT> Stream<ELEMENT> concat(Stream<? extends ELEMENT>... streams) {
+	/// 	return Stream.of(streams).flatMap(s -> s);
+	/// }
+	/// ```
+	pub fn concat<'a, Element>(streams: impl IntoIterator<Item = Stream<'a, Element>> + 'a) -> Stream<'a, Element>
+	where
+		Element: 'a,
+	{
+		Stream::of(streams).flat_map(|s| s)
 	}
 
 	/// ```java
@@ -150,24 +163,6 @@ macro_rules! collect_equal_element {
 }
 
 /// ```java
-/// @SuppressWarnings("unchecked")
-/// public static <ELEMENT> Stream<ELEMENT> concat(Stream<? extends ELEMENT>... streams) {
-/// 	return Stream.of(streams).flatMap(s -> s);
-/// }
-/// ```
-///
-/// Implemented as a macro to simulate variadic function.
-#[macro_export]
-macro_rules! concat {
-	() => {
-		crate::stream_of!().flat_map()
-	};
-	($($element: expr), + $(,) ?) => {
-		crate::stream_of!($($element),+).flat_map()
-	};
-}
-
-/// ```java
 /// class UtilsTests {
 /// ```
 #[cfg(test)]
@@ -209,8 +204,8 @@ mod test {
 	#[allow(non_snake_case)]
 	mod collect_equal_element {
 		use crate::helpers::exception::Exception::IllegalArgumentException;
+		use crate::helpers::stream::Stream;
 		use crate::helpers::test::assert_that;
-		use crate::stream_of;
 
 		/// ```java
 		/// @Test
@@ -224,7 +219,7 @@ mod test {
 		/// ```
 		#[test]
 		pub(super) fn empty_stream__empty_optional() {
-			let element: Option<i32> = stream_of!().collect(collect_equal_element!()).unwrap();
+			let element: Option<i32> = Stream::of([]).collect(collect_equal_element!()).unwrap();
 
 			assert_that(&element).is_empty();
 		}
@@ -241,7 +236,7 @@ mod test {
 		/// ```
 		#[test]
 		pub(super) fn single_element_stream__optional_with_that_element() {
-			let element = stream_of!("element").collect(collect_equal_element!()).unwrap();
+			let element = Stream::of(["element"]).collect(collect_equal_element!()).unwrap();
 
 			assert_that(element).contains("element");
 		}
@@ -258,7 +253,7 @@ mod test {
 		/// ```
 		#[test]
 		pub(super) fn equal_element_stream__optional_with_that_element() {
-			let element = stream_of!("element", "element", "element")
+			let element = Stream::of(["element", "element", "element"])
 				.collect(collect_equal_element!())
 				.unwrap();
 
@@ -276,7 +271,7 @@ mod test {
 		/// ```
 		#[test]
 		pub(super) fn non_equal_element_stream__throws_exception() {
-			let stream = stream_of!("element", "other_element");
+			let stream = Stream::of(["element", "other_element"]);
 
 			assert_that(move || stream.collect(collect_equal_element!()))
 				.throws()

@@ -97,8 +97,8 @@ mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
 	use crate::helpers::test::assert_that;
+	use crate::map_of;
 	use crate::post::test::PostTestHelper;
-	use crate::{map_of, stream_of};
 
 	/// ```java
 	/// class RelationTests {
@@ -166,12 +166,12 @@ mod test {
 		/// ```
 		pub(super) fn single_typed_relation__weight_one__same_posts_and_score(&self) -> Result<(), Exception> {
 			let score = 60;
-			let typed_relations = stream_of!(TypedRelation::new(
+			let typed_relations = Stream::of([TypedRelation::new(
 				self.post_a.clone(),
 				self.post_b.clone(),
 				self.tag_relation.clone(),
 				score,
-			)?);
+			)?]);
 
 			let relation = Relation::aggregate(typed_relations, self.weights.clone())?;
 
@@ -195,10 +195,10 @@ mod test {
 		///	}
 		/// ```
 		pub(super) fn two_typed_relations__weight_one__averaged_score(&self) -> Result<(), Exception> {
-			let typed_relations = stream_of!(
+			let typed_relations = Stream::of([
 				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.tag_relation.clone(), 40)?,
 				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.tag_relation.clone(), 80)?,
-			);
+			]);
 
 			let relation = Relation::aggregate(typed_relations, self.weights.clone())?;
 
@@ -221,10 +221,10 @@ mod test {
 		///	}
 		/// ```
 		pub(super) fn two_typed_relation__differing_weight__weighted_score(&self) -> Result<(), Exception> {
-			let typed_relations = stream_of!(
+			let typed_relations = Stream::of([
 				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.tag_relation.clone(), 40)?,
 				TypedRelation::new(self.post_a.clone(), self.post_b.clone(), self.link_relation.clone(), 80)?,
-			);
+			]);
 
 			let relation = Relation::aggregate(typed_relations, self.weights.clone())?;
 

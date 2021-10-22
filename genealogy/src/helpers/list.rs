@@ -28,6 +28,10 @@ impl<Element> List<Element> {
 	{
 		list.to_vec().into()
 	}
+
+	pub fn of(iterable: impl IntoIterator<Item = Element>) -> Self {
+		iterable.into_iter().collect()
+	}
 }
 
 impl<Element> Serialize for List<Element>
@@ -118,36 +122,5 @@ impl<Element> From<Vec<Element>> for List<Element> {
 		Self {
 			vector: Rc::new(vector),
 		}
-	}
-}
-
-#[macro_export]
-macro_rules! list_of {
-	() => {
-		crate::helpers::list::List::new()
-	};
-	($($element: expr), + $(,) ?) => {
-		<crate::helpers::list::List<_> as std::convert::From<std::vec::Vec<_>>>::from(std::vec![$($element),+])
-	};
-}
-
-#[cfg(test)]
-mod test {
-	use crate::helpers::list::List;
-
-	#[test]
-	fn list_of_none() {
-		let list: List<()> = list_of!();
-		assert!(list.is_empty())
-	}
-
-	#[test]
-	fn list_of_one() {
-		assert_eq!(vec!["hello"], list_of!("hello"));
-	}
-
-	#[test]
-	fn list_of_two() {
-		assert_eq!(vec!["hello", "world"], list_of!("hello", "world"));
 	}
 }

@@ -48,8 +48,8 @@ impl JString {
 	}
 }
 
-pub fn jstrings<const N: usize>(array: [&str; N]) -> [JString; N] {
-	let vector = array.into_iter().map(JString::from).collect::<Vec<_>>();
+pub fn jstrings<'a>(iterable: impl IntoIterator<Item = &'a str>) -> List<JString> {
+	let vector = iterable.into_iter().map(JString::from).collect::<Vec<_>>();
 	vector.try_into().unwrap()
 }
 

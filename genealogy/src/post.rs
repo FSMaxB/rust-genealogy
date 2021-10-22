@@ -97,9 +97,9 @@ impl Post {
 pub mod test {
 	use super::*;
 	use crate::helpers::exception::Exception;
+	use crate::helpers::stream::Stream;
 	use crate::helpers::string::JString;
 	use crate::helpers::time::LocalDateExtension;
-	use crate::stream_of;
 
 	/// ```java
 	/// public class PostTestHelper {
@@ -127,7 +127,7 @@ pub mod test {
 				Description::new("description".into())?,
 				Slug::new(slug)?,
 				None,
-				Box::new(|| stream_of!("".into())),
+				Box::new(|| Stream::of(["".into()])),
 			)
 			.into())
 		}

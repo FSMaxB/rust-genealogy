@@ -21,15 +21,12 @@ where
 			.into()
 	}
 
-	pub fn flat_map<NewItem>(
-		self,
-		mut mapper: impl FnMut(Item) -> Option<Stream<'a, NewItem>> + 'a,
-	) -> Stream<'a, NewItem>
+	pub fn flat_map<NewItem>(self, mut mapper: impl FnMut(Item) -> Stream<'a, NewItem> + 'a) -> Stream<'a, NewItem>
 	where
 		NewItem: 'a,
 	{
 		self.iterator
-			.flat_map_ok(move |item| mapper(item).into_iter().flat_map(|stream| stream.iterator))
+			.flat_map_ok(move |item| mapper(item).iterator)
 			.map(|result| result.and_then(identity))
 			.into()
 	}
@@ -123,56 +120,5 @@ where
 
 	fn stream(self) -> Stream<'a, Self::Item> {
 		Stream::of(self.iter())
-	}
-}
-
-#[macro_export]
-macro_rules! stream_of {
-	() => {
-		{
-			use ::std::result::Result;
-			use ::std::convert::From;
-			use crate::helpers::stream::Stream;
-			use ::std::iter::empty;
-			use crate::helpers::exception::Exception;
-			<Stream<_> as From<_>>::from(empty::<Result<_,Exception>>())
-		}
-	};
-	($($element: expr), + $(,) ?) => {
-		{
-			use ::std::result::Result;
-			use ::std::convert::From;
-			use crate::helpers::stream::Stream;
-			use ::std::iter::IntoIterator;
-			use ::std::iter::Iterator;
-			use crate::helpers::exception::Exception;
-			<Stream<_> as From<_>>::from(::std::vec![$($element),+].into_iter().map(Result::Ok::<_, Exception>))
-		}
-	};
-}
-
-#[cfg(test)]
-mod test {
-	use super::*;
-
-	#[test]
-	fn stream_of_none() {
-		let mut stream: Stream<String> = stream_of!();
-		assert!(stream.iterator.next().is_none());
-	}
-
-	#[test]
-	fn stream_of_one() {
-		let mut stream = stream_of!("hello");
-		assert_eq!("hello", stream.iterator.next().unwrap().unwrap());
-		assert!(stream.iterator.next().is_none());
-	}
-
-	#[test]
-	fn stream_of_two() {
-		let mut stream = stream_of!("hello", "world");
-		assert_eq!("hello", stream.iterator.next().unwrap().unwrap());
-		assert_eq!("world", stream.iterator.next().unwrap().unwrap());
-		assert!(stream.iterator.next().is_none());
 	}
 }

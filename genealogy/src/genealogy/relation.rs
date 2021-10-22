@@ -138,8 +138,8 @@ mod test {
 			let tag_relation = RelationType::new("tag".into())?;
 			let link_relation = RelationType::new("link".into())?;
 			Ok(Self {
-				post_a: PostTestHelper::create_with_slug("a")?,
-				post_b: PostTestHelper::create_with_slug("b")?,
+				post_a: PostTestHelper::create_with_slug("a".into())?,
+				post_b: PostTestHelper::create_with_slug("b".into())?,
 				tag_relation: tag_relation.clone(),
 				link_relation: link_relation.clone(),
 				weights: Weights::new(

@@ -3,7 +3,7 @@ use crate::helpers::exception::Exception::{self, IllegalArgumentException};
 use crate::helpers::files::Files;
 use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use crate::{list_of, throw};
 use std::fmt::Debug;
 use std::path::{Path, PathBuf};
@@ -25,7 +25,7 @@ impl Utils {
 	/// 	return string.replaceAll("^\"|\"$", "");
 	/// }
 	/// ```
-	pub fn remove_outer_quotation_marks(string: &str) -> Result<String, Exception> {
+	pub fn remove_outer_quotation_marks(string: JString) -> Result<JString, Exception> {
 		string.replace_all(r#"^"|"$"#, "")
 	}
 
@@ -51,7 +51,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_write(path: &Path, content: &str) -> Result<(), Exception> {
+	pub fn unchecked_files_write(path: &Path, content: JString) -> Result<(), Exception> {
 		Files::write(path, list_of!(content))
 	}
 
@@ -64,7 +64,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_read_all_lines(file: &Path) -> Result<List<String>, Exception> {
+	pub fn unchecked_files_read_all_lines(file: &Path) -> Result<List<JString>, Exception> {
 		Files::read_all_lines(file)
 	}
 
@@ -77,7 +77,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_lines(file: &Path) -> Result<Stream<String>, Exception> {
+	pub fn unchecked_files_lines(file: &Path) -> Result<Stream<JString>, Exception> {
 		Files::lines(file)
 	}
 
@@ -192,7 +192,7 @@ mod test {
 		/// 	return Utils.removeOuterQuotationMarks(text);
 		/// }
 		/// ```
-		fn parse_create_extract(text: &str) -> Result<String, Exception> {
+		fn parse_create_extract(text: JString) -> Result<JString, Exception> {
 			Utils::remove_outer_quotation_marks(text)
 		}
 	}

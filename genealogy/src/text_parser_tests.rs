@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::string::JString;
 use crate::helpers::test::assert_that;
 
 /// ```java
@@ -9,7 +10,7 @@ pub trait QuotationTests {
 	/// ```java
 	/// String parseCreateExtract(String text);
 	/// ```
-	fn parse_create_extract(text: &str) -> Result<String, Exception>;
+	fn parse_create_extract(text: JString) -> Result<JString, Exception>;
 
 	/// ```java
 	/// @Test
@@ -23,8 +24,8 @@ pub trait QuotationTests {
 	///	}
 	/// ```
 	fn create_from_string_without_quotation_marks__no_change() {
-		let text = "A cool blog post";
-		let expected = text;
+		let text: JString = "A cool blog post".into();
+		let expected = text.clone();
 
 		let actual = Self::parse_create_extract(text).unwrap();
 
@@ -43,7 +44,7 @@ pub trait QuotationTests {
 	///	}
 	/// ```
 	fn create_from_string_with_quotation_marks__quotation_marks_removed() {
-		let text = r#""A cool blog post""#;
+		let text = r#""A cool blog post""#.into();
 		let expected = "A cool blog post";
 
 		let actual = Self::parse_create_extract(text).unwrap();
@@ -63,7 +64,7 @@ pub trait QuotationTests {
 	///	}
 	/// ```
 	fn create_from_string_with_inner_quotation_marks__only_outer_quotation_marks_removed() {
-		let text = r#""A cool blog post""#;
+		let text = r#""A cool blog post""#.into();
 		let expected = "A cool blog post";
 
 		let actual = Self::parse_create_extract(text).unwrap();

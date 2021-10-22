@@ -92,8 +92,8 @@ mod test {
 
 	impl GenealogyTests {
 		pub fn new() -> Result<Self, Exception> {
-			let tag_relation = RelationType::new("tag".to_string())?;
-			let link_relation = RelationType::new("link".to_string())?;
+			let tag_relation = RelationType::new("tag".into())?;
+			let link_relation = RelationType::new("link".into())?;
 			let posts = Posts::new()?;
 			Ok(Self {
 				posts: posts.clone(),
@@ -239,9 +239,9 @@ mod test {
 	impl Posts {
 		pub fn new() -> Result<Posts, Exception> {
 			Ok(Self {
-				a: PostTestHelper::create_with_slug("a")?,
-				b: PostTestHelper::create_with_slug("b")?,
-				c: PostTestHelper::create_with_slug("c")?,
+				a: PostTestHelper::create_with_slug("a".into())?,
+				b: PostTestHelper::create_with_slug("b".into())?,
+				c: PostTestHelper::create_with_slug("c".into())?,
 				tag_weight: 1.0,
 				link_weight: 0.75,
 			})

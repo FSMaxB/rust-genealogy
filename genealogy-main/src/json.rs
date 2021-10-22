@@ -1,4 +1,5 @@
 use genealogy::helpers::list::List;
+use genealogy::helpers::string::JString;
 use genealogy::post::Post;
 use genealogy::recommendation::Recommendation;
 use serde::Serialize;
@@ -24,7 +25,7 @@ impl FromIterator<Recommendation> for SerializedRecommendations {
 
 #[derive(Serialize)]
 struct SerializedRecommendation {
-	title: String,
+	title: JString,
 	recommendations: List<SerializedPost>,
 }
 
@@ -44,7 +45,7 @@ impl From<&Recommendation> for SerializedRecommendation {
 
 #[derive(Serialize)]
 struct SerializedPost {
-	title: String,
+	title: JString,
 }
 
 impl From<&Post> for SerializedPost {

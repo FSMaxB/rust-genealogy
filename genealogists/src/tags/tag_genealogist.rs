@@ -11,7 +11,7 @@ pub struct TagGenealogist {
 impl TagGenealogist {
 	pub fn new() -> Result<Self, Exception> {
 		Ok(Self {
-			r#type: RelationType::new("tag".to_string())?,
+			r#type: RelationType::new("tag".into())?,
 		})
 	}
 }

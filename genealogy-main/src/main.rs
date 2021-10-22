@@ -10,6 +10,7 @@ use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
 use genealogy::helpers::exception::Exception::RuntimeException;
+use genealogy::helpers::string::JString;
 use genealogy::post::factories::article_factory::ArticleFactory;
 use genealogy::post::talk::Talk;
 use genealogy::post::video::Video;
@@ -28,7 +29,7 @@ fn main() -> Result<(), Exception> {
 	println!("{}", ProcessDetails::details());
 
 	// NOTE: The first parameter is just the current program, so needs to be skipped.
-	let args = std::env::args().skip(1).collect();
+	let args = std::env::args().skip(1).map(JString::from).collect();
 	let config = Config::create(args)?.join()?;
 	let genealogy = create_genealogy(&config.article_folder, &config.talk_folder, &config.video_folder)?;
 
@@ -36,7 +37,7 @@ fn main() -> Result<(), Exception> {
 	let recommendations = Recommender::recommend(relations, 3)?;
 	let recommendations_as_json = recommendations_to_json(recommendations)?;
 	if let Some(output_file) = &config.output_file {
-		Utils::unchecked_files_write(output_file, &recommendations_as_json)?;
+		Utils::unchecked_files_write(output_file, recommendations_as_json)?;
 	}
 	Ok(())
 }
@@ -79,8 +80,9 @@ fn get_genealogists(posts: Vec<Post>) -> Vec<Rc<dyn Genealogist>> {
 
 fn recommendations_to_json(
 	recommendations: impl Iterator<Item = Result<Recommendation, Exception>>,
-) -> Result<String, Exception> {
+) -> Result<JString, Exception> {
 	let serialized_recommendations = recommendations.collect::<Result<SerializedRecommendations, Exception>>()?;
 	serde_json::to_string(&serialized_recommendations)
+		.map(JString::from)
 		.map_err(|error| RuntimeException("Failed to serialize JSON".into(), error.into()))
 }

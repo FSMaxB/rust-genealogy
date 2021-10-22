@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use crate::throw;
 
 /// ```java
@@ -14,7 +14,7 @@ use crate::throw;
 /// compareTo is automatically implemented by the PartialOrd and Ord derives
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VideoSlug {
-	pub value: String,
+	pub value: JString,
 }
 
 impl VideoSlug {
@@ -25,7 +25,7 @@ impl VideoSlug {
 	///			throw new IllegalArgumentException("Slugs can't have an empty value.");
 	///	}
 	/// ```
-	pub fn new(value: String) -> Result<VideoSlug, Exception> {
+	pub fn new(value: JString) -> Result<VideoSlug, Exception> {
 		if value.is_blank() {
 			throw!(IllegalArgumentException(
 				"VideoSlugs can't have an empty value.".to_string()
@@ -45,7 +45,7 @@ mod test {
 
 	#[test]
 	fn empty_text__exception() {
-		assert_that(|| VideoSlug::new("".to_string()))
+		assert_that(|| VideoSlug::new("".into()))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}

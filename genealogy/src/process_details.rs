@@ -1,3 +1,5 @@
+use crate::helpers::string::JString;
+
 /// ```java
 /// public class ProcessDetails {
 /// ```
@@ -11,11 +13,12 @@ impl ProcessDetails {
 	/// 			Runtime.version().major());
 	/// }
 	/// ```
-	pub fn details() -> String {
+	pub fn details() -> JString {
 		format!(
 			"Process ID: {} | Rust version: {}",
 			std::process::id(),
 			rustc_version_runtime::version()
 		)
+		.into()
 	}
 }

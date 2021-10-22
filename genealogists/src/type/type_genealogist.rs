@@ -15,6 +15,6 @@ impl Genealogist for TypeGenealogist {
 			Talk(_) => 20,
 		};
 
-		TypedRelation::new(post1, post2, RelationType::new("type".to_string())?, score)
+		TypedRelation::new(post1, post2, RelationType::new("type".into())?, score)
 	}
 }

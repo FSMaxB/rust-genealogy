@@ -1,6 +1,7 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::option_extensions::OptionExtensions;
+use crate::helpers::string::JString;
 use std::collections::HashMap;
 
 /// ```java
@@ -10,7 +11,7 @@ use std::collections::HashMap;
 /// ```
 #[derive(Debug)]
 pub(super) struct RawFrontMatter {
-	lines: HashMap<String, String>,
+	lines: HashMap<JString, JString>,
 }
 
 impl RawFrontMatter {
@@ -19,7 +20,7 @@ impl RawFrontMatter {
 	///		this.lines = lines;
 	///	}
 	/// ```
-	pub(super) fn new(lines: HashMap<String, String>) -> Self {
+	pub(super) fn new(lines: HashMap<JString, JString>) -> Self {
 		Self { lines }
 	}
 
@@ -28,8 +29,8 @@ impl RawFrontMatter {
 	///		return Optional.ofNullable(lines.get(key));
 	///	}
 	/// ```
-	pub fn value_of(&self, key: &str) -> Option<&str> {
-		self.lines.get(key).map(AsRef::as_ref)
+	pub fn value_of(&self, key: JString) -> Option<JString> {
+		self.lines.get(&key).cloned()
 	}
 
 	/// ```java
@@ -38,8 +39,8 @@ impl RawFrontMatter {
 	///				() -> new IllegalArgumentException("Required key '" + key + "' not present in front matter."));
 	///	}
 	/// ```
-	pub fn required_value_of(&self, key: &str) -> Result<&str, Exception> {
-		self.value_of(key)
+	pub fn required_value_of(&self, key: JString) -> Result<JString, Exception> {
+		self.value_of(key.clone())
 			.or_else_throw(|| IllegalArgumentException(format!("Required key '{}' not present in front matter.", key)))
 	}
 }

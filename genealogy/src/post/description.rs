@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use crate::throw;
 use crate::utils::Utils;
 
@@ -9,7 +9,7 @@ use crate::utils::Utils;
 /// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Description {
-	pub text: String,
+	pub text: JString,
 }
 
 impl Description {
@@ -21,7 +21,7 @@ impl Description {
 	///			throw new IllegalArgumentException("Description can't have an empty text.");
 	///	}
 	/// ```
-	pub fn new(text: &str) -> Result<Description, Exception> {
+	pub fn new(text: JString) -> Result<Description, Exception> {
 		let text = Utils::remove_outer_quotation_marks(text)?;
 		if text.is_blank() {
 			throw!(IllegalArgumentException(
@@ -51,7 +51,7 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn empty_text_exception() {
-		assert_that(|| Description::new(""))
+		assert_that(|| Description::new("".into()))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}
@@ -73,7 +73,7 @@ mod test {
 		///		return new Description(text).text();
 		///	}
 		/// ```
-		fn parse_create_extract(text: &str) -> Result<String, Exception> {
+		fn parse_create_extract(text: JString) -> Result<JString, Exception> {
 			Ok(Description::new(text)?.text)
 		}
 	}

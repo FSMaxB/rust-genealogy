@@ -1,6 +1,7 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
 use crate::helpers::list::List;
+use crate::helpers::string::JString;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
@@ -49,7 +50,7 @@ impl ArticleFactory {
 	///	}
 	/// ```
 	/// Note: The method has been renamed because rust doesn't have any overloading.
-	pub fn create_article_from_lines(file_lines: List<String>) -> Result<Article, Exception> {
+	pub fn create_article_from_lines(file_lines: List<JString>) -> Result<Article, Exception> {
 		let post = PostFactory::read_post(file_lines)?;
 		Self::create_article_from_raw_post(post)
 	}
@@ -71,14 +72,13 @@ impl ArticleFactory {
 	fn create_article_from_raw_post(post: RawPost) -> Result<Article, Exception> {
 		let front_matter = post.front_matter();
 		Ok(Article::new(
-			Title::new(front_matter.required_value_of(PostFactory::TITLE)?)?,
-			Tag::from(front_matter.required_value_of(PostFactory::TAGS)?)?,
-			parse_date(front_matter.required_value_of(PostFactory::DATE)?)?,
-			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?.into())?,
+			Title::new(front_matter.required_value_of(PostFactory::TITLE().into())?)?,
+			Tag::from(front_matter.required_value_of(PostFactory::TAGS().into())?)?,
+			parse_date(front_matter.required_value_of(PostFactory::DATE().into())?)?,
+			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION().into())?)?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?.into())?,
 			front_matter
-				.value_of(PostFactory::REPOSITORY)
-				.map(ToString::to_string)
+				.value_of(PostFactory::REPOSITORY().into())
 				.map(Repository::new)
 				.transpose()?,
 			post.content(),
@@ -171,7 +171,7 @@ mod test {
 		assert_eq!(expected_content, content);
 	}
 
-	fn lines(lines: &[&str]) -> List<String> {
-		lines.iter().copied().map(str::to_string).collect()
+	fn lines(lines: &[&str]) -> List<JString> {
+		lines.iter().copied().map(JString::from).collect()
 	}
 }

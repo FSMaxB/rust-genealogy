@@ -28,16 +28,15 @@ impl TryFrom<RawPost> for Video {
 	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
 		let front_matter = raw_post.front_matter();
 		Ok(Video::new(
-			Title::new(front_matter.required_value_of(PostFactory::TITLE)?)?,
-			Tag::from(front_matter.required_value_of(PostFactory::TAGS)?)?,
-			parse_date(front_matter.required_value_of(PostFactory::DATE)?)?,
-			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?.into())?,
-			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO)?.into())?,
+			Title::new(front_matter.required_value_of(PostFactory::TITLE().into())?)?,
+			Tag::from(front_matter.required_value_of(PostFactory::TAGS().into())?)?,
+			parse_date(front_matter.required_value_of(PostFactory::DATE().into())?)?,
+			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION().into())?)?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?)?,
+			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO().into())?.into())?,
 			front_matter
-				.required_value_of(PostFactory::REPOSITORY)
+				.required_value_of(PostFactory::REPOSITORY().into())
 				.ok()
-				.map(ToString::to_string)
 				.map(Repository::new)
 				.transpose()?,
 		))

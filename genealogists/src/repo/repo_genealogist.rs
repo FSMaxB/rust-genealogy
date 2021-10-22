@@ -10,7 +10,7 @@ pub struct RepoGenealogist;
 impl Genealogist for RepoGenealogist {
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		let score = determine_score(&post1, &post2);
-		TypedRelation::new(post1, post2, RelationType::new("repo".to_string())?, score)
+		TypedRelation::new(post1, post2, RelationType::new("repo".into())?, score)
 	}
 }
 

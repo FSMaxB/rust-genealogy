@@ -97,9 +97,9 @@ mod test {
 
 	impl RecommenderTests {
 		fn new() -> Result<Self, Exception> {
-			let post_a = PostTestHelper::create_with_slug("a")?;
-			let post_b = PostTestHelper::create_with_slug("b")?;
-			let post_c = PostTestHelper::create_with_slug("c")?;
+			let post_a = PostTestHelper::create_with_slug("a".into())?;
+			let post_b = PostTestHelper::create_with_slug("b".into())?;
+			let post_c = PostTestHelper::create_with_slug("c".into())?;
 			Ok(Self {
 				post_a: post_a.clone(),
 				post_b: post_b.clone(),

@@ -1,7 +1,7 @@
 use crate::helpers::collector::Collectors;
 use crate::helpers::exception::Exception;
 use crate::helpers::stream::Stream;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use std::collections::HashSet;
 
 /// ```java
@@ -9,7 +9,7 @@ use std::collections::HashSet;
 /// ```
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Tag {
-	pub text: String,
+	pub text: JString,
 }
 
 impl Tag {
@@ -18,13 +18,13 @@ impl Tag {
 	/// 	requireNonNull(text);
 	/// }
 	/// ```
-	pub fn new(text: String) -> Tag {
+	pub fn new(text: JString) -> Tag {
 		Tag { text }
 	}
 
 	/// Used for tests extracting(Tag::text)
 	#[cfg(test)]
-	fn text(self) -> String {
+	fn text(self) -> JString {
 		self.text
 	}
 
@@ -39,9 +39,9 @@ impl Tag {
 	///				.collect(toUnmodifiableSet());
 	///	}
 	/// ```
-	pub fn from(tags_text: &str) -> Result<HashSet<Tag>, Exception> {
+	pub fn from(tags_text: JString) -> Result<HashSet<Tag>, Exception> {
 		Stream::of(tags_text.replace_all("^\\[|\\]$", "")?.split(','))
-			.map(|string| Ok(string.strip().to_string()))
+			.map(|string| Ok(string.strip()))
 			.filter(|string| !string.is_empty())
 			.map(|string| Ok(Tag::new(string)))
 			// An UnmodifiableSet isn't really necessary in rust since it
@@ -57,6 +57,7 @@ impl Tag {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::helpers::string::jstrings;
 	use crate::helpers::test::assert_that;
 
 	/// ```java
@@ -74,8 +75,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn empty_element_array__empty_tag() {
-		let tags_text = "[ ]";
-		let expected_tags: [&str; 0] = [];
+		let tags_text = "[ ]".into();
+		let expected_tags = jstrings([]);
 
 		let tags = Tag::from(tags_text).unwrap();
 
@@ -99,8 +100,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn single_element_array__single_tag() {
-		let tags_text = "[$TAG]";
-		let expected_tags = ["$TAG"];
+		let tags_text = "[$TAG]".into();
+		let expected_tags = jstrings(["$TAG"]);
 
 		let tags = Tag::from(tags_text).unwrap();
 
@@ -124,8 +125,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn multiple_elements_array__multiple_tags() {
-		let tags_text = "[$TAG,$TOG,$TUG]";
-		let expected_tags = ["$TAG", "$TOG", "$TUG"];
+		let tags_text = "[$TAG,$TOG,$TUG]".into();
+		let expected_tags = jstrings(["$TAG", "$TOG", "$TUG"]);
 
 		let tags = Tag::from(tags_text).unwrap();
 
@@ -149,8 +150,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn multiple_elements_array_with_spaces_multiple__tags_without_spaces() {
-		let tags_text = "[$TAG ,  $TOG , $TUG  ]";
-		let expected_tags = ["$TAG", "$TOG", "$TUG"];
+		let tags_text = "[$TAG ,  $TOG , $TUG  ]".into();
+		let expected_tags = jstrings(["$TAG", "$TOG", "$TUG"]);
 
 		let tags = Tag::from(tags_text).unwrap();
 
@@ -174,8 +175,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn multiple_elements_array_with_just_spaces_tag__empty_tag_is_ignored() {
-		let tags_text = "[$TAG ,  , $TUG  ]";
-		let expected_tags = ["$TAG", "$TUG"];
+		let tags_text = "[$TAG ,  , $TUG  ]".into();
+		let expected_tags = jstrings(["$TAG", "$TUG"]);
 
 		let tags = Tag::from(tags_text).unwrap();
 
@@ -199,8 +200,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn multiple_elements_array_with_empty_tag__empty_tag_is_ignored() {
-		let tags_text = "[$TAG ,, $TUG ]";
-		let expected_tags = ["$TAG", "$TUG"];
+		let tags_text = "[$TAG ,, $TUG ]".into();
+		let expected_tags = jstrings(["$TAG", "$TUG"]);
 
 		let tags = Tag::from(tags_text).unwrap();
 
@@ -224,8 +225,8 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn multiple_elements_array_duplicate_tags_duplicate_tag_is_ignored() {
-		let tags_text = "[$TAG, $TAG]";
-		let expected_tags = ["$TAG"];
+		let tags_text = "[$TAG, $TAG]".into();
+		let expected_tags = jstrings(["$TAG"]);
 
 		let tags = Tag::from(tags_text).unwrap();
 

@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use crate::throw;
 
 /// ```java
@@ -11,7 +11,7 @@ use crate::throw;
 /// ```
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct RelationType {
-	pub value: String,
+	pub value: JString,
 }
 
 impl RelationType {
@@ -22,7 +22,7 @@ impl RelationType {
 	///			throw new IllegalArgumentException("Relation types can't have an empty value.");
 	///	}
 	/// ```
-	pub fn new(value: String) -> Result<RelationType, Exception> {
+	pub fn new(value: JString) -> Result<RelationType, Exception> {
 		if value.is_blank() {
 			throw!(IllegalArgumentException(
 				"Relation types can't have an empty value.".to_string()
@@ -42,7 +42,7 @@ mod test {
 
 	#[test]
 	fn empty_text__exception() {
-		assert_that(|| RelationType::new("".to_string()))
+		assert_that(|| RelationType::new("".into()))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}

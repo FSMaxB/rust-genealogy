@@ -12,7 +12,7 @@ pub struct SillyGenealogist {
 impl SillyGenealogist {
 	pub fn new() -> Result<Self, Exception> {
 		Ok(Self {
-			r#type: RelationType::new("silly".to_string())?,
+			r#type: RelationType::new("silly".into())?,
 		})
 	}
 }
@@ -29,5 +29,8 @@ impl Genealogist for SillyGenealogist {
 }
 
 fn title_letters(post: &Post) -> BTreeSet<u16> {
-	post.title().text.to_lowercase().encode_utf16().collect()
+	AsRef::<str>::as_ref(&post.title().text)
+		.to_lowercase()
+		.encode_utf16()
+		.collect()
 }

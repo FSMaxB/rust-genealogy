@@ -4,8 +4,10 @@ use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::files::Files;
 use crate::helpers::list::List;
 use crate::helpers::path::Path;
+use crate::helpers::string::JString;
 use crate::helpers::system::System;
 use crate::throw;
+use lazy_static::lazy_static;
 use std::path::PathBuf;
 
 /// ```java
@@ -26,7 +28,12 @@ impl Config {
 	/// ```java
 	/// private static final String CONFIG_FILE_NAME = "recommendations.config";
 	/// ```
-	const CONFIG_FILE_NAME: &'static str = "recommendations.config";
+	fn config_file_name() -> JString {
+		lazy_static! {
+			static ref CONFIG_FILE_NAME: JString = "recommendations.config".into();
+		};
+		CONFIG_FILE_NAME.clone()
+	}
 
 	/// ```java
 	/// // use static factory method(s)
@@ -66,15 +73,15 @@ impl Config {
 	///		return new Config(articleFolder, talkFolder, videoFolder, outputFile);
 	///	}
 	/// ```
-	fn from_raw_config(raw: List<String>) -> Result<Config, Exception> {
+	fn from_raw_config(raw: List<JString>) -> Result<Config, Exception> {
 		#[allow(clippy::len_zero)]
 		if raw.len() == 0 {
 			throw!(IllegalArgumentException("No article path defined".into()));
 		}
 
-		let article_folder = Self::read_folder(raw.get(0)?)?;
-		let talk_folder = Self::read_folder(raw.get(1)?)?;
-		let video_folder = Self::read_folder(raw.get(2)?)?;
+		let article_folder = Self::read_folder(raw.get(0)?.into())?;
+		let talk_folder = Self::read_folder(raw.get(1)?.into())?;
+		let video_folder = Self::read_folder(raw.get(2)?.into())?;
 
 		let output_filename = if raw.len() >= 4 { Some(raw.get(3)?) } else { None };
 
@@ -109,7 +116,7 @@ impl Config {
 	/// 	return folder;
 	/// }
 	/// ```
-	fn read_folder(raw: &str) -> Result<PathBuf, Exception> {
+	fn read_folder(raw: JString) -> Result<PathBuf, Exception> {
 		let folder = PathBuf::from(raw);
 
 		// NOTE: In general, paths are NOT valid Unicode strings.
@@ -143,7 +150,7 @@ impl Config {
 	///				.thenApply(Config::fromRawConfig);
 	///	}
 	/// ```
-	pub fn create(args: List<String>) -> Result<CompletableFuture<Config>, Exception> {
+	pub fn create(args: List<JString>) -> Result<CompletableFuture<Config>, Exception> {
 		#[allow(clippy::len_zero)]
 		let raw_config = if args.len() > 0 {
 			CompletableFuture::completed_future(args)
@@ -162,8 +169,8 @@ impl Config {
 	/// 	return readConfig(workingDir);
 	/// }
 	/// ```
-	fn read_project_config() -> Result<CompletableFuture<List<String>>, Exception> {
-		let working_dir = Path::of(&System::get_property("user.dir")?).join(Self::CONFIG_FILE_NAME);
+	fn read_project_config() -> Result<CompletableFuture<List<JString>>, Exception> {
+		let working_dir = Path::of(&System::get_property("user.dir")?).join(Self::config_file_name());
 		Ok(Self::read_config(working_dir))
 	}
 
@@ -173,8 +180,8 @@ impl Config {
 	/// 	return readConfig(workingDir);
 	/// }
 	/// ```
-	fn read_user_config() -> Result<CompletableFuture<List<String>>, Exception> {
-		let working_dir = Path::of(&System::get_property("user.home")?).join(Self::CONFIG_FILE_NAME);
+	fn read_user_config() -> Result<CompletableFuture<List<JString>>, Exception> {
+		let working_dir = Path::of(&System::get_property("user.home")?).join(Self::config_file_name());
 		Ok(Self::read_config(working_dir))
 	}
 
@@ -189,7 +196,7 @@ impl Config {
 	/// 	});
 	/// }
 	/// ```
-	fn read_config(working_dir: PathBuf) -> CompletableFuture<List<String>> {
+	fn read_config(working_dir: PathBuf) -> CompletableFuture<List<JString>> {
 		CompletableFuture::supply_async(move || Files::read_all_lines(&working_dir))
 	}
 }

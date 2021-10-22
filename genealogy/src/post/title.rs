@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use crate::throw;
 use crate::utils::Utils;
 
@@ -9,7 +9,7 @@ use crate::utils::Utils;
 /// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Title {
-	pub text: String,
+	pub text: JString,
 }
 
 impl Title {
@@ -22,7 +22,7 @@ impl Title {
 	///		text = unquotedText;
 	///	}
 	/// ```
-	pub fn new(text: &str) -> Result<Title, Exception> {
+	pub fn new(text: JString) -> Result<Title, Exception> {
 		let unquoted_text = Utils::remove_outer_quotation_marks(text)?;
 		if unquoted_text.is_blank() {
 			throw!(IllegalArgumentException("Titles can't have an empty text.".to_string()));
@@ -51,7 +51,7 @@ mod test {
 	/// ```
 	#[test]
 	pub(super) fn empty_text_exception() {
-		assert_that(|| Title::new(""))
+		assert_that(|| Title::new("".into()))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}
@@ -73,7 +73,7 @@ mod test {
 		///		return new Title(text).text();
 		///	}
 		/// ```
-		fn parse_create_extract(text: &str) -> Result<String, Exception> {
+		fn parse_create_extract(text: JString) -> Result<JString, Exception> {
 			Ok(Title::new(text)?.text)
 		}
 	}

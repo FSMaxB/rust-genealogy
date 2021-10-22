@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string_extensions::StringExtensions;
+use crate::helpers::string::JString;
 use crate::throw;
 
 /// ```java
@@ -8,7 +8,7 @@ use crate::throw;
 /// ```
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Repository {
-	pub identifier: String,
+	pub identifier: JString,
 }
 
 impl Repository {
@@ -19,7 +19,7 @@ impl Repository {
 	///			throw new IllegalArgumentException("Repositories can't have an empty identifier.");
 	///	}
 	/// ```
-	pub fn new(identifier: String) -> Result<Repository, Exception> {
+	pub fn new(identifier: JString) -> Result<Repository, Exception> {
 		if identifier.is_blank() {
 			throw!(IllegalArgumentException(
 				"Repositories can't have an empty identifier.".to_string()
@@ -39,7 +39,7 @@ mod test {
 
 	#[test]
 	fn empty_text__exception() {
-		assert_that(|| Repository::new("".to_string()))
+		assert_that(|| Repository::new("".into()))
 			.throws()
 			.and_satisfies(|exception| matches!(exception, IllegalArgumentException(_)));
 	}

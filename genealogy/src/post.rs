@@ -97,6 +97,7 @@ impl Post {
 pub mod test {
 	use super::*;
 	use crate::helpers::exception::Exception;
+	use crate::helpers::string::JString;
 	use crate::helpers::time::LocalDateExtension;
 	use crate::stream_of;
 
@@ -118,15 +119,15 @@ pub mod test {
 		///				() -> Stream.of(""));
 		///	}
 		/// ```
-		pub fn create_with_slug(slug: &str) -> Result<Post, Exception> {
+		pub fn create_with_slug(slug: JString) -> Result<Post, Exception> {
 			Ok(Article::new(
-				Title::new("Title")?,
-				Tag::from("[Tag]")?,
+				Title::new("Title".into())?,
+				Tag::from("[Tag]".into())?,
 				LocalDate::today(),
-				Description::new("description")?,
+				Description::new("description".into())?,
 				Slug::new(slug.into())?,
 				None,
-				Box::new(|| stream_of!("".to_string())),
+				Box::new(|| stream_of!("".into())),
 			)
 			.into())
 		}

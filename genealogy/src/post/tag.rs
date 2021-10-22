@@ -22,6 +22,11 @@ impl Tag {
 		Tag { text }
 	}
 
+	/// Used for tests extracting(Tag::text)
+	fn text(self) -> String {
+		self.text
+	}
+
 	/// ```java
 	/// public static Set<Tag> from(String tagsText) {
 	///		return Stream.of(tagsText
@@ -40,7 +45,7 @@ impl Tag {
 			.map(Tag::new)
 			// An UnmodifiableSet isn't really necessary in rust since it
 			// can only be modified via mutable reference anyways.
-			.collect(Collectors::to_hash_set())
+			.collect(Collectors::to_set())
 	}
 }
 
@@ -74,7 +79,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 
@@ -99,7 +104,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 
@@ -124,7 +129,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 
@@ -149,7 +154,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 
@@ -174,7 +179,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 
@@ -199,7 +204,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 
@@ -224,7 +229,7 @@ mod test {
 		let tags = Tag::from(tags_text).unwrap();
 
 		assert_that(tags)
-			.extracting(|tag| tag.text)
+			.extracting(Tag::text)
 			.contains_exactly_in_any_order(expected_tags);
 	}
 }

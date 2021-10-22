@@ -3,7 +3,8 @@ use crate::helpers::exception::Exception::RuntimeException;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
-use crate::post::factories::raw_post::{RawPost, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE};
+use crate::post::factories::post_factory::{DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE};
+use crate::post::factories::raw_post::RawPost;
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
@@ -38,7 +39,7 @@ impl TryFrom<RawPost> for Article {
 	type Error = Exception;
 
 	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
-		let front_matter = raw_post.front_matter;
+		let front_matter = raw_post.front_matter();
 		// RUSTIFICATION: Create a trait that allows simple text parsing and
 		// put the constants in it as associated const so they can be used by
 		// dynamic code for lookup in the front matter.
@@ -53,7 +54,7 @@ impl TryFrom<RawPost> for Article {
 				.ok()
 				.map(Repository::new)
 				.transpose()?,
-			raw_post.content,
+			raw_post.content(),
 		))
 	}
 }

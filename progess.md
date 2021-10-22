@@ -35,7 +35,7 @@
     * ArticleFactory.java [ ]
     * PostFactory.java [ ]
     * RawFrontMatter.java [x]
-    * RawPost.java [ ]
+    * RawPost.java [x]
     * TalkFactory.java [ ]
     * VideoFactory.java [ ]
   * Repository.java [x]

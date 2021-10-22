@@ -9,7 +9,7 @@ use std::collections::HashMap;
 /// 	private final Map<String, String> lines;
 /// ```
 #[derive(Debug)]
-pub struct RawFrontMatter {
+pub(super) struct RawFrontMatter {
 	lines: HashMap<String, String>,
 }
 
@@ -19,7 +19,7 @@ impl RawFrontMatter {
 	///		this.lines = lines;
 	///	}
 	/// ```
-	pub fn new(lines: HashMap<String, String>) -> Self {
+	pub(super) fn new(lines: HashMap<String, String>) -> Self {
 		Self { lines }
 	}
 

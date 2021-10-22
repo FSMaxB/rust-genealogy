@@ -2,7 +2,8 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
-use crate::post::factories::raw_post::{RawPost, DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE, VIDEO};
+use crate::post::factories::post_factory::{DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE, VIDEO};
+use crate::post::factories::raw_post::RawPost;
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
@@ -31,7 +32,7 @@ impl TryFrom<RawPost> for Video {
 	type Error = Exception;
 
 	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
-		let front_matter = raw_post.front_matter;
+		let front_matter = raw_post.front_matter();
 		Ok(Video::new(
 			Title::new(&front_matter.required_value_of(TITLE)?)?,
 			Tag::from(&front_matter.required_value_of(TAGS)?)?,

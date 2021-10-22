@@ -10,7 +10,7 @@ use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
 use genealogy::helpers::exception::Exception::RuntimeException;
-use genealogy::post::article::Article;
+use genealogy::post::factories::article_factory::ArticleFactory;
 use genealogy::post::talk::Talk;
 use genealogy::post::video::Video;
 use genealogy::post::Post;
@@ -44,7 +44,8 @@ fn main() -> Result<(), Exception> {
 fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
-			markdown_files_in(article_folder)?.and_then_ok(|path| Article::try_from(path.as_ref()).map(Post::from)),
+			markdown_files_in(article_folder)?
+				.and_then_ok(|path| ArticleFactory::create_article(&path).map(Post::from)),
 		),
 		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::from))),
 		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::from))),

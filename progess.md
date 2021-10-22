@@ -32,7 +32,7 @@
   * Description.java [x]
   * Post.java [x]
   * factories [ ]
-    * ArticleFactory.java [ ]
+    * ArticleFactory.java [x]
     * PostFactory.java [x]
     * RawFrontMatter.java [x]
     * RawPost.java [x]

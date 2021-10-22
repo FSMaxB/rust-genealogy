@@ -28,8 +28,8 @@ impl RawFrontMatter {
 	///		return Optional.ofNullable(lines.get(key));
 	///	}
 	/// ```
-	pub fn value_of(&self, key: &str) -> Option<String> {
-		self.lines.get(key).map(Clone::clone)
+	pub fn value_of(&self, key: &str) -> Option<&str> {
+		self.lines.get(key).map(AsRef::as_ref)
 	}
 
 	/// ```java
@@ -38,7 +38,7 @@ impl RawFrontMatter {
 	///				() -> new IllegalArgumentException("Required key '" + key + "' not present in front matter."));
 	///	}
 	/// ```
-	pub fn required_value_of(&self, key: &str) -> Result<String, Exception> {
+	pub fn required_value_of(&self, key: &str) -> Result<&str, Exception> {
 		self.value_of(key)
 			.or_else_throw(|| IllegalArgumentException(format!("Required key '{}' not present in front matter.", key)))
 	}

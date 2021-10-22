@@ -11,44 +11,76 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use std::path::Path;
 
-impl TryFrom<&Path> for Article {
-	type Error = Exception;
+/// ```java
+/// public final class ArticleFactory {
+///
+/// 	private ArticleFactory() {
+/// 		// private constructor to prevent accidental instantiation of utility class
+/// 	}
+/// ```
+/// The empty enum has the same effect as a private constructor, preventing instantiation.
+pub enum ArticleFactory {}
 
-	fn try_from(path: &Path) -> Result<Self, Self::Error> {
-		PostFactory::read_post_from_path(path)
-			.map_err(|error| RuntimeException(format!(r#"Creating article failed: "{:?}""#, path,), error.into()))
-			.and_then(Article::try_from)
+impl ArticleFactory {
+	/// ```java
+	/// public static Article createArticle(Path file) {
+	///		try {
+	///			RawPost post = PostFactory.readPost(file);
+	///			return createArticle(post);
+	///		} catch (RuntimeException ex) {
+	///			throw new RuntimeException("Creating article failed: " + file, ex);
+	///		}
+	///	}
+	/// ```
+	pub fn create_article(file: &Path) -> Result<Article, Exception> {
+		// simulate try catch
+		(|| {
+			let post = PostFactory::read_post_from_path(file)?;
+			Self::create_article_from_raw_post(post)
+		})()
+		.map_err(|ex| RuntimeException(format!("Creating article failed: {:?}", file), ex.into()))
 	}
-}
 
-impl TryFrom<Vec<String>> for Article {
-	type Error = Exception;
-
-	fn try_from(lines: Vec<String>) -> Result<Self, Self::Error> {
-		PostFactory::read_post(lines).and_then(Article::try_from)
+	/// ```java
+	/// public static Article createArticle(List<String> fileLines) {
+	///		RawPost post = PostFactory.readPost(fileLines);
+	///		return createArticle(post);
+	///	}
+	/// ```
+	/// Note: The method has been renamed because rust doesn't have any overloading.
+	pub fn create_article_from_lines(file_lines: Vec<String>) -> Result<Article, Exception> {
+		let post = PostFactory::read_post(file_lines)?;
+		Self::create_article_from_raw_post(post)
 	}
-}
 
-impl TryFrom<RawPost> for Article {
-	type Error = Exception;
-
-	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
-		let front_matter = raw_post.front_matter();
-		// RUSTIFICATION: Create a trait that allows simple text parsing and
-		// put the constants in it as associated const so they can be used by
-		// dynamic code for lookup in the front matter.
+	/// ```java
+	/// private static Article createArticle(RawPost post) {
+	///		RawFrontMatter frontMatter = post.frontMatter();
+	///		return new Article(
+	///				new Title(frontMatter.requiredValueOf(TITLE)),
+	///				Tag.from(frontMatter.requiredValueOf(TAGS)),
+	///				LocalDate.parse(frontMatter.requiredValueOf(DATE)),
+	///				new Description(frontMatter.requiredValueOf(DESCRIPTION)),
+	///				new Slug(frontMatter.requiredValueOf(SLUG)),
+	///				frontMatter.valueOf(REPOSITORY).map(Repository::new),
+	///				post.content());
+	///	}
+	/// ```
+	/// Note: The method has been renamed because rust doesn't have any overloading.
+	fn create_article_from_raw_post(post: RawPost) -> Result<Article, Exception> {
+		let front_matter = post.front_matter();
 		Ok(Article::new(
-			Title::new(&front_matter.required_value_of(PostFactory::TITLE)?)?,
-			Tag::from(&front_matter.required_value_of(PostFactory::TAGS)?)?,
-			parse_date(&front_matter.required_value_of(PostFactory::DATE)?)?,
-			Description::new(&front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?)?,
+			Title::new(front_matter.required_value_of(PostFactory::TITLE)?)?,
+			Tag::from(front_matter.required_value_of(PostFactory::TAGS)?)?,
+			parse_date(front_matter.required_value_of(PostFactory::DATE)?)?,
+			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?.into())?,
 			front_matter
-				.required_value_of(PostFactory::REPOSITORY)
-				.ok()
+				.value_of(PostFactory::REPOSITORY)
+				.map(ToString::to_string)
 				.map(Repository::new)
 				.transpose()?,
-			raw_post.content(),
+			post.content(),
 		))
 	}
 }
@@ -72,7 +104,7 @@ mod test {
 			"",
 		]);
 
-		let post = Article::try_from(file).unwrap();
+		let post = ArticleFactory::create_article_from_lines(file).unwrap();
 
 		assert_eq!("Cool: A blog post", post.title.text);
 		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags());
@@ -94,7 +126,7 @@ mod test {
 			"",
 		]);
 
-		let post = Article::try_from(file).unwrap();
+		let post = ArticleFactory::create_article_from_lines(file).unwrap();
 
 		assert_eq!("A cool blog post", post.title.text);
 		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags());
@@ -120,7 +152,7 @@ mod test {
 			"Excepteur sint occaecat cupidatat non proident.",
 		]);
 
-		let post = Article::try_from(file).unwrap();
+		let post = ArticleFactory::create_article_from_lines(file).unwrap();
 
 		assert_eq!("A cool blog post", post.title.text);
 		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags());

@@ -28,15 +28,16 @@ impl TryFrom<RawPost> for Video {
 	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
 		let front_matter = raw_post.front_matter();
 		Ok(Video::new(
-			Title::new(&front_matter.required_value_of(PostFactory::TITLE)?)?,
-			Tag::from(&front_matter.required_value_of(PostFactory::TAGS)?)?,
-			parse_date(&front_matter.required_value_of(PostFactory::DATE)?)?,
-			Description::new(&front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?)?,
-			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO)?)?,
+			Title::new(front_matter.required_value_of(PostFactory::TITLE)?)?,
+			Tag::from(front_matter.required_value_of(PostFactory::TAGS)?)?,
+			parse_date(front_matter.required_value_of(PostFactory::DATE)?)?,
+			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?.into())?,
+			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO)?.into())?,
 			front_matter
 				.required_value_of(PostFactory::REPOSITORY)
 				.ok()
+				.map(ToString::to_string)
 				.map(Repository::new)
 				.transpose()?,
 		))

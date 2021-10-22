@@ -1,22 +1,45 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use std::collections::BTreeMap;
+use crate::helpers::option_extensions::OptionExtensions;
+use std::collections::HashMap;
 
+/// ```java
+/// class RawFrontMatter {
+///
+/// 	private final Map<String, String> lines;
+/// ```
 #[derive(Debug)]
 pub struct RawFrontMatter {
-	lines: BTreeMap<String, String>,
+	lines: HashMap<String, String>,
 }
 
 impl RawFrontMatter {
-	pub fn new(lines: BTreeMap<String, String>) -> Self {
+	/// ```java
+	/// RawFrontMatter(Map<String, String> lines) {
+	///		this.lines = lines;
+	///	}
+	/// ```
+	pub fn new(lines: HashMap<String, String>) -> Self {
 		Self { lines }
 	}
 
-	// NOTE: `valueOf` and `requiredValueOf` where combined since it doesn't make sense to have one with `Option` and one with `Result`.
-	pub fn value_of(&self, key: &str) -> Result<&str, Exception> {
-		self.lines
-			.get(key)
-			.map(String::as_str)
-			.ok_or_else(|| IllegalArgumentException(format!("Required key '{}' not present in front matter.", key)))
+	/// ```java
+	/// public Optional<String> valueOf(String key) {
+	///		return Optional.ofNullable(lines.get(key));
+	///	}
+	/// ```
+	pub fn value_of(&self, key: &str) -> Option<String> {
+		self.lines.get(key).map(Clone::clone)
+	}
+
+	/// ```java
+	/// public String requiredValueOf(String key) {
+	///		return valueOf(key).orElseThrow(
+	///				() -> new IllegalArgumentException("Required key '" + key + "' not present in front matter."));
+	///	}
+	/// ```
+	pub fn required_value_of(&self, key: &str) -> Result<String, Exception> {
+		self.value_of(key)
+			.or_else_throw(|| IllegalArgumentException(format!("Required key '{}' not present in front matter.", key)))
 	}
 }

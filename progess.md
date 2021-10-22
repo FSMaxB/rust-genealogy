@@ -34,7 +34,7 @@
   * factories [ ]
     * ArticleFactory.java [ ]
     * PostFactory.java [ ]
-    * RawFrontMatter.java [ ]
+    * RawFrontMatter.java [x]
     * RawPost.java [ ]
     * TalkFactory.java [ ]
     * VideoFactory.java [ ]

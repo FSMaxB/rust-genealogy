@@ -33,16 +33,16 @@ impl TryFrom<RawPost> for Talk {
 	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
 		let front_matter = raw_post.front_matter;
 		Ok(Talk::new(
-			Title::new(front_matter.value_of(TITLE)?)?,
-			Tag::from(front_matter.value_of(TAGS)?)?,
-			parse_date(front_matter.value_of(DATE)?)?,
-			Description::new(front_matter.value_of(DESCRIPTION)?)?,
-			Slug::new(front_matter.value_of(SLUG)?.to_string())?,
-			Url::parse(front_matter.value_of(SLIDES)?).map_err(|error| IllegalArgumentException(error.to_string()))?,
+			Title::new(&front_matter.required_value_of(TITLE)?)?,
+			Tag::from(&front_matter.required_value_of(TAGS)?)?,
+			parse_date(&front_matter.required_value_of(DATE)?)?,
+			Description::new(&front_matter.required_value_of(DESCRIPTION)?)?,
+			Slug::new(front_matter.required_value_of(SLUG)?)?,
+			Url::parse(&front_matter.required_value_of(SLIDES)?)
+				.map_err(|error| IllegalArgumentException(error.to_string()))?,
 			front_matter
-				.value_of(VIDEO)
+				.required_value_of(VIDEO)
 				.ok()
-				.map(str::to_string)
 				.map(VideoSlug::new)
 				.transpose()?,
 		))

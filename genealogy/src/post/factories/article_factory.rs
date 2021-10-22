@@ -43,15 +43,14 @@ impl TryFrom<RawPost> for Article {
 		// put the constants in it as associated const so they can be used by
 		// dynamic code for lookup in the front matter.
 		Ok(Article::new(
-			Title::new(front_matter.value_of(TITLE)?)?,
-			Tag::from(front_matter.value_of(TAGS)?)?,
-			parse_date(front_matter.value_of(DATE)?)?,
-			Description::new(front_matter.value_of(DESCRIPTION)?)?,
-			Slug::new(front_matter.value_of(SLUG)?.to_string())?,
+			Title::new(&front_matter.required_value_of(TITLE)?)?,
+			Tag::from(&front_matter.required_value_of(TAGS)?)?,
+			parse_date(&front_matter.required_value_of(DATE)?)?,
+			Description::new(&front_matter.required_value_of(DESCRIPTION)?)?,
+			Slug::new(front_matter.required_value_of(SLUG)?)?,
 			front_matter
-				.value_of(REPOSITORY)
+				.required_value_of(REPOSITORY)
 				.ok()
-				.map(str::to_string)
 				.map(Repository::new)
 				.transpose()?,
 			raw_post.content,

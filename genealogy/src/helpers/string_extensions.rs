@@ -10,6 +10,8 @@ pub trait StringExtensions {
 
 	fn split(&self, separator: char) -> Vec<String>;
 
+	fn split_limit(&self, separator: char, limit: usize) -> Vec<String>;
+
 	fn strip(&self) -> String;
 
 	fn is_blank(&self) -> bool;
@@ -30,6 +32,10 @@ where
 
 	fn split(&self, separator: char) -> Vec<String> {
 		self.as_ref().split(separator).map(str::to_owned).collect()
+	}
+
+	fn split_limit(&self, separator: char, limit: usize) -> Vec<String> {
+		self.as_ref().splitn(limit, separator).map(str::to_owned).collect()
 	}
 
 	fn strip(&self) -> String {

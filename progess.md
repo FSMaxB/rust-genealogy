@@ -33,7 +33,7 @@
   * Post.java [x]
   * factories [ ]
     * ArticleFactory.java [ ]
-    * PostFactory.java [ ]
+    * PostFactory.java [x]
     * RawFrontMatter.java [x]
     * RawPost.java [x]
     * TalkFactory.java [ ]

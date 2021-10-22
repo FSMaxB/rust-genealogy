@@ -1,5 +1,5 @@
 use crate::helpers::exception::Exception;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
 /// The combiner and characteristics where left out for easier implementation of the collectors.
@@ -80,7 +80,7 @@ impl Collectors {
 		}
 	}
 
-	pub fn to_hash_set<Input>() -> Collector<Input, HashSet<Input>, HashSet<Input>>
+	pub fn to_set<Input>() -> Collector<Input, HashSet<Input>, HashSet<Input>>
 	where
 		Input: Hash + Eq + 'static,
 	{
@@ -88,6 +88,24 @@ impl Collectors {
 			supplier: Box::new(|| Ok(HashSet::default())),
 			accumulator: Box::new(|set, element| {
 				set.insert(element);
+				Ok(())
+			}),
+			finisher: Box::new(Result::<_, Exception>::Ok),
+		}
+	}
+
+	pub fn to_map<Input, Key, Value>(
+		key_mapper: impl Fn(&Input) -> Key + 'static,
+		value_mapper: impl Fn(&Input) -> Value + 'static,
+	) -> Collector<Input, HashMap<Key, Value>, HashMap<Key, Value>>
+	where
+		Key: Hash + Eq + 'static,
+		Value: 'static,
+	{
+		Collector {
+			supplier: Box::new(|| Ok(HashMap::default())),
+			accumulator: Box::new(move |map, input| {
+				map.insert(key_mapper(&input), value_mapper(&input));
 				Ok(())
 			}),
 			finisher: Box::new(Result::<_, Exception>::Ok),

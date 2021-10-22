@@ -1,6 +1,7 @@
 pub mod collector;
 pub mod completable_future;
 pub mod exception;
+pub mod extensions;
 pub mod files;
 pub mod indexing;
 pub mod iterator;

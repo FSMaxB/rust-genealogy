@@ -23,6 +23,7 @@ impl Tag {
 	}
 
 	/// Used for tests extracting(Tag::text)
+	#[cfg(test)]
 	fn text(self) -> String {
 		self.text
 	}
@@ -40,9 +41,9 @@ impl Tag {
 	/// ```
 	pub fn from(tags_text: &str) -> Result<HashSet<Tag>, Exception> {
 		Stream::of(tags_text.replace_all("^\\[|\\]$", "")?.split(','))
-			.map(|string| string.strip())
+			.map(|string| Ok(string.strip()))
 			.filter(|string| !string.is_empty())
-			.map(Tag::new)
+			.map(|string| Ok(Tag::new(string)))
 			// An UnmodifiableSet isn't really necessary in rust since it
 			// can only be modified via mutable reference anyways.
 			.collect(Collectors::to_set())

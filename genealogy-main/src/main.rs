@@ -81,5 +81,5 @@ fn recommendations_to_json(
 ) -> Result<String, Exception> {
 	let serialized_recommendations = recommendations.collect::<Result<SerializedRecommendations, Exception>>()?;
 	serde_json::to_string(&serialized_recommendations)
-		.map_err(|error| RuntimeException(format!("Failed to serialize JSON: {}", error)))
+		.map_err(|error| RuntimeException("Failed to serialize JSON".into(), error.into()))
 }

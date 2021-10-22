@@ -6,7 +6,7 @@ use std::fmt::{Display, Formatter};
 pub enum Exception {
 	IllegalArgumentException(String),
 	UncheckedIO(std::io::Error),
-	RuntimeException(String),
+	RuntimeException(String, Box<dyn Error>),
 	DateTimeException(chrono::format::ParseError),
 	IndexOutOfBoundsException(usize),
 	PatternSyntaxException(regex::Error),
@@ -23,8 +23,8 @@ impl Display for Exception {
 			UncheckedIO(error) => {
 				write!(formatter, "UncheckedIOException: '{}'", error)
 			}
-			RuntimeException(message) => {
-				write!(formatter, "RuntimeException: '{}'", message)
+			RuntimeException(message, exception) => {
+				write!(formatter, "RuntimeException: '{}', cause: {}", message, exception)
 			}
 			DateTimeException(error) => {
 				write!(formatter, "DateTimeException: '{}'", error)

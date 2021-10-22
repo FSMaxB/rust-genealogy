@@ -11,11 +11,13 @@ impl<Item> Stream<Item>
 where
 	Item: 'static,
 {
-	pub fn map<NewItem>(self, mapper: impl FnMut(Item) -> NewItem + 'static) -> Stream<NewItem>
+	pub fn map<NewItem>(self, mut mapper: impl FnMut(Item) -> Result<NewItem, Exception> + 'static) -> Stream<NewItem>
 	where
 		NewItem: 'static,
 	{
-		self.iterator.map_ok(mapper).into()
+		self.iterator
+			.map(move |result| result.map(|item| (&mut mapper)(item)).and_then(identity))
+			.into()
 	}
 
 	pub fn flat_map<NewItem>(self, mut mapper: impl FnMut(Item) -> Option<Stream<NewItem>> + 'static) -> Stream<NewItem>
@@ -58,6 +60,22 @@ where
 	pub fn to_list(self) -> Result<Vec<Item>, Exception> {
 		self.iterator.collect()
 	}
+
+	pub fn drop_while(self, predicate: impl Fn(&Item) -> bool + 'static) -> Self {
+		self.iterator
+			.skip_while(move |result| result.as_ref().map(|item| (&predicate)(item)).unwrap_or(false))
+			.into()
+	}
+
+	pub fn take_while(self, predicate: impl Fn(&Item) -> bool + 'static) -> Self {
+		self.iterator
+			.take_while(move |result| result.as_ref().map(|item| (&predicate)(item)).unwrap_or(false))
+			.into()
+	}
+
+	pub fn skip(self, amount: usize) -> Self {
+		self.iterator.skip(amount).into()
+	}
 }
 
 impl<Iter, Item, Error> From<Iter> for Stream<Item>
@@ -84,6 +102,23 @@ impl<Item> IntoIterator for Stream<Item> {
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.iterator
+	}
+}
+
+pub trait StreamExtensions {
+	type Item;
+
+	fn stream(self) -> Stream<Self::Item>;
+}
+
+impl<Item> StreamExtensions for Vec<Item>
+where
+	Item: 'static,
+{
+	type Item = Item;
+
+	fn stream(self) -> Stream<Self::Item> {
+		Stream::of(self)
 	}
 }
 

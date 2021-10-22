@@ -3,7 +3,7 @@ use crate::helpers::exception::Exception::RuntimeException;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
-use crate::post::factories::post_factory::{DATE, DESCRIPTION, REPOSITORY, SLUG, TAGS, TITLE};
+use crate::post::factories::post_factory::PostFactory;
 use crate::post::factories::raw_post::RawPost;
 use crate::post::repository::Repository;
 use crate::post::slug::Slug;
@@ -15,14 +15,8 @@ impl TryFrom<&Path> for Article {
 	type Error = Exception;
 
 	fn try_from(path: &Path) -> Result<Self, Self::Error> {
-		RawPost::try_from(path)
-			.map_err(|error| {
-				RuntimeException(format!(
-					r#"Creating article failed: "{}", error: {}"#,
-					path.to_string_lossy(),
-					error
-				))
-			})
+		PostFactory::read_post_from_path(path)
+			.map_err(|error| RuntimeException(format!(r#"Creating article failed: "{:?}""#, path,), error.into()))
 			.and_then(Article::try_from)
 	}
 }
@@ -31,7 +25,7 @@ impl TryFrom<Vec<String>> for Article {
 	type Error = Exception;
 
 	fn try_from(lines: Vec<String>) -> Result<Self, Self::Error> {
-		RawPost::try_from(lines).and_then(Article::try_from)
+		PostFactory::read_post(lines).and_then(Article::try_from)
 	}
 }
 
@@ -44,13 +38,13 @@ impl TryFrom<RawPost> for Article {
 		// put the constants in it as associated const so they can be used by
 		// dynamic code for lookup in the front matter.
 		Ok(Article::new(
-			Title::new(&front_matter.required_value_of(TITLE)?)?,
-			Tag::from(&front_matter.required_value_of(TAGS)?)?,
-			parse_date(&front_matter.required_value_of(DATE)?)?,
-			Description::new(&front_matter.required_value_of(DESCRIPTION)?)?,
-			Slug::new(front_matter.required_value_of(SLUG)?)?,
+			Title::new(&front_matter.required_value_of(PostFactory::TITLE)?)?,
+			Tag::from(&front_matter.required_value_of(PostFactory::TAGS)?)?,
+			parse_date(&front_matter.required_value_of(PostFactory::DATE)?)?,
+			Description::new(&front_matter.required_value_of(PostFactory::DESCRIPTION)?)?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG)?)?,
 			front_matter
-				.required_value_of(REPOSITORY)
+				.required_value_of(PostFactory::REPOSITORY)
 				.ok()
 				.map(Repository::new)
 				.transpose()?,

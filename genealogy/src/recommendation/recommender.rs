@@ -78,6 +78,7 @@ impl Ord for RelationSortedByPostThenByDecreasingScore {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::list_of;
 	use crate::post::test::PostTestHelper;
 	use crate::post::Post;
 	use literally::hset;
@@ -116,7 +117,7 @@ mod test {
 			let recommendations = Recommender::recommend(vec![self.relation_ac.clone()].into_iter().map(Ok), 1)?
 				.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations =
-				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_c.clone()]}};
+				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: list_of!(self.post_c.clone())}};
 			assert_eq!(expected_recommendations, recommendations);
 			Ok(())
 		}
@@ -130,7 +131,7 @@ mod test {
 			)?
 			.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations =
-				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_b.clone()]}};
+				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: list_of!(self.post_b.clone())}};
 			assert_eq!(expected_recommendations, recommendations);
 			Ok(())
 		}
@@ -148,9 +149,9 @@ mod test {
 			)?
 			.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations = hset! {
-				Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_c.clone()]},
-				Recommendation {post: self.post_b.clone(), recommended_posts: vec![self.post_c.clone()]},
-				Recommendation {post: self.post_c.clone(), recommended_posts: vec![self.post_b.clone()]},
+				Recommendation {post: self.post_a.clone(), recommended_posts: list_of!(self.post_c.clone())},
+				Recommendation {post: self.post_b.clone(), recommended_posts: list_of!(self.post_c.clone())},
+				Recommendation {post: self.post_c.clone(), recommended_posts: list_of!(self.post_b.clone())},
 			};
 			assert_eq!(expected_recommendations, recommendations);
 			Ok(())
@@ -172,9 +173,9 @@ mod test {
 			)?
 			.collect::<Result<HashSet<_>, Exception>>()?;
 			let expected_recommendations = hset! {
-				Recommendation {post: self.post_a.clone(), recommended_posts: vec![self.post_b.clone()]},
-				Recommendation {post: self.post_b.clone(), recommended_posts: vec![self.post_c.clone()]},
-				Recommendation {post: self.post_c.clone(), recommended_posts: vec![self.post_a.clone()]},
+				Recommendation {post: self.post_a.clone(), recommended_posts: list_of!(self.post_b.clone())},
+				Recommendation {post: self.post_b.clone(), recommended_posts: list_of!(self.post_c.clone())},
+				Recommendation {post: self.post_c.clone(), recommended_posts: list_of!(self.post_a.clone())},
 			};
 			assert_eq!(expected_recommendations, recommendations);
 			Ok(())

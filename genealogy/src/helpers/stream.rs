@@ -1,5 +1,6 @@
 use crate::helpers::collector::Collector;
 use crate::helpers::exception::Exception;
+use crate::helpers::list::List;
 use resiter::{Filter, FlatMap, Map};
 use std::convert::identity;
 
@@ -60,7 +61,7 @@ where
 		self.iterator.take(limit).into()
 	}
 
-	pub fn to_list(self) -> Result<Vec<Item>, Exception> {
+	pub fn to_list(self) -> Result<List<Item>, Exception> {
 		self.iterator.collect()
 	}
 
@@ -112,17 +113,6 @@ pub trait StreamExtensions<'a> {
 	type Item;
 
 	fn stream(self) -> Stream<'a, Self::Item>;
-}
-
-impl<'a, Item> StreamExtensions<'a> for Vec<Item>
-where
-	Item: 'a,
-{
-	type Item = Item;
-
-	fn stream(self) -> Stream<'a, Self::Item> {
-		Stream::of(self)
-	}
 }
 
 impl<'a, Item> StreamExtensions<'a> for &'a [Item]

@@ -2,7 +2,7 @@ use crate::helpers::completable_future::CompletableFuture;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::files::Files;
-use crate::helpers::indexing::index;
+use crate::helpers::list::List;
 use crate::helpers::path::Path;
 use crate::helpers::system::System;
 use crate::throw;
@@ -66,17 +66,17 @@ impl Config {
 	///		return new Config(articleFolder, talkFolder, videoFolder, outputFile);
 	///	}
 	/// ```
-	fn from_raw_config(raw: Vec<String>) -> Result<Config, Exception> {
+	fn from_raw_config(raw: List<String>) -> Result<Config, Exception> {
 		#[allow(clippy::len_zero)]
 		if raw.len() == 0 {
 			throw!(IllegalArgumentException("No article path defined".into()));
 		}
 
-		let article_folder = Self::read_folder(index(&raw, 0)?)?;
-		let talk_folder = Self::read_folder(index(&raw, 1)?)?;
-		let video_folder = Self::read_folder(index(&raw, 2)?)?;
+		let article_folder = Self::read_folder(raw.get(0)?)?;
+		let talk_folder = Self::read_folder(raw.get(1)?)?;
+		let video_folder = Self::read_folder(raw.get(2)?)?;
 
-		let output_filename = if raw.len() >= 4 { Some(index(&raw, 3)?) } else { None };
+		let output_filename = if raw.len() >= 4 { Some(raw.get(3)?) } else { None };
 
 		let output_file = output_filename
 			.map(|file| Ok::<_, Exception>(Path::of(&System::get_property("user.dir")?).join(file)))
@@ -143,7 +143,7 @@ impl Config {
 	///				.thenApply(Config::fromRawConfig);
 	///	}
 	/// ```
-	pub fn create(args: Vec<String>) -> Result<CompletableFuture<Config>, Exception> {
+	pub fn create(args: List<String>) -> Result<CompletableFuture<Config>, Exception> {
 		#[allow(clippy::len_zero)]
 		let raw_config = if args.len() > 0 {
 			CompletableFuture::completed_future(args)
@@ -151,7 +151,7 @@ impl Config {
 			Self::read_project_config()?
 		}
 		.exceptionally_compose_async(|_| Self::read_user_config())
-		.exceptionally_compose(|_| Ok(Vec::new()));
+		.exceptionally_compose(|_| Ok(List::new()));
 
 		Ok(raw_config.then_apply(Config::from_raw_config))
 	}
@@ -162,7 +162,7 @@ impl Config {
 	/// 	return readConfig(workingDir);
 	/// }
 	/// ```
-	fn read_project_config() -> Result<CompletableFuture<Vec<String>>, Exception> {
+	fn read_project_config() -> Result<CompletableFuture<List<String>>, Exception> {
 		let working_dir = Path::of(&System::get_property("user.dir")?).join(Self::CONFIG_FILE_NAME);
 		Ok(Self::read_config(working_dir))
 	}
@@ -173,7 +173,7 @@ impl Config {
 	/// 	return readConfig(workingDir);
 	/// }
 	/// ```
-	fn read_user_config() -> Result<CompletableFuture<Vec<String>>, Exception> {
+	fn read_user_config() -> Result<CompletableFuture<List<String>>, Exception> {
 		let working_dir = Path::of(&System::get_property("user.home")?).join(Self::CONFIG_FILE_NAME);
 		Ok(Self::read_config(working_dir))
 	}
@@ -189,7 +189,7 @@ impl Config {
 	/// 	});
 	/// }
 	/// ```
-	fn read_config(working_dir: PathBuf) -> CompletableFuture<Vec<String>> {
+	fn read_config(working_dir: PathBuf) -> CompletableFuture<List<String>> {
 		CompletableFuture::supply_async(move || Files::read_all_lines(&working_dir))
 	}
 }

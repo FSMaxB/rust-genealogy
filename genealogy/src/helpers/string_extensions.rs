@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::list::List;
 use regex::{Regex, Replacer};
 
 pub trait StringExtensions {
@@ -8,9 +9,9 @@ pub trait StringExtensions {
 		replacement: Replacement,
 	) -> Result<String, Exception>;
 
-	fn split(&self, separator: char) -> Vec<String>;
+	fn split(&self, separator: char) -> List<String>;
 
-	fn split_limit(&self, separator: char, limit: usize) -> Vec<String>;
+	fn split_limit(&self, separator: char, limit: usize) -> List<String>;
 
 	fn strip(&self) -> &str;
 
@@ -30,11 +31,11 @@ where
 		Ok(regex.replace_all(self.as_ref(), replacement).into_owned())
 	}
 
-	fn split(&self, separator: char) -> Vec<String> {
+	fn split(&self, separator: char) -> List<String> {
 		self.as_ref().split(separator).map(str::to_owned).collect()
 	}
 
-	fn split_limit(&self, separator: char, limit: usize) -> Vec<String> {
+	fn split_limit(&self, separator: char, limit: usize) -> List<String> {
 		self.as_ref().splitn(limit, separator).map(str::to_owned).collect()
 	}
 

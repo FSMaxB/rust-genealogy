@@ -17,6 +17,7 @@ pin-project = "1"
 regex = {version = "1", default_features = false, features = ["std"]}
 resiter = "0.4"
 rustc_version_runtime = "0.2.0"
+serde = {version = "1", features = ["derive"]}
 url = "2"
 
 [dev-dependencies]

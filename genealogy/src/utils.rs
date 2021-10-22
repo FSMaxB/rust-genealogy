@@ -1,6 +1,7 @@
 use crate::helpers::collector::Collector;
 use crate::helpers::exception::Exception::{self, IllegalArgumentException};
 use crate::helpers::files::Files;
+use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
 use crate::helpers::string_extensions::StringExtensions;
 use crate::{list_of, throw};
@@ -63,7 +64,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_read_all_lines(file: &Path) -> Result<Vec<String>, Exception> {
+	pub fn unchecked_files_read_all_lines(file: &Path) -> Result<List<String>, Exception> {
 		Files::read_all_lines(file)
 	}
 

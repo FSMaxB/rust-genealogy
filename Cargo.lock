@@ -131,6 +131,7 @@ dependencies = [
  "regex",
  "resiter",
  "rustc_version_runtime",
+ "serde",
  "url",
 ]
 

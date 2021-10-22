@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
 use resiter::Map;
 use std::fs::{File, OpenOptions};
@@ -15,7 +16,7 @@ impl Files {
 		}
 	}
 
-	pub fn read_all_lines(path: &Path) -> Result<Vec<String>, Exception> {
+	pub fn read_all_lines(path: &Path) -> Result<List<String>, Exception> {
 		let file = File::open(path)?;
 		BufReader::new(file).lines().map_err(Exception::from).collect()
 	}

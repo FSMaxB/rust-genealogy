@@ -1,3 +1,4 @@
+use genealogy::helpers::list::List;
 use genealogy::post::Post;
 use genealogy::recommendation::Recommendation;
 use serde::Serialize;
@@ -6,7 +7,7 @@ use std::iter::FromIterator;
 #[derive(Serialize)]
 pub struct SerializedRecommendations {
 	#[serde(flatten)]
-	posts: Vec<SerializedRecommendation>,
+	posts: List<SerializedRecommendation>,
 }
 
 impl FromIterator<Recommendation> for SerializedRecommendations {
@@ -24,7 +25,7 @@ impl FromIterator<Recommendation> for SerializedRecommendations {
 #[derive(Serialize)]
 struct SerializedRecommendation {
 	title: String,
-	recommendations: Vec<SerializedPost>,
+	recommendations: List<SerializedPost>,
 }
 
 impl From<&Recommendation> for SerializedRecommendation {

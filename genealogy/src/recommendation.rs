@@ -13,7 +13,7 @@ pub mod recommender;
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Recommendation {
 	pub post: Post,
-	pub recommended_posts: Vec<Post>,
+	pub recommended_posts: List<Post>,
 }
 
 impl Recommendation {
@@ -23,7 +23,7 @@ impl Recommendation {
 	///		requireNonNull(recommendedPosts);
 	///	}
 	/// ```
-	pub fn new(post: Post, recommended_posts: Vec<Post>) -> Self {
+	pub fn new(post: Post, recommended_posts: List<Post>) -> Self {
 		Self {
 			post,
 			recommended_posts,
@@ -53,7 +53,7 @@ impl Recommendation {
 	///		return List.copyOf(recommendedPosts);
 	///	}
 	/// ```
-	pub fn recommended_posts(&self) -> Vec<Post> {
+	pub fn recommended_posts(&self) -> List<Post> {
 		List::copy_of(&self.recommended_posts)
 	}
 }

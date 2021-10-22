@@ -1,5 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
+use crate::helpers::list::List;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::factories::parse_date;
@@ -48,7 +49,7 @@ impl ArticleFactory {
 	///	}
 	/// ```
 	/// Note: The method has been renamed because rust doesn't have any overloading.
-	pub fn create_article_from_lines(file_lines: Vec<String>) -> Result<Article, Exception> {
+	pub fn create_article_from_lines(file_lines: List<String>) -> Result<Article, Exception> {
 		let post = PostFactory::read_post(file_lines)?;
 		Self::create_article_from_raw_post(post)
 	}
@@ -93,7 +94,7 @@ mod test {
 
 	#[test]
 	fn create_from_front_matter_multiple_colons_get_valid_article() {
-		let file = line_vector(&[
+		let file = lines(&[
 			"---",
 			"title: Cool: A blog post",
 			"tags: [$TAG, $TOG]",
@@ -115,7 +116,7 @@ mod test {
 
 	#[test]
 	fn create_from_front_matter_all_tags_correct_get_valid_article() {
-		let file = line_vector(&[
+		let file = lines(&[
 			"---",
 			"title: A cool blog post",
 			"tags: [$TAG, $TOG]",
@@ -137,7 +138,7 @@ mod test {
 
 	#[test]
 	fn creat_from_file_all_tags_correct_get_valid_article() {
-		let file = line_vector(&[
+		let file = lines(&[
 			"---",
 			"title: A cool blog post",
 			"tags: [$TAG, $TOG]",
@@ -160,7 +161,7 @@ mod test {
 		assert_eq!("Very blog, much post, so wow", post.description.text);
 		assert_eq!("cool-blog-post", post.slug.value);
 		let content = (post.content)().to_list().unwrap();
-		let expected_content = line_vector(&[
+		let expected_content = lines(&[
 			"",
 			"Lorem ipsum dolor sit amet.",
 			"Ut enim ad minim veniam.",
@@ -170,7 +171,7 @@ mod test {
 		assert_eq!(expected_content, content);
 	}
 
-	fn line_vector(lines: &[&str]) -> Vec<String> {
+	fn lines(lines: &[&str]) -> List<String> {
 		lines.iter().copied().map(str::to_string).collect()
 	}
 }

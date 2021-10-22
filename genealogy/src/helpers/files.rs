@@ -43,7 +43,7 @@ impl Files {
 			.into())
 	}
 
-	pub fn write<'content, Lines, Line>(path: impl AsRef<Path>, lines: Lines) -> Result<(), Exception>
+	pub fn write<Lines, Line>(path: impl AsRef<Path>, lines: Lines) -> Result<(), Exception>
 	where
 		Line: AsRef<[u8]>,
 		Lines: IntoIterator<Item = Line>,

@@ -7,6 +7,7 @@ use std::ops::Deref;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+#[allow(clippy::derive_hash_xor_eq)]
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct JString {
 	text: Arc<String>,

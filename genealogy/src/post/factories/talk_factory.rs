@@ -32,7 +32,7 @@ impl TryFrom<RawPost> for Talk {
 			Tag::from(front_matter.required_value_of(PostFactory::TAGS().into())?)?,
 			parse_date(front_matter.required_value_of(PostFactory::DATE().into())?)?,
 			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION().into())?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?.into())?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?)?,
 			Url::parse(front_matter.required_value_of(PostFactory::SLIDES().into())?.as_ref())
 				.map_err(|error| IllegalArgumentException(error.to_string()))?,
 			front_matter

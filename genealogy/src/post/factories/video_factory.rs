@@ -33,7 +33,7 @@ impl TryFrom<RawPost> for Video {
 			parse_date(front_matter.required_value_of(PostFactory::DATE().into())?)?,
 			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION().into())?)?,
 			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?)?,
-			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO().into())?.into())?,
+			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO().into())?)?,
 			front_matter
 				.required_value_of(PostFactory::REPOSITORY().into())
 				.ok()

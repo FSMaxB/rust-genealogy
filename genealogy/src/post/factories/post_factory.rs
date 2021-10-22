@@ -111,7 +111,7 @@ impl PostFactory {
 	fn extract_front_matter(file_lines: List<JString>) -> Result<RawFrontMatter, Exception> {
 		let front_matter = Self::read_front_matter(file_lines)
 			.filter(|line| !line.starts_with("#"))
-			.map(|string| PostFactory::key_value_pair_from(string))
+			.map(PostFactory::key_value_pair_from)
 			.collect(Collectors::to_map(FrontMatterLine::key, FrontMatterLine::value))?;
 		Ok(RawFrontMatter::new(front_matter))
 	}
@@ -161,7 +161,7 @@ impl PostFactory {
 		}
 
 		let value = pair.get(1)?.strip();
-		Ok(FrontMatterLine::new(key.into(), value.into()))
+		Ok(FrontMatterLine::new(key, value))
 	}
 
 	/// ```java

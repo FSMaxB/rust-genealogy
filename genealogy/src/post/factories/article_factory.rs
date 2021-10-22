@@ -76,7 +76,7 @@ impl ArticleFactory {
 			Tag::from(front_matter.required_value_of(PostFactory::TAGS().into())?)?,
 			parse_date(front_matter.required_value_of(PostFactory::DATE().into())?)?,
 			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION().into())?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?.into())?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?)?,
 			front_matter
 				.value_of(PostFactory::REPOSITORY().into())
 				.map(Repository::new)

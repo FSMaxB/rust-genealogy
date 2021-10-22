@@ -125,7 +125,7 @@ pub mod test {
 				Tag::from("[Tag]".into())?,
 				LocalDate::today(),
 				Description::new("description".into())?,
-				Slug::new(slug.into())?,
+				Slug::new(slug)?,
 				None,
 				Box::new(|| stream_of!("".into())),
 			)

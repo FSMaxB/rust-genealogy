@@ -12,21 +12,51 @@ use crate::post::title::Title;
 use crate::post::video::Video;
 use crate::post::video_slug::VideoSlug;
 
-impl TryFrom<Path> for Video {
-	type Error = Exception;
+/// ```java
+/// public final class VideoFactory {
+///
+/// 	private VideoFactory() {
+/// 		// private constructor to prevent accidental instantiation of utility class
+/// 	}
+/// ```
+/// The empty enum has the same effect as a private constructor, preventing instantiation.
+pub enum VideoFactory {}
 
-	fn try_from(path: Path) -> Result<Self, Self::Error> {
-		PostFactory::read_post_from_path(path.clone())
-			.map_err(|error| RuntimeException(r#"Creating video failed: ""# + path + r#"""#, error.into()))
-			.and_then(Video::try_from)
+impl VideoFactory {
+	/// ```java
+	/// public static Video createVideo(Path file) {
+	///		try {
+	///			RawPost post = PostFactory.readPost(file);
+	///			return createVideo(post);
+	///		} catch (RuntimeException ex) {
+	///			throw new RuntimeException("Creating video failed: " + file, ex);
+	///		}
+	///	}
+	/// ```
+	pub fn create_video(file: Path) -> Result<Video, Exception> {
+		// simulate try-catch
+		(|| {
+			let post = PostFactory::read_post_from_path(file.clone())?;
+			Self::create_video_from_raw_post(post)
+		})()
+		.map_err(|ex| RuntimeException(r#"Creating video failed: ""# + file, ex.into()))
 	}
-}
 
-impl TryFrom<RawPost> for Video {
-	type Error = Exception;
-
-	fn try_from(raw_post: RawPost) -> Result<Self, Self::Error> {
-		let front_matter = raw_post.front_matter();
+	/// ```java
+	/// private static Video createVideo(RawPost post) {
+	///		RawFrontMatter frontMatter = post.frontMatter();
+	///		return new Video(
+	///				new Title(frontMatter.requiredValueOf(TITLE)),
+	///				Tag.from(frontMatter.requiredValueOf(TAGS)),
+	///				LocalDate.parse(frontMatter.requiredValueOf(DATE)),
+	///				new Description(frontMatter.requiredValueOf(DESCRIPTION)),
+	///				new Slug(frontMatter.requiredValueOf(SLUG)),
+	///				new VideoSlug(frontMatter.requiredValueOf(VIDEO)),
+	///				frontMatter.valueOf(REPOSITORY).map(Repository::new));
+	///	}
+	/// ```
+	fn create_video_from_raw_post(post: RawPost) -> Result<Video, Exception> {
+		let front_matter = post.front_matter();
 		Ok(Video::new(
 			Title::new(front_matter.required_value_of(PostFactory::TITLE())?)?,
 			Tag::from(front_matter.required_value_of(PostFactory::TAGS())?)?,

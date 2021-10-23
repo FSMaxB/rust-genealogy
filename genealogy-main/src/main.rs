@@ -14,7 +14,7 @@ use genealogy::helpers::path::Path;
 use genealogy::helpers::string::JString;
 use genealogy::post::factories::article_factory::ArticleFactory;
 use genealogy::post::factories::talk_factory::TalkFactory;
-use genealogy::post::video::Video;
+use genealogy::post::factories::video_factory::VideoFactory;
 use genealogy::post::Post;
 use genealogy::process_details::ProcessDetails;
 use genealogy::recommendation::recommender::Recommender;
@@ -22,6 +22,7 @@ use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
 use resiter::{AndThen, Filter};
 use std::rc::Rc;
+
 mod json;
 
 fn main() -> Result<(), Exception> {
@@ -47,7 +48,7 @@ fn create_genealogy(article_folder: Path, talk_folder: Path, video_folder: Path)
 			markdown_files_in(article_folder)?.and_then_ok(|path| ArticleFactory::create_article(path).map(Post::from)),
 		),
 		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| TalkFactory::create_talk(path).map(Post::from))),
-		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path).map(Post::from))),
+		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| VideoFactory::create_video(path).map(Post::from))),
 	];
 	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());

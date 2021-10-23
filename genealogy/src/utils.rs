@@ -3,11 +3,11 @@ use crate::helpers::exception::Exception::{self, IllegalArgumentException};
 use crate::helpers::files::Files;
 use crate::helpers::list::List;
 use crate::helpers::optional::Optional;
+use crate::helpers::path::Path;
 use crate::helpers::stream::Stream;
 use crate::helpers::string::JString;
 use crate::throw;
 use std::fmt::Debug;
-use std::path::{Path, PathBuf};
 
 /// ```java
 /// public final class Utils {
@@ -39,7 +39,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_list(dir: &Path) -> Result<Stream<'static, PathBuf>, Exception> {
+	pub fn unchecked_files_list(dir: Path) -> Result<Stream<'static, Path>, Exception> {
 		Files::list(dir)
 	}
 
@@ -52,7 +52,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_write(path: &Path, content: JString) -> Result<(), Exception> {
+	pub fn unchecked_files_write(path: Path, content: JString) -> Result<(), Exception> {
 		Files::write(path, List::of([content]))
 	}
 
@@ -65,7 +65,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_read_all_lines(file: &Path) -> Result<List<JString>, Exception> {
+	pub fn unchecked_files_read_all_lines(file: Path) -> Result<List<JString>, Exception> {
 		Files::read_all_lines(file)
 	}
 
@@ -78,7 +78,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_lines(file: &Path) -> Result<Stream<JString>, Exception> {
+	pub fn unchecked_files_lines(file: Path) -> Result<Stream<'static, JString>, Exception> {
 		Files::lines(file)
 	}
 

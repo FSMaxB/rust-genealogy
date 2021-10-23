@@ -4,7 +4,6 @@ use regex::{Regex, Replacer};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Deref};
-use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 #[allow(clippy::derive_hash_xor_eq)]
@@ -115,8 +114,8 @@ impl From<String> for JString {
 	}
 }
 
-impl AsRef<Path> for JString {
-	fn as_ref(&self) -> &Path {
+impl AsRef<std::path::Path> for JString {
+	fn as_ref(&self) -> &std::path::Path {
 		self.text.as_ref().as_ref()
 	}
 }
@@ -133,53 +132,18 @@ impl AsRef<[u8]> for JString {
 	}
 }
 
-impl From<JString> for PathBuf {
-	fn from(jstring: JString) -> Self {
-		jstring.text.deref().into()
-	}
-}
-
-impl Add<&str> for JString {
+impl<Displayable> Add<Displayable> for JString
+where
+	Displayable: Display,
+{
 	type Output = JString;
 
-	fn add(self, right_hand_side: &str) -> Self::Output {
+	fn add(self, right_hand_side: Displayable) -> Self::Output {
 		format!("{}{}", self, right_hand_side).into()
 	}
 }
 
-impl Add<&Path> for JString {
-	type Output = JString;
-
-	fn add(self, right_hand_side: &Path) -> Self::Output {
-		format!("{}{}", self, right_hand_side.display()).into()
-	}
-}
-
-impl Add<&PathBuf> for JString {
-	type Output = JString;
-
-	fn add(self, right_hand_side: &PathBuf) -> Self::Output {
-		format!("{}{}", self, right_hand_side.display()).into()
-	}
-}
-
-impl Add<i64> for JString {
-	type Output = JString;
-
-	fn add(self, right_hand_side: i64) -> Self::Output {
-		format!("{}{}", self, right_hand_side).into()
-	}
-}
-
-impl Add<String> for JString {
-	type Output = JString;
-
-	fn add(self, right_hand_side: String) -> Self::Output {
-		format!("{}{}", self, right_hand_side).into()
-	}
-}
-
-impl Add<JString> for JString {
+impl Add<JString> for &str {
 	type Output = JString;
 
 	fn add(self, right_hand_side: JString) -> Self::Output {

@@ -1,6 +1,7 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
 use crate::helpers::list::List;
+use crate::helpers::path::Path;
 use crate::helpers::string::JString;
 use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::post::article::Article;
@@ -11,7 +12,6 @@ use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
-use std::path::Path;
 
 /// ```java
 /// public final class ArticleFactory {
@@ -34,13 +34,13 @@ impl ArticleFactory {
 	///		}
 	///	}
 	/// ```
-	pub fn create_article(file: &Path) -> Result<Article, Exception> {
+	pub fn create_article(file: Path) -> Result<Article, Exception> {
 		// simulate try catch
 		(|| {
-			let post = PostFactory::read_post_from_path(file)?;
+			let post = PostFactory::read_post_from_path(file.clone())?;
 			Self::create_article_from_raw_post(post)
 		})()
-		.map_err(|ex| RuntimeException(JString::from("Creating article failed: ") + file, ex.into()))
+		.map_err(|ex| RuntimeException("Creating article failed: " + file, ex.into()))
 	}
 
 	/// ```java

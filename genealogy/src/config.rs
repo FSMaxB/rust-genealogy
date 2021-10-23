@@ -7,9 +7,7 @@ use crate::helpers::optional::Optional;
 use crate::helpers::path::Path;
 use crate::helpers::string::JString;
 use crate::helpers::system::System;
-use crate::throw;
-use lazy_static::lazy_static;
-use std::path::PathBuf;
+use crate::{r#static, throw};
 
 /// ```java
 /// public record Config(
@@ -19,22 +17,17 @@ use std::path::PathBuf;
 /// 	Optional<Path> outputFile) {
 /// ```
 pub struct Config {
-	pub article_folder: PathBuf,
-	pub talk_folder: PathBuf,
-	pub video_folder: PathBuf,
-	pub output_file: Optional<PathBuf>,
+	pub article_folder: Path,
+	pub talk_folder: Path,
+	pub video_folder: Path,
+	pub output_file: Optional<Path>,
 }
 
 impl Config {
-	/// ```java
-	/// private static final String CONFIG_FILE_NAME = "recommendations.config";
-	/// ```
-	fn config_file_name() -> JString {
-		lazy_static! {
-			static ref CONFIG_FILE_NAME: JString = "recommendations.config".into();
-		};
-		CONFIG_FILE_NAME.clone()
-	}
+	// ```java
+	// private static final String CONFIG_FILE_NAME = "recommendations.config";
+	// ```
+	r#static!(pub CONFIG_FILE_NAME: JString = "recommendations.config".into());
 
 	/// ```java
 	/// // use static factory method(s)
@@ -90,14 +83,12 @@ impl Config {
 			Optional::empty()
 		};
 
-		let output_file =
-			output_filename.map(|file| Ok::<_, Exception>(Path::of(&System::get_property("user.dir")?).join(file)))?;
+		let output_file = output_filename
+			.map(|file| Ok::<_, Exception>(Path::of(System::get_property("user.dir")?).resolve(file.clone())))?;
 		output_file.if_present(|file| {
-			let not_writable = Files::exists(file) && Files::is_writable(file);
+			let not_writable = Files::exists(file.clone()) && Files::is_writable(file.clone());
 			if not_writable {
-				throw!(IllegalArgumentException(
-					JString::from("Output path is not writable: ") + file
-				));
+				throw!(IllegalArgumentException("Output path is not writable: " + file));
 			}
 			Ok(())
 		})?;
@@ -120,21 +111,17 @@ impl Config {
 	/// 	return folder;
 	/// }
 	/// ```
-	fn read_folder(raw: JString) -> Result<PathBuf, Exception> {
-		let folder = PathBuf::from(raw);
-
+	fn read_folder(raw: JString) -> Result<Path, Exception> {
 		// NOTE: In general, paths are NOT valid Unicode strings.
 		// E.g. on UNIX they are just bytes with some disallowed characters.
-		if !folder.exists() {
-			return Err(IllegalArgumentException(
-				JString::from("Path doesn't exist: ") + &folder,
-			));
+		let folder = Path::of(raw);
+
+		if !Files::exists(&folder) {
+			return Err(IllegalArgumentException("Path doesn't exist: " + &folder));
 		}
 
-		if !folder.is_dir() {
-			return Err(IllegalArgumentException(
-				JString::from("Path is no directory: ") + &folder,
-			));
+		if !Files::is_directory(&folder) {
+			return Err(IllegalArgumentException("Path is no directory: " + &folder));
 		}
 
 		Ok(folder)
@@ -172,7 +159,7 @@ impl Config {
 	/// }
 	/// ```
 	fn read_project_config() -> Result<CompletableFuture<List<JString>>, Exception> {
-		let working_dir = Path::of(&System::get_property("user.dir")?).join(Self::config_file_name());
+		let working_dir = Path::of(System::get_property("user.dir")?).resolve(Self::CONFIG_FILE_NAME());
 		Ok(Self::read_config(working_dir))
 	}
 
@@ -183,7 +170,7 @@ impl Config {
 	/// }
 	/// ```
 	fn read_user_config() -> Result<CompletableFuture<List<JString>>, Exception> {
-		let working_dir = Path::of(&System::get_property("user.home")?).join(Self::config_file_name());
+		let working_dir = Path::of(System::get_property("user.home")?).resolve(Self::CONFIG_FILE_NAME());
 		Ok(Self::read_config(working_dir))
 	}
 
@@ -198,7 +185,7 @@ impl Config {
 	/// 	});
 	/// }
 	/// ```
-	fn read_config(working_dir: PathBuf) -> CompletableFuture<List<JString>> {
+	fn read_config(working_dir: Path) -> CompletableFuture<List<JString>> {
 		CompletableFuture::supply_async(move || Files::read_all_lines(&working_dir))
 	}
 }

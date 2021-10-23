@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
-use crate::helpers::string::JString;
+use crate::helpers::path::Path;
 use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::post::description::Description;
 use crate::post::factories::post_factory::PostFactory;
@@ -11,19 +11,13 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video::Video;
 use crate::post::video_slug::VideoSlug;
-use std::path::Path;
 
-impl TryFrom<&Path> for Video {
+impl TryFrom<Path> for Video {
 	type Error = Exception;
 
-	fn try_from(path: &Path) -> Result<Self, Self::Error> {
-		PostFactory::read_post_from_path(path)
-			.map_err(|error| {
-				RuntimeException(
-					JString::from(r#"Creating video failed: ""#) + path + r#"""#,
-					error.into(),
-				)
-			})
+	fn try_from(path: Path) -> Result<Self, Self::Error> {
+		PostFactory::read_post_from_path(path.clone())
+			.map_err(|error| RuntimeException(r#"Creating video failed: ""# + path + r#"""#, error.into()))
 			.and_then(Video::try_from)
 	}
 }

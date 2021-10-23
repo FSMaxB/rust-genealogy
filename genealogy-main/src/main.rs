@@ -10,6 +10,7 @@ use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
 use genealogy::helpers::exception::Exception::RuntimeException;
+use genealogy::helpers::path::Path;
 use genealogy::helpers::string::JString;
 use genealogy::post::factories::article_factory::ArticleFactory;
 use genealogy::post::factories::talk_factory::TalkFactory;
@@ -20,9 +21,7 @@ use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
 use resiter::{AndThen, Filter};
-use std::path::{Path, PathBuf};
 use std::rc::Rc;
-
 mod json;
 
 fn main() -> Result<(), Exception> {
@@ -31,38 +30,35 @@ fn main() -> Result<(), Exception> {
 	// NOTE: The first parameter is just the current program, so needs to be skipped.
 	let args = std::env::args().skip(1).map(JString::from).collect();
 	let config = Config::create(args)?.join()?;
-	let genealogy = create_genealogy(&config.article_folder, &config.talk_folder, &config.video_folder)?;
+	let genealogy = create_genealogy(config.article_folder, config.talk_folder, config.video_folder)?;
 
 	let relations = genealogy.infer_relations();
 	let recommendations = Recommender::recommend(relations, 3)?;
 	let recommendations_as_json = recommendations_to_json(recommendations)?;
 	config
 		.output_file
-		.if_present(move |file| Utils::unchecked_files_write(file.as_ref(), recommendations_as_json))?;
+		.if_present(move |file| Utils::unchecked_files_write(file.clone(), recommendations_as_json))?;
 	Ok(())
 }
 
-fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Path) -> Result<Genealogy, Exception> {
+fn create_genealogy(article_folder: Path, talk_folder: Path, video_folder: Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
-			markdown_files_in(article_folder)?
-				.and_then_ok(|path| ArticleFactory::create_article(&path).map(Post::from)),
+			markdown_files_in(article_folder)?.and_then_ok(|path| ArticleFactory::create_article(path).map(Post::from)),
 		),
-		Box::new(
-			markdown_files_in(talk_folder)?.and_then_ok(|path| TalkFactory::create_talk(path.as_ref()).map(Post::from)),
-		),
-		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::from))),
+		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| TalkFactory::create_talk(path).map(Post::from))),
+		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path).map(Post::from))),
 	];
 	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());
 	Ok(Genealogy::new(posts, genealogists, Weights::all_equal()))
 }
 
-fn markdown_files_in(folder: &Path) -> Result<impl Iterator<Item = Result<PathBuf, Exception>>, Exception> {
+fn markdown_files_in(folder: Path) -> Result<impl Iterator<Item = Result<Path, Exception>>, Exception> {
 	Ok(
 		Box::<dyn Iterator<Item = _>>::from(Utils::unchecked_files_list(folder)?)
-			.filter_ok(|path| path.is_file())
-			.filter_ok(|path| path.ends_with(".md")),
+			.filter_ok(|path| path.as_ref().is_file())
+			.filter_ok(|path| path.as_ref().ends_with(".md")),
 	)
 }
 

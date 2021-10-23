@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException, URISyntaxException};
-use crate::helpers::string::JString;
+use crate::helpers::path::Path;
 use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::helpers::uri::URI;
 use crate::post::description::Description;
@@ -11,7 +11,6 @@ use crate::post::tag::Tag;
 use crate::post::talk::Talk;
 use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
-use std::path::Path;
 
 /// ```java
 /// public final class TalkFactory {
@@ -34,13 +33,13 @@ impl TalkFactory {
 	///		}
 	///	}
 	/// ```
-	pub fn create_talk(file: &Path) -> Result<Talk, Exception> {
+	pub fn create_talk(file: Path) -> Result<Talk, Exception> {
 		// simulate try-catch
 		(|| {
-			let post = PostFactory::read_post_from_path(file)?;
+			let post = PostFactory::read_post_from_path(file.clone())?;
 			Self::create_talk_from_raw_post(post)
 		})()
-		.map_err(|ex| RuntimeException(JString::from("Creating talk failed: ") + file, ex.into()))
+		.map_err(|ex| RuntimeException("Creating talk failed: " + file, ex.into()))
 	}
 
 	/// ```java

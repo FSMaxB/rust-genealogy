@@ -2,6 +2,7 @@ use crate::helpers::collector::Collectors;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
 use crate::helpers::list::List;
+use crate::helpers::path::Path;
 use crate::helpers::stream::{Stream, StreamExtensions};
 use crate::helpers::string::JString;
 use crate::post::factories::raw_front_matter::RawFrontMatter;
@@ -9,8 +10,6 @@ use crate::post::factories::raw_post::RawPost;
 use crate::r#static;
 use crate::throw;
 use crate::utils::Utils;
-use std::path::Path;
-
 /// ```java
 /// final class PostFactory {
 /// 	private PostFactory() {
@@ -77,13 +76,13 @@ impl PostFactory {
 	///	}
 	/// ````
 	/// Note: Different name in rust because overloading isn't possible
-	pub fn read_post_from_path(file: &Path) -> Result<RawPost, Exception> {
+	pub fn read_post_from_path(file: Path) -> Result<RawPost, Exception> {
 		// simulated try-catch block
 		(|| {
-			let eager_lines = Utils::unchecked_files_read_all_lines(file)?;
+			let eager_lines = Utils::unchecked_files_read_all_lines(file.clone())?;
 			Self::read_post(eager_lines)
 		})()
-		.map_err(|exception| RuntimeException(JString::from("Creating article failed: ") + file, exception.into()))
+		.map_err(|exception| RuntimeException("Creating article failed: " + file, exception.into()))
 	}
 
 	/// ```java
@@ -151,14 +150,12 @@ impl PostFactory {
 		let pair = line.split_limit(':', 2);
 		if pair.len() < 2 {
 			throw!(IllegalArgumentException(
-				JString::from("Line doesn't seem to be a key/value pair (no colon): ") + line
+				"Line doesn't seem to be a key/value pair (no colon): " + line
 			));
 		}
 		let key = pair.get(0)?.strip();
 		if key.is_blank() {
-			throw!(IllegalArgumentException(
-				JString::from(r#"Line ""#) + line + r#"" has no key."#
-			));
+			throw!(IllegalArgumentException(r#"Line ""# + line + r#"" has no key."#));
 		}
 
 		let value = pair.get(1)?.strip();

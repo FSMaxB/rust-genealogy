@@ -50,8 +50,7 @@ mod test {
 	use crate::genealogist::relation_type::RelationType;
 	use crate::genealogy::weights::Weights;
 	use crate::helpers::test::assert_that;
-	use crate::map_of;
-	use lazy_static::lazy_static;
+	use crate::{map_of, r#static};
 
 	/// ```java
 	/// class WeightsTests {
@@ -59,25 +58,15 @@ mod test {
 	pub struct WeightsTests;
 
 	impl WeightsTests {
-		/// ```java
-		/// public static final RelationType TAG_TYPE = new RelationType("tag");
-		/// ```
-		fn tag_type() -> RelationType {
-			lazy_static! {
-				static ref TAG_TYPE: RelationType = RelationType::new("tag".into()).unwrap();
-			};
-			TAG_TYPE.clone()
-		}
+		// ```java
+		// public static final RelationType TAG_TYPE = new RelationType("tag");
+		// ```
+		r#static!(pub TAG_TYPE: RelationType = RelationType::new("tag".into()).unwrap());
 
-		/// ```java
-		/// public static final RelationType LIST_TYPE = new RelationType("list");
-		/// ```
-		fn list_type() -> RelationType {
-			lazy_static! {
-				static ref LIST_TYPE: RelationType = RelationType::new("list".into()).unwrap();
-			};
-			LIST_TYPE.clone()
-		}
+		// ```java
+		// public static final RelationType LIST_TYPE = new RelationType("list");
+		// ```
+		r#static!(pub LIST_TYPE: RelationType = RelationType::new("list".into()).unwrap());
 
 		// NOTE: The following tests are omitted because there is no `null` in rust:
 		//
@@ -104,9 +93,9 @@ mod test {
 		///	}
 		/// ```
 		pub(super) fn known_relation_type__returns_weight() {
-			let weights = Weights::new(&map_of!(Self::tag_type(), 0.42), 0.5);
+			let weights = Weights::new(&map_of!(Self::TAG_TYPE(), 0.42), 0.5);
 
-			assert_that(weights.weight_of(&Self::tag_type())).is_equal_to(0.42);
+			assert_that(weights.weight_of(&Self::TAG_TYPE())).is_equal_to(0.42);
 		}
 
 		/// ```java
@@ -118,9 +107,9 @@ mod test {
 		///	}
 		/// ```
 		pub(super) fn unknown_relation_type__returns_default_weight() {
-			let weights = Weights::new(&map_of!(Self::tag_type(), 0.42), 0.5);
+			let weights = Weights::new(&map_of!(Self::TAG_TYPE(), 0.42), 0.5);
 
-			assert_that(weights.weight_of(&Self::list_type())).is_equal_to(0.5);
+			assert_that(weights.weight_of(&Self::LIST_TYPE())).is_equal_to(0.5);
 		}
 	}
 

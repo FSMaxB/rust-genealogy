@@ -24,7 +24,7 @@ impl Tag {
 
 	/// Used for tests extracting(Tag::text)
 	#[cfg(test)]
-	fn text(self) -> JString {
+	pub fn text(self) -> JString {
 		self.text
 	}
 

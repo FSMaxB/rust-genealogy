@@ -109,4 +109,22 @@ where
 			);
 		}
 	}
+
+	#[track_caller]
+	pub fn contains_exactly<ExpectedValues>(self, expected_values: ExpectedValues)
+	where
+		ExpectedValues: IntoIterator,
+		ExpectedValues::Item: Debug + PartialEq<Value::Item>,
+		Value::Item: Debug,
+	{
+		let expected_values = expected_values.into_iter().collect::<Vec<ExpectedValues::Item>>();
+		let actual_values = self.value.into_iter().collect::<Vec<Value::Item>>();
+
+		if expected_values != actual_values {
+			panic!(
+				"The collections differ, actual: {:#?} expected: {:#?}",
+				actual_values, expected_values
+			);
+		}
+	}
 }

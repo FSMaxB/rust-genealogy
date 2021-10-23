@@ -86,92 +86,176 @@ impl ArticleFactory {
 	}
 }
 
+/// ```java
+/// class ArticleFactoryTests {
+/// ```
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::helpers::test::assert_that;
 	use crate::helpers::time::LocalDate;
-	use crate::test_helpers::hash_set_of_tags;
+	use crate::helpers::time::LocalDateExtension;
+	use crate::post::content::ContentExtensions;
 
+	/// ```java
+	/// @Test
+	///	void createFromFrontMatter_multipleColons_getValidArticle() {
+	///		var file = List.of(
+	///				"---",
+	///				"title: Cool: A blog post",
+	///				"tags: [$TAG, $TOG]",
+	///				"date: 2020-01-23",
+	///				"description: \"Very blog, much post, so wow\"",
+	///				"slug: cool-blog-post",
+	///				"---",
+	///				""
+	///		);
+	///
+	///		var post = ArticleFactory.createArticle(file);
+	///
+	///		assertThat(post.title().text()).isEqualTo("Cool: A blog post");
+	///		assertThat(post.tags()).extracting(Tag::text).containsExactlyInAnyOrder("$TAG", "$TOG");
+	///		assertThat(post.date()).isEqualTo(LocalDate.of(2020, 1, 23));
+	///		assertThat(post.description().text()).isEqualTo("Very blog, much post, so wow");
+	///		assertThat(post.slug().value()).isEqualTo("cool-blog-post");
+	///	}
+	/// ```
 	#[test]
-	fn create_from_front_matter_multiple_colons_get_valid_article() {
-		let file = lines(&[
-			"---",
-			"title: Cool: A blog post",
-			"tags: [$TAG, $TOG]",
-			"date: 2020-01-23",
-			"description: \"Very blog, much post, so wow\"",
-			"slug: cool-blog-post",
-			"---",
-			"",
+	fn create_from_front_matter__multiple_colons__get_valid_article() {
+		let file = List::of([
+			"---".into(),
+			"title: Cool: A blog post".into(),
+			"tags: [$TAG, $TOG]".into(),
+			"date: 2020-01-23".into(),
+			r#"description: "Very blog, much post, so wow""#.into(),
+			"slug: cool-blog-post".into(),
+			"---".into(),
+			"".into(),
 		]);
 
 		let post = ArticleFactory::create_article_from_lines(file).unwrap();
 
-		assert_eq!("Cool: A blog post", post.title.text);
-		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags());
-		assert_eq!(LocalDate::from_ymd(2020, 1, 23), post.date);
-		assert_eq!("Very blog, much post, so wow", post.description.text);
-		assert_eq!("cool-blog-post", post.slug.value);
+		assert_that(&post.title.text).is_equal_to("Cool: A blog post");
+		assert_that(post.tags())
+			.extracting(Tag::text)
+			.contains_exactly_in_any_order(["$TAG", "$TOG"]);
+		assert_that(post.date).is_equal_to(LocalDate::of(2020, 1, 23));
+		assert_that(&post.description.text).is_equal_to("Very blog, much post, so wow");
+		assert_that(&post.slug.value).is_equal_to("cool-blog-post");
 	}
 
+	/// ```java
+	/// @Test
+	///	void createFromFrontMatter_allTagsCorrect_getValidArticle() {
+	///		var file = List.of(
+	///				"---",
+	///				"title: A cool blog post",
+	///				"tags: [$TAG, $TOG]",
+	///				"date: 2020-01-23",
+	///				"description: \"Very blog, much post, so wow\"",
+	///				"slug: cool-blog-post",
+	///				"---",
+	///				""
+	///		);
+	///
+	///		var article = ArticleFactory.createArticle(file);
+	///
+	///		assertThat(article.title().text()).isEqualTo("A cool blog post");
+	///		assertThat(article.tags()).extracting(Tag::text).containsExactlyInAnyOrder("$TAG", "$TOG");
+	///		assertThat(article.date()).isEqualTo(LocalDate.of(2020, 1, 23));
+	///		assertThat(article.description().text()).isEqualTo("Very blog, much post, so wow");
+	///		assertThat(article.slug().value()).isEqualTo("cool-blog-post");
+	///	}
+	/// ````
 	#[test]
-	fn create_from_front_matter_all_tags_correct_get_valid_article() {
-		let file = lines(&[
-			"---",
-			"title: A cool blog post",
-			"tags: [$TAG, $TOG]",
-			"date: 2020-01-23",
-			"description: \"Very blog, much post, so wow\"",
-			"slug: cool-blog-post",
-			"---",
-			"",
+	fn create_from_front_matter__all_tags_correct__get_valid_article() {
+		let file = List::of([
+			"---".into(),
+			"title: A cool blog post".into(),
+			"tags: [$TAG, $TOG]".into(),
+			"date: 2020-01-23".into(),
+			r#"description: "Very blog, much post, so wow""#.into(),
+			"slug: cool-blog-post".into(),
+			"---".into(),
+			"".into(),
 		]);
 
-		let post = ArticleFactory::create_article_from_lines(file).unwrap();
+		let article = ArticleFactory::create_article_from_lines(file).unwrap();
 
-		assert_eq!("A cool blog post", post.title.text);
-		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags());
-		assert_eq!(LocalDate::from_ymd(2020, 1, 23), post.date);
-		assert_eq!("Very blog, much post, so wow", post.description.text);
-		assert_eq!("cool-blog-post", post.slug.value);
+		assert_that(&article.title.text).is_equal_to("A cool blog post");
+		assert_that(article.tags())
+			.extracting(Tag::text)
+			.contains_exactly_in_any_order(["$TAG", "$TOG"]);
+		assert_that(article.date).is_equal_to(LocalDate::of(2020, 1, 23));
+		assert_that(&article.description.text).is_equal_to("Very blog, much post, so wow");
+		assert_that(&article.slug.value).is_equal_to("cool-blog-post");
 	}
 
+	/// ```java
+	/// @Test
+	///	void createFromFile_allTagsCorrect_getValidArticle() {
+	///		var file = List.of(
+	///				"---",
+	///				"title: A cool blog post",
+	///				"tags: [$TAG, $TOG]",
+	///				"date: 2020-01-23",
+	///				"description: \"Very blog, much post, so wow\"",
+	///				"slug: cool-blog-post",
+	///				"---",
+	///				"",
+	///				"Lorem ipsum dolor sit amet.",
+	///				"Ut enim ad minim veniam.",
+	///				"Duis aute irure dolor in reprehenderit.",
+	///				"Excepteur sint occaecat cupidatat non proident.");
+	///
+	///		var article = ArticleFactory.createArticle(file);
+	///
+	///		assertThat(article.title().text()).isEqualTo("A cool blog post");
+	///		assertThat(article.tags()).extracting(Tag::text).containsExactlyInAnyOrder("$TAG", "$TOG");
+	///		assertThat(article.date()).isEqualTo(LocalDate.of(2020, 1, 23));
+	///		assertThat(article.description().text()).isEqualTo("Very blog, much post, so wow");
+	///		assertThat(article.slug().value()).isEqualTo("cool-blog-post");
+	///		assertThat(article.content().get()).containsExactly(
+	///				"",
+	///				"Lorem ipsum dolor sit amet.",
+	///				"Ut enim ad minim veniam.",
+	///				"Duis aute irure dolor in reprehenderit.",
+	///				"Excepteur sint occaecat cupidatat non proident.");
+	///	}
+	/// ```
 	#[test]
 	fn creat_from_file_all_tags_correct_get_valid_article() {
-		let file = lines(&[
-			"---",
-			"title: A cool blog post",
-			"tags: [$TAG, $TOG]",
-			"date: 2020-01-23",
-			"description: \"Very blog, much post, so wow\"",
-			"slug: cool-blog-post",
-			"---",
-			"",
+		let file = List::of([
+			"---".into(),
+			"title: A cool blog post".into(),
+			"tags: [$TAG, $TOG]".into(),
+			"date: 2020-01-23".into(),
+			r#"description: "Very blog, much post, so wow""#.into(),
+			"slug: cool-blog-post".into(),
+			"---".into(),
+			"".into(),
+			"Lorem ipsum dolor sit amet.".into(),
+			"Ut enim ad minim veniam.".into(),
+			"Duis aute irure dolor in reprehenderit.".into(),
+			"Excepteur sint occaecat cupidatat non proident.".into(),
+		]);
+
+		let article = ArticleFactory::create_article_from_lines(file).unwrap();
+
+		assert_that(&article.title.text).is_equal_to("A cool blog post");
+		assert_that(article.tags())
+			.extracting(Tag::text)
+			.contains_exactly_in_any_order(["$TAG", "$TOG"]);
+		assert_that(article.date).is_equal_to(LocalDate::of(2020, 1, 23));
+		assert_that(&article.description.text).is_equal_to("Very blog, much post, so wow");
+		assert_that(&article.slug.value).is_equal_to("cool-blog-post");
+		assert_that(article.content.get().to_list().unwrap()).contains_exactly([
+			"".into(),
 			"Lorem ipsum dolor sit amet.",
 			"Ut enim ad minim veniam.",
 			"Duis aute irure dolor in reprehenderit.",
 			"Excepteur sint occaecat cupidatat non proident.",
 		]);
-
-		let post = ArticleFactory::create_article_from_lines(file).unwrap();
-
-		assert_eq!("A cool blog post", post.title.text);
-		assert_eq!(hash_set_of_tags(&["$TAG", "$TOG"]), post.tags());
-		assert_eq!(LocalDate::from_ymd(2020, 1, 23), post.date);
-		assert_eq!("Very blog, much post, so wow", post.description.text);
-		assert_eq!("cool-blog-post", post.slug.value);
-		let content = (post.content)().to_list().unwrap();
-		let expected_content = lines(&[
-			"",
-			"Lorem ipsum dolor sit amet.",
-			"Ut enim ad minim veniam.",
-			"Duis aute irure dolor in reprehenderit.",
-			"Excepteur sint occaecat cupidatat non proident.",
-		]);
-		assert_eq!(expected_content, content);
-	}
-
-	fn lines(lines: &[&str]) -> List<JString> {
-		lines.iter().copied().map(JString::from).collect()
 	}
 }

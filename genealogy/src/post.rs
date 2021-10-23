@@ -6,7 +6,6 @@ use crate::post::tag::Tag;
 use crate::post::talk::Talk;
 use crate::post::title::Title;
 use crate::post::video::Video;
-use std::collections::HashSet;
 use std::rc::Rc;
 
 pub mod article;
@@ -34,6 +33,7 @@ pub enum Post {
 	Video(Rc<Video>),
 }
 
+use crate::helpers::set::Set;
 use Post::*;
 
 impl Post {
@@ -51,7 +51,7 @@ impl Post {
 	/// ```java
 	/// Set<Tag> tags();
 	/// ```
-	pub fn tags(&self) -> HashSet<Tag> {
+	pub fn tags(&self) -> Set<Tag> {
 		match self {
 			Article(article) => article.tags(),
 			Talk(talk) => talk.tags(),

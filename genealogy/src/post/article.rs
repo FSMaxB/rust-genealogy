@@ -9,7 +9,6 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::Post;
 use debug_stub_derive::DebugStub;
-use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
@@ -30,7 +29,7 @@ use std::rc::Rc;
 #[derive(DebugStub)]
 pub struct Article {
 	pub title: Title,
-	tags: HashSet<Tag>,
+	tags: Set<Tag>,
 	pub date: LocalDate,
 	pub description: Description,
 	pub slug: Slug,
@@ -53,7 +52,7 @@ impl Article {
 	/// ```
 	pub fn new(
 		title: Title,
-		tags: HashSet<Tag>,
+		tags: Set<Tag>,
 		date: LocalDate,
 		description: Description,
 		slug: Slug,
@@ -77,8 +76,8 @@ impl Article {
 	///		return Set.copyOf(tags);
 	///	}
 	/// ```
-	pub fn tags(&self) -> HashSet<Tag> {
-		Set::copy_of(&self.tags)
+	pub fn tags(&self) -> Set<Tag> {
+		Set::copy_of(self.tags.clone())
 	}
 }
 

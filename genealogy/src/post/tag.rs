@@ -1,8 +1,8 @@
 use crate::helpers::collector::Collectors;
 use crate::helpers::exception::Exception;
+use crate::helpers::set::Set;
 use crate::helpers::stream::Stream;
 use crate::helpers::string::JString;
-use std::collections::HashSet;
 
 /// ```java
 /// public record Tag(String text) {
@@ -39,7 +39,7 @@ impl Tag {
 	///				.collect(toUnmodifiableSet());
 	///	}
 	/// ```
-	pub fn from(tags_text: JString) -> Result<HashSet<Tag>, Exception> {
+	pub fn from(tags_text: JString) -> Result<Set<Tag>, Exception> {
 		Stream::of(tags_text.replace_all("^\\[|\\]$", "")?.split(','))
 			.map(|string| Ok(string.strip()))
 			.filter(|string| !string.is_empty())

@@ -8,7 +8,6 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
 use crate::post::Post;
-use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
@@ -29,7 +28,7 @@ use std::rc::Rc;
 #[derive(Debug)]
 pub struct Talk {
 	pub title: Title,
-	tags: HashSet<Tag>,
+	tags: Set<Tag>,
 	pub date: LocalDate,
 	pub description: Description,
 	pub slug: Slug,
@@ -51,7 +50,7 @@ impl Talk {
 	/// ```
 	pub fn new(
 		title: Title,
-		tags: HashSet<Tag>,
+		tags: Set<Tag>,
 		date: LocalDate,
 		description: Description,
 		slug: Slug,
@@ -75,8 +74,8 @@ impl Talk {
 	///		return Set.copyOf(tags);
 	///	}
 	/// ```
-	pub fn tags(&self) -> HashSet<Tag> {
-		Set::copy_of(&self.tags)
+	pub fn tags(&self) -> Set<Tag> {
+		Set::copy_of(self.tags.clone())
 	}
 }
 

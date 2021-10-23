@@ -1,5 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::map::Map;
+use crate::helpers::set::Set;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
@@ -81,7 +82,7 @@ impl Collectors {
 		}
 	}
 
-	pub fn to_set<Input>() -> Collector<Input, HashSet<Input>, HashSet<Input>>
+	pub fn to_set<Input>() -> Collector<Input, HashSet<Input>, Set<Input>>
 	where
 		Input: Hash + Eq + 'static,
 	{
@@ -91,7 +92,7 @@ impl Collectors {
 				set.insert(element);
 				Ok(())
 			}),
-			finisher: Box::new(Result::<_, Exception>::Ok),
+			finisher: Box::new(|set| Ok(set.into())),
 		}
 	}
 

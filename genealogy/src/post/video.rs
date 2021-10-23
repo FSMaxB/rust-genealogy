@@ -1,3 +1,4 @@
+use crate::helpers::optional::Optional;
 use crate::helpers::set::Set;
 use crate::helpers::time::LocalDate;
 use crate::post::description::Description;
@@ -34,7 +35,7 @@ pub struct Video {
 	pub description: Description,
 	pub slug: Slug,
 	pub video: VideoSlug,
-	pub repository: Option<Repository>,
+	pub repository: Optional<Repository>,
 }
 
 impl Video {
@@ -56,7 +57,7 @@ impl Video {
 		description: Description,
 		slug: Slug,
 		video: VideoSlug,
-		repository: Option<Repository>,
+		repository: Optional<Repository>,
 	) -> Self {
 		Self {
 			title,

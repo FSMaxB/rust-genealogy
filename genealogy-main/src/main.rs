@@ -36,9 +36,9 @@ fn main() -> Result<(), Exception> {
 	let relations = genealogy.infer_relations();
 	let recommendations = Recommender::recommend(relations, 3)?;
 	let recommendations_as_json = recommendations_to_json(recommendations)?;
-	if let Some(output_file) = &config.output_file {
-		Utils::unchecked_files_write(output_file, recommendations_as_json)?;
-	}
+	config
+		.output_file
+		.if_present(move |file| Utils::unchecked_files_write(file.as_ref(), recommendations_as_json))?;
 	Ok(())
 }
 

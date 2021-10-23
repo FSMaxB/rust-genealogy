@@ -3,7 +3,7 @@ use crate::helpers::list::List;
 use regex::{Regex, Replacer};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
-use std::ops::Deref;
+use std::ops::{Add, Deref};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -136,6 +136,17 @@ impl AsRef<[u8]> for JString {
 impl From<JString> for PathBuf {
 	fn from(jstring: JString) -> Self {
 		jstring.text.deref().into()
+	}
+}
+
+impl<Displayable> Add<Displayable> for JString
+where
+	Displayable: Display,
+{
+	type Output = JString;
+
+	fn add(self, right_hand_side: Displayable) -> Self::Output {
+		format!("{}{}", self, right_hand_side).into()
 	}
 }
 

@@ -2,6 +2,7 @@ use crate::helpers::collector::Collector;
 use crate::helpers::exception::Exception::{self, IllegalArgumentException};
 use crate::helpers::files::Files;
 use crate::helpers::list::List;
+use crate::helpers::optional::Optional;
 use crate::helpers::stream::Stream;
 use crate::helpers::string::JString;
 use crate::throw;
@@ -99,7 +100,7 @@ impl Utils {
 	/// 	return collectEqualElement(Objects::equals);
 	/// }
 	/// ```
-	pub fn collect_equal_element<Element>() -> Collector<Element, Option<Element>, Option<Element>>
+	pub fn collect_equal_element<Element>() -> Collector<Element, Optional<Element>, Optional<Element>>
 	where
 		Element: Debug + PartialEq + 'static,
 	{
@@ -129,21 +130,21 @@ impl Utils {
 	/// ```
 	pub fn collect_equal_element_with_predicate<Element>(
 		equals: impl Fn(&Element, &Element) -> bool + 'static,
-	) -> Collector<Element, Option<Element>, Option<Element>>
+	) -> Collector<Element, Optional<Element>, Optional<Element>>
 	where
 		Element: Debug + 'static,
 	{
 		Collector::of(
-			|| Ok(None),
+			|| Ok(Optional::empty()),
 			move |left, right| {
-				if left.is_some() && !equals(left.as_ref().unwrap(), &right) {
+				if left.is_present() && !equals(left.get()?, &right) {
 					throw!(IllegalArgumentException(format!(
 						"Unequal elements in stream: {:?} vs {:?}",
-						left.as_ref().unwrap(),
+						left.get()?,
 						&right
 					)));
 				}
-				left.replace(right);
+				left.set(right);
 				Ok(())
 			},
 			Ok,
@@ -204,6 +205,7 @@ mod test {
 	#[allow(non_snake_case)]
 	mod collect_equal_element {
 		use crate::helpers::exception::Exception::IllegalArgumentException;
+		use crate::helpers::optional::Optional;
 		use crate::helpers::stream::Stream;
 		use crate::helpers::test::assert_that;
 
@@ -219,9 +221,9 @@ mod test {
 		/// ```
 		#[test]
 		pub(super) fn empty_stream__empty_optional() {
-			let element: Option<i32> = Stream::of([]).collect(collect_equal_element!()).unwrap();
+			let element: Optional<i32> = Stream::of([]).collect(collect_equal_element!()).unwrap();
 
-			assert_that(&element).is_empty();
+			assert_that(element).is_empty();
 		}
 
 		/// ```java

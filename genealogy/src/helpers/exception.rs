@@ -13,6 +13,7 @@ pub enum Exception {
 	PatternSyntaxException(regex::Error),
 	SecurityException,
 	URISyntaxException(url::ParseError),
+	NoSuchElementException(&'static str),
 }
 
 impl Display for Exception {
@@ -40,6 +41,9 @@ impl Display for Exception {
 			SecurityException => formatter.write_str("SecurityException"),
 			URISyntaxException(error) => {
 				write!(formatter, "URISyntaxException: {}", error)
+			}
+			NoSuchElementException(message) => {
+				write!(formatter, "NoSuchElementException: {}", message)
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::option_extensions::OptionExtensions;
+use crate::helpers::optional::Optional;
 use crate::helpers::string::JString;
 use std::collections::HashMap;
 
@@ -29,8 +29,8 @@ impl RawFrontMatter {
 	///		return Optional.ofNullable(lines.get(key));
 	///	}
 	/// ```
-	pub fn value_of(&self, key: JString) -> Option<JString> {
-		self.lines.get(&key).cloned()
+	pub fn value_of(&self, key: JString) -> Optional<JString> {
+		Optional::of_nullable(self.lines.get(&key).cloned())
 	}
 
 	/// ```java

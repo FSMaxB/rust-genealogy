@@ -18,8 +18,11 @@ impl<Element> List<Element> {
 		}
 	}
 
-	pub fn get(&self, index: usize) -> Result<&Element, Exception> {
-		self.vector.get(index).ok_or(IndexOutOfBoundsException(index))
+	pub fn get(&self, index: usize) -> Result<Element, Exception>
+	where
+		Element: Clone,
+	{
+		self.vector.get(index).cloned().ok_or(IndexOutOfBoundsException(index))
 	}
 
 	pub fn copy_of(list: &[Element]) -> Self

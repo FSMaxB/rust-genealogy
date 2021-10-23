@@ -6,7 +6,7 @@ pub mod indexing;
 pub mod iterator;
 pub mod list;
 pub mod map;
-pub mod option_extensions;
+pub mod optional;
 pub mod path;
 pub mod set;
 pub mod r#static;

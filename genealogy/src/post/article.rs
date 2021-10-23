@@ -1,3 +1,4 @@
+use crate::helpers::optional::Optional;
 use crate::helpers::set::Set;
 use crate::helpers::time::LocalDate;
 use crate::post::content::Content;
@@ -33,7 +34,7 @@ pub struct Article {
 	pub date: LocalDate,
 	pub description: Description,
 	pub slug: Slug,
-	pub repository: Option<Repository>,
+	pub repository: Optional<Repository>,
 	#[debug_stub = "Content"]
 	pub content: Content,
 }
@@ -56,7 +57,7 @@ impl Article {
 		date: LocalDate,
 		description: Description,
 		slug: Slug,
-		repository: Option<Repository>,
+		repository: Optional<Repository>,
 		content: Content,
 	) -> Self {
 		Self {

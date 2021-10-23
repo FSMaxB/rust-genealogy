@@ -70,10 +70,7 @@ impl TalkFactory {
 				Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION())?)?,
 				Slug::new(front_matter.required_value_of(PostFactory::SLUG())?)?,
 				URI::new(front_matter.required_value_of(PostFactory::SLIDES())?)?,
-				front_matter
-					.value_of(PostFactory::VIDEO())
-					.map(VideoSlug::new)
-					.transpose()?,
+				front_matter.value_of(PostFactory::VIDEO()).map(VideoSlug::new)?,
 			))
 		})()
 		.map_err(|error| match error {

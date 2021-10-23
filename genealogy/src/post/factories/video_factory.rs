@@ -34,11 +34,7 @@ impl TryFrom<RawPost> for Video {
 			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION())?)?,
 			Slug::new(front_matter.required_value_of(PostFactory::SLUG())?)?,
 			VideoSlug::new(front_matter.required_value_of(PostFactory::VIDEO())?)?,
-			front_matter
-				.required_value_of(PostFactory::REPOSITORY())
-				.ok()
-				.map(Repository::new)
-				.transpose()?,
+			front_matter.value_of(PostFactory::REPOSITORY()).map(Repository::new)?,
 		))
 	}
 }

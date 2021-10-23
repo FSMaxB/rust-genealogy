@@ -4,7 +4,6 @@ use crate::genealogy::weights::Weights;
 use crate::helpers::collector::Collectors;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::option_extensions::OptionExtensions;
 use crate::helpers::stream::Stream;
 use crate::post::Post;
 use crate::throw;
@@ -81,11 +80,7 @@ impl Relation {
 				Collectors::averaging_double(move |rel: TypedRelation| {
 					Ok((rel.score() as f64) * weights.weight_of(&rel.r#type))
 				}),
-				|posts, score| {
-					posts
-						.map(|ps| Relation::new(ps.post1, ps.post2, score.round() as i64))
-						.transpose()
-				},
+				|posts, score| posts.map(|ps| Relation::new(ps.post1, ps.post2, score.round() as i64)),
 			))?
 			.or_else_throw(|| IllegalArgumentException("Can't create relation from zero typed relations.".into()))
 	}

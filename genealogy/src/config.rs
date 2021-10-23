@@ -3,6 +3,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::files::Files;
 use crate::helpers::list::List;
+use crate::helpers::optional::Optional;
 use crate::helpers::path::Path;
 use crate::helpers::string::JString;
 use crate::helpers::system::System;
@@ -21,7 +22,7 @@ pub struct Config {
 	pub article_folder: PathBuf,
 	pub talk_folder: PathBuf,
 	pub video_folder: PathBuf,
-	pub output_file: Option<PathBuf>,
+	pub output_file: Optional<PathBuf>,
 }
 
 impl Config {
@@ -46,7 +47,7 @@ impl Config {
 			article_folder: Default::default(),
 			talk_folder: Default::default(),
 			video_folder: Default::default(),
-			output_file: None,
+			output_file: Optional::empty(),
 		}
 	}
 
@@ -79,24 +80,28 @@ impl Config {
 			throw!(IllegalArgumentException("No article path defined".into()));
 		}
 
-		let article_folder = Self::read_folder(raw.get(0)?.into())?;
-		let talk_folder = Self::read_folder(raw.get(1)?.into())?;
-		let video_folder = Self::read_folder(raw.get(2)?.into())?;
+		let article_folder = Self::read_folder(raw.get(0)?)?;
+		let talk_folder = Self::read_folder(raw.get(1)?)?;
+		let video_folder = Self::read_folder(raw.get(2)?)?;
 
-		let output_filename = if raw.len() >= 4 { Some(raw.get(3)?) } else { None };
+		let output_filename = if raw.len() >= 4 {
+			Optional::of(raw.get(3)?)
+		} else {
+			Optional::empty()
+		};
 
-		let output_file = output_filename
-			.map(|file| Ok::<_, Exception>(Path::of(&System::get_property("user.dir")?).join(file)))
-			.transpose()?;
-		if let Some(output_file) = &output_file {
-			let not_writable = output_file.exists() && Files::is_writable(output_file);
+		let output_file =
+			output_filename.map(|file| Ok::<_, Exception>(Path::of(&System::get_property("user.dir")?).join(file)))?;
+		output_file.if_present(|file| {
+			let not_writable = Files::exists(file) && Files::is_writable(file);
 			if not_writable {
 				throw!(IllegalArgumentException(format!(
-					"Output path is not writable: {}",
-					output_file.to_string_lossy()
+					"Output path is not writable: {:?}",
+					file
 				)));
 			}
-		}
+			Ok(())
+		})?;
 
 		Ok(Config {
 			article_folder,

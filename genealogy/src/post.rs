@@ -97,6 +97,7 @@ impl Post {
 pub mod test {
 	use super::*;
 	use crate::helpers::exception::Exception;
+	use crate::helpers::optional::Optional;
 	use crate::helpers::stream::Stream;
 	use crate::helpers::string::JString;
 	use crate::helpers::time::LocalDateExtension;
@@ -126,7 +127,7 @@ pub mod test {
 				LocalDate::today(),
 				Description::new("description".into())?,
 				Slug::new(slug)?,
-				None,
+				Optional::empty(),
 				Box::new(|| Stream::of(["".into()])),
 			)
 			.into())

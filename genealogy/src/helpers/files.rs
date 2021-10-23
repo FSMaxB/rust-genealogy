@@ -10,6 +10,10 @@ use std::path::{Path, PathBuf};
 pub enum Files {}
 
 impl Files {
+	pub fn exists(path: impl AsRef<Path>) -> bool {
+		path.as_ref().exists()
+	}
+
 	pub fn is_writable(path: impl AsRef<Path>) -> bool {
 		match path.as_ref().metadata() {
 			Ok(metadata) => !metadata.permissions().readonly(),

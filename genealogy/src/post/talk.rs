@@ -1,3 +1,4 @@
+use crate::helpers::optional::Optional;
 use crate::helpers::set::Set;
 use crate::helpers::time::LocalDate;
 use crate::helpers::uri::URI;
@@ -33,7 +34,7 @@ pub struct Talk {
 	pub description: Description,
 	pub slug: Slug,
 	pub slides: URI,
-	pub video: Option<VideoSlug>,
+	pub video: Optional<VideoSlug>,
 }
 
 impl Talk {
@@ -55,7 +56,7 @@ impl Talk {
 		description: Description,
 		slug: Slug,
 		slides: URI,
-		video: Option<VideoSlug>,
+		video: Optional<VideoSlug>,
 	) -> Self {
 		Self {
 			title,

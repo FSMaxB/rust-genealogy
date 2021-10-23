@@ -36,7 +36,7 @@
     * PostFactory.java [x]
     * RawFrontMatter.java [x]
     * RawPost.java [x]
-    * TalkFactory.java [ ]
+    * TalkFactory.java [x]
     * VideoFactory.java [ ]
   * Repository.java [x]
   * Slug.java [x]

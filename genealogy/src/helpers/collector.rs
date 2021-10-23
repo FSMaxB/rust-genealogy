@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::map::Map;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
@@ -97,7 +98,7 @@ impl Collectors {
 	pub fn to_map<Input, Key, Value>(
 		key_mapper: impl Fn(&Input) -> Key + 'static,
 		value_mapper: impl Fn(&Input) -> Value + 'static,
-	) -> Collector<Input, HashMap<Key, Value>, HashMap<Key, Value>>
+	) -> Collector<Input, HashMap<Key, Value>, Map<Key, Value>>
 	where
 		Key: Hash + Eq + 'static,
 		Value: 'static,
@@ -108,7 +109,7 @@ impl Collectors {
 				map.insert(key_mapper(&input), value_mapper(&input));
 				Ok(())
 			}),
-			finisher: Box::new(Result::<_, Exception>::Ok),
+			finisher: Box::new(|map| Ok(map.into())),
 		}
 	}
 

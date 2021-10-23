@@ -1,8 +1,6 @@
 use crate::genealogist::relation_type::RelationType;
-use crate::helpers::map::{Map, MapExtension};
+use crate::helpers::map::Map;
 use crate::map_of;
-use std::collections::HashMap;
-use std::rc::Rc;
 
 /// ```java
 /// public class Weights {
@@ -12,7 +10,7 @@ use std::rc::Rc;
 /// ```
 #[derive(Debug, Clone)]
 pub struct Weights {
-	weights: Rc<HashMap<RelationType, f64>>,
+	weights: Map<RelationType, f64>,
 	default_weight: f64,
 }
 
@@ -23,9 +21,9 @@ impl Weights {
 	///		this.defaultWeight = defaultWeight;
 	///	}
 	/// ```
-	pub fn new(weights: &HashMap<RelationType, f64>, default_weight: f64) -> Self {
+	pub fn new(weights: Map<RelationType, f64>, default_weight: f64) -> Self {
 		Self {
-			weights: Rc::new(Map::copy_of(weights)),
+			weights: Map::copy_of(weights),
 			default_weight,
 		}
 	}
@@ -36,10 +34,10 @@ impl Weights {
 	///	}
 	/// ```
 	pub fn all_equal() -> Self {
-		Weights::new(&map_of!(), 1.0)
+		Weights::new(map_of!(), 1.0)
 	}
 
-	pub fn weight_of(&self, genealogist_type: &RelationType) -> f64 {
+	pub fn weight_of(&self, genealogist_type: RelationType) -> f64 {
 		self.weights.get_or_default(genealogist_type, self.default_weight)
 	}
 }
@@ -93,9 +91,9 @@ mod test {
 		///	}
 		/// ```
 		pub(super) fn known_relation_type__returns_weight() {
-			let weights = Weights::new(&map_of!(Self::TAG_TYPE(), 0.42), 0.5);
+			let weights = Weights::new(map_of!(Self::TAG_TYPE(), 0.42), 0.5);
 
-			assert_that(weights.weight_of(&Self::TAG_TYPE())).is_equal_to(0.42);
+			assert_that(weights.weight_of(Self::TAG_TYPE())).is_equal_to(0.42);
 		}
 
 		/// ```java
@@ -107,9 +105,9 @@ mod test {
 		///	}
 		/// ```
 		pub(super) fn unknown_relation_type__returns_default_weight() {
-			let weights = Weights::new(&map_of!(Self::TAG_TYPE(), 0.42), 0.5);
+			let weights = Weights::new(map_of!(Self::TAG_TYPE(), 0.42), 0.5);
 
-			assert_that(weights.weight_of(&Self::LIST_TYPE())).is_equal_to(0.5);
+			assert_that(weights.weight_of(Self::LIST_TYPE())).is_equal_to(0.5);
 		}
 	}
 

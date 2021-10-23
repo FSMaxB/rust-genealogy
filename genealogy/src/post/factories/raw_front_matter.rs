@@ -1,8 +1,8 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
+use crate::helpers::map::Map;
 use crate::helpers::optional::Optional;
 use crate::helpers::string::JString;
-use std::collections::HashMap;
 
 /// ```java
 /// class RawFrontMatter {
@@ -11,7 +11,7 @@ use std::collections::HashMap;
 /// ```
 #[derive(Debug)]
 pub(super) struct RawFrontMatter {
-	lines: HashMap<JString, JString>,
+	lines: Map<JString, JString>,
 }
 
 impl RawFrontMatter {
@@ -20,7 +20,7 @@ impl RawFrontMatter {
 	///		this.lines = lines;
 	///	}
 	/// ```
-	pub(super) fn new(lines: HashMap<JString, JString>) -> Self {
+	pub(super) fn new(lines: Map<JString, JString>) -> Self {
 		Self { lines }
 	}
 
@@ -30,7 +30,7 @@ impl RawFrontMatter {
 	///	}
 	/// ```
 	pub fn value_of(&self, key: JString) -> Optional<JString> {
-		Optional::of_nullable(self.lines.get(&key).cloned())
+		Optional::of_nullable(self.lines.get(key))
 	}
 
 	/// ```java

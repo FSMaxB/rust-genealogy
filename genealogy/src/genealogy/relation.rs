@@ -79,7 +79,7 @@ impl Relation {
 					collect_equal_element!(),
 				),
 				Collectors::averaging_double(move |rel: TypedRelation| {
-					Ok((rel.score() as f64) * weights.weight_of(&rel.r#type))
+					Ok((rel.score() as f64) * weights.weight_of(rel.r#type))
 				}),
 				|posts, score| posts.map(|ps| Relation::new(ps.post1, ps.post2, score.round() as i64)),
 			))?
@@ -145,7 +145,7 @@ mod test {
 				tag_relation: tag_relation.clone(),
 				link_relation: link_relation.clone(),
 				weights: Weights::new(
-					&map_of!(tag_relation, Self::TAG_WEIGHT, link_relation, Self::LINK_WEIGHT,),
+					map_of!(tag_relation, Self::TAG_WEIGHT, link_relation, Self::LINK_WEIGHT,),
 					0.5,
 				),
 			})

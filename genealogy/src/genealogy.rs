@@ -78,8 +78,9 @@ fn infer_typed_relations(
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
+	use crate::map_of;
 	use crate::post::test::PostTestHelper;
-	use literally::{hmap, hset};
+	use literally::hset;
 	use std::collections::HashSet;
 	use std::rc::Rc;
 
@@ -114,10 +115,7 @@ mod test {
 					}
 				}),
 				weights: Weights::new(
-					&hmap! {
-						tag_relation => posts.tag_weight,
-						link_relation => posts.link_weight,
-					},
+					map_of!(tag_relation, posts.tag_weight, link_relation, posts.link_weight),
 					0.5,
 				),
 			})

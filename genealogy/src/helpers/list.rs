@@ -25,11 +25,11 @@ impl<Element> List<Element> {
 		self.vector.get(index).cloned().ok_or(IndexOutOfBoundsException(index))
 	}
 
-	pub fn copy_of(list: &[Element]) -> Self
+	pub fn copy_of(list: impl AsRef<[Element]>) -> Self
 	where
 		Element: Clone,
 	{
-		list.to_vec().into()
+		list.as_ref().to_vec().into()
 	}
 
 	pub fn of(iterable: impl IntoIterator<Item = Element>) -> Self {
@@ -125,5 +125,11 @@ impl<Element> From<Vec<Element>> for List<Element> {
 		Self {
 			vector: Rc::new(vector),
 		}
+	}
+}
+
+impl<Element> AsRef<[Element]> for List<Element> {
+	fn as_ref(&self) -> &[Element] {
+		self.vector.as_ref()
 	}
 }

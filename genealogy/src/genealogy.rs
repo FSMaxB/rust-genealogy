@@ -11,6 +11,8 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 pub mod relation;
+#[cfg(test)]
+pub mod relation_test_helper;
 pub mod weights;
 
 pub struct Genealogy {

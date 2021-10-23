@@ -12,7 +12,7 @@ use genealogy::helpers::exception::Exception;
 use genealogy::helpers::exception::Exception::RuntimeException;
 use genealogy::helpers::string::JString;
 use genealogy::post::factories::article_factory::ArticleFactory;
-use genealogy::post::talk::Talk;
+use genealogy::post::factories::talk_factory::TalkFactory;
 use genealogy::post::video::Video;
 use genealogy::post::Post;
 use genealogy::process_details::ProcessDetails;
@@ -48,7 +48,9 @@ fn create_genealogy(article_folder: &Path, talk_folder: &Path, video_folder: &Pa
 			markdown_files_in(article_folder)?
 				.and_then_ok(|path| ArticleFactory::create_article(&path).map(Post::from)),
 		),
-		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| Talk::try_from(path.as_ref()).map(Post::from))),
+		Box::new(
+			markdown_files_in(talk_folder)?.and_then_ok(|path| TalkFactory::create_talk(path.as_ref()).map(Post::from)),
+		),
 		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| Video::try_from(path.as_ref()).map(Post::from))),
 	];
 	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;

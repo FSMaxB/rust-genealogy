@@ -1,5 +1,6 @@
 use std::error::Error;
 use std::fmt::{Display, Formatter};
+use url::ParseError;
 
 /// Fake exception type to emulate Java exceptions used in the original
 #[derive(Debug)]
@@ -11,6 +12,7 @@ pub enum Exception {
 	IndexOutOfBoundsException(usize),
 	PatternSyntaxException(regex::Error),
 	SecurityException,
+	URISyntaxException(url::ParseError),
 }
 
 impl Display for Exception {
@@ -36,6 +38,9 @@ impl Display for Exception {
 				write!(formatter, "PatternSyntaxException: {}", error)
 			}
 			SecurityException => formatter.write_str("SecurityException"),
+			URISyntaxException(error) => {
+				write!(formatter, "URISyntaxException: {}", error)
+			}
 		}
 	}
 }
@@ -57,6 +62,12 @@ impl From<chrono::format::ParseError> for Exception {
 impl From<regex::Error> for Exception {
 	fn from(regex_error: regex::Error) -> Self {
 		Self::PatternSyntaxException(regex_error)
+	}
+}
+
+impl From<url::ParseError> for Exception {
+	fn from(parse_error: ParseError) -> Self {
+		Self::URISyntaxException(parse_error)
 	}
 }
 

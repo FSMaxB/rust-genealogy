@@ -1,5 +1,6 @@
 use crate::helpers::set::Set;
 use crate::helpers::time::LocalDate;
+use crate::helpers::uri::URI;
 use crate::post::description::Description;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
@@ -9,7 +10,6 @@ use crate::post::Post;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
-use url::Url;
 
 /// ```java
 /// public record Talk(
@@ -32,7 +32,7 @@ pub struct Talk {
 	pub date: LocalDate,
 	pub description: Description,
 	pub slug: Slug,
-	pub slides: Url,
+	pub slides: URI,
 	pub video: Option<VideoSlug>,
 }
 
@@ -54,7 +54,7 @@ impl Talk {
 		date: LocalDate,
 		description: Description,
 		slug: Slug,
-		slides: Url,
+		slides: URI,
 		video: Option<VideoSlug>,
 	) -> Self {
 		Self {

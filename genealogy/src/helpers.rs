@@ -16,3 +16,4 @@ pub mod system;
 #[cfg(test)]
 pub mod test;
 pub mod time;
+pub mod uri;

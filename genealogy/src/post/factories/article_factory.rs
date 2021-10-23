@@ -2,9 +2,9 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
 use crate::helpers::list::List;
 use crate::helpers::string::JString;
+use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::post::article::Article;
 use crate::post::description::Description;
-use crate::post::factories::parse_date;
 use crate::post::factories::post_factory::PostFactory;
 use crate::post::factories::raw_post::RawPost;
 use crate::post::repository::Repository;
@@ -72,13 +72,13 @@ impl ArticleFactory {
 	fn create_article_from_raw_post(post: RawPost) -> Result<Article, Exception> {
 		let front_matter = post.front_matter();
 		Ok(Article::new(
-			Title::new(front_matter.required_value_of(PostFactory::TITLE().into())?)?,
-			Tag::from(front_matter.required_value_of(PostFactory::TAGS().into())?)?,
-			parse_date(front_matter.required_value_of(PostFactory::DATE().into())?)?,
-			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION().into())?)?,
-			Slug::new(front_matter.required_value_of(PostFactory::SLUG().into())?)?,
+			Title::new(front_matter.required_value_of(PostFactory::TITLE())?)?,
+			Tag::from(front_matter.required_value_of(PostFactory::TAGS())?)?,
+			LocalDate::parse(front_matter.required_value_of(PostFactory::DATE())?)?,
+			Description::new(front_matter.required_value_of(PostFactory::DESCRIPTION())?)?,
+			Slug::new(front_matter.required_value_of(PostFactory::SLUG())?)?,
 			front_matter
-				.value_of(PostFactory::REPOSITORY().into())
+				.value_of(PostFactory::REPOSITORY())
 				.map(Repository::new)
 				.transpose()?,
 			post.content(),
@@ -122,7 +122,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn create_from_front_matter__multiple_colons__get_valid_article() {
+	pub(super) fn create_from_front_matter__multiple_colons__get_valid_article() {
 		let file = List::of([
 			"---".into(),
 			"title: Cool: A blog post".into(),
@@ -169,7 +169,7 @@ mod test {
 	///	}
 	/// ````
 	#[test]
-	fn create_from_front_matter__all_tags_correct__get_valid_article() {
+	pub(super) fn create_from_front_matter__all_tags_correct__get_valid_article() {
 		let file = List::of([
 			"---".into(),
 			"title: A cool blog post".into(),
@@ -225,7 +225,7 @@ mod test {
 	///	}
 	/// ```
 	#[test]
-	fn creat_from_file_all_tags_correct_get_valid_article() {
+	pub(super) fn creat_from_file_all_tags_correct_get_valid_article() {
 		let file = List::of([
 			"---".into(),
 			"title: A cool blog post".into(),

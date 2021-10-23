@@ -138,11 +138,9 @@ impl Utils {
 			|| Ok(Optional::empty()),
 			move |left, right| {
 				if left.is_present() && !equals(left.get()?, &right) {
-					throw!(IllegalArgumentException(format!(
-						"Unequal elements in stream: {:?} vs {:?}",
-						left.get()?,
-						&right
-					)));
+					throw!(IllegalArgumentException(
+						format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
+					));
 				}
 				left.set(right);
 				Ok(())

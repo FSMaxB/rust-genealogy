@@ -27,9 +27,7 @@ impl VideoSlug {
 	/// ```
 	pub fn new(value: JString) -> Result<VideoSlug, Exception> {
 		if value.is_blank() {
-			throw!(IllegalArgumentException(
-				"VideoSlugs can't have an empty value.".to_string()
-			));
+			throw!(IllegalArgumentException("VideoSlugs can't have an empty value.".into()));
 		}
 
 		Ok(VideoSlug { value })

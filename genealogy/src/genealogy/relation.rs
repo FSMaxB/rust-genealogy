@@ -5,8 +5,10 @@ use crate::helpers::collector::Collectors;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::stream::Stream;
+use crate::helpers::string::JString;
 use crate::post::Post;
 use crate::throw;
+use std::fmt::{Display, Formatter};
 
 /// ```java
 /// public record Relation(
@@ -35,10 +37,9 @@ impl Relation {
 
 		#[allow(clippy::manual_range_contains)]
 		if (score < 0) || (100 < score) {
-			throw!(IllegalArgumentException(format!(
-				"Score should be in interval [0; 100]: {:?}",
-				relation
-			)));
+			throw!(IllegalArgumentException(
+				JString::from("Score should be in interval [0; 100]: {:?}") + relation.to_string()
+			));
 		}
 
 		Ok(relation)
@@ -83,6 +84,12 @@ impl Relation {
 				|posts, score| posts.map(|ps| Relation::new(ps.post1, ps.post2, score.round() as i64)),
 			))?
 			.or_else_throw(|| IllegalArgumentException("Can't create relation from zero typed relations.".into()))
+	}
+}
+
+impl Display for Relation {
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		write!(formatter, "{:?}", self)
 	}
 }
 

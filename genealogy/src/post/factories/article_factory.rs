@@ -40,7 +40,7 @@ impl ArticleFactory {
 			let post = PostFactory::read_post_from_path(file)?;
 			Self::create_article_from_raw_post(post)
 		})()
-		.map_err(|ex| RuntimeException(format!("Creating article failed: {:?}", file), ex.into()))
+		.map_err(|ex| RuntimeException(JString::from("Creating article failed: ") + file, ex.into()))
 	}
 
 	/// ```java

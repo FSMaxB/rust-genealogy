@@ -1,5 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::RuntimeException;
+use crate::helpers::string::JString;
 use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::post::description::Description;
 use crate::post::factories::post_factory::PostFactory;
@@ -17,7 +18,12 @@ impl TryFrom<&Path> for Video {
 
 	fn try_from(path: &Path) -> Result<Self, Self::Error> {
 		PostFactory::read_post_from_path(path)
-			.map_err(|error| RuntimeException(format!(r#"Creating video failed: "{:?}""#, path), error.into()))
+			.map_err(|error| {
+				RuntimeException(
+					JString::from(r#"Creating video failed: ""#) + path + r#"""#,
+					error.into(),
+				)
+			})
 			.and_then(Video::try_from)
 	}
 }

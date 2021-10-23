@@ -1,5 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException, URISyntaxException};
+use crate::helpers::string::JString;
 use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::helpers::uri::URI;
 use crate::post::description::Description;
@@ -39,7 +40,7 @@ impl TalkFactory {
 			let post = PostFactory::read_post_from_path(file)?;
 			Self::create_talk_from_raw_post(post)
 		})()
-		.map_err(|ex| RuntimeException(format!("Creating talk failed: {:?}", file), ex.into()))
+		.map_err(|ex| RuntimeException(JString::from("Creating talk failed: ") + file, ex.into()))
 	}
 
 	/// ```java
@@ -74,7 +75,7 @@ impl TalkFactory {
 			))
 		})()
 		.map_err(|error| match error {
-			URISyntaxException(ex) => IllegalArgumentException(ex.to_string()),
+			URISyntaxException(ex) => IllegalArgumentException(ex.to_string().into()),
 			other => other,
 		})
 	}

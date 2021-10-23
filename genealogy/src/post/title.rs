@@ -25,7 +25,7 @@ impl Title {
 	pub fn new(text: JString) -> Result<Title, Exception> {
 		let unquoted_text = Utils::remove_outer_quotation_marks(text)?;
 		if unquoted_text.is_blank() {
-			throw!(IllegalArgumentException("Titles can't have an empty text.".to_string()));
+			throw!(IllegalArgumentException("Titles can't have an empty text.".into()));
 		}
 
 		Ok(Title { text: unquoted_text })

@@ -40,7 +40,8 @@ impl RawFrontMatter {
 	///	}
 	/// ```
 	pub fn required_value_of(&self, key: JString) -> Result<JString, Exception> {
-		self.value_of(key.clone())
-			.or_else_throw(|| IllegalArgumentException(format!("Required key '{}' not present in front matter.", key)))
+		self.value_of(key.clone()).or_else_throw(|| {
+			IllegalArgumentException(JString::from("Required key '") + key + "' not present in front matter.")
+		})
 	}
 }

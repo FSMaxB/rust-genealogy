@@ -139,13 +139,50 @@ impl From<JString> for PathBuf {
 	}
 }
 
-impl<Displayable> Add<Displayable> for JString
-where
-	Displayable: Display,
-{
+impl Add<&str> for JString {
 	type Output = JString;
 
-	fn add(self, right_hand_side: Displayable) -> Self::Output {
+	fn add(self, right_hand_side: &str) -> Self::Output {
+		format!("{}{}", self, right_hand_side).into()
+	}
+}
+
+impl Add<&Path> for JString {
+	type Output = JString;
+
+	fn add(self, right_hand_side: &Path) -> Self::Output {
+		format!("{}{}", self, right_hand_side.display()).into()
+	}
+}
+
+impl Add<&PathBuf> for JString {
+	type Output = JString;
+
+	fn add(self, right_hand_side: &PathBuf) -> Self::Output {
+		format!("{}{}", self, right_hand_side.display()).into()
+	}
+}
+
+impl Add<i64> for JString {
+	type Output = JString;
+
+	fn add(self, right_hand_side: i64) -> Self::Output {
+		format!("{}{}", self, right_hand_side).into()
+	}
+}
+
+impl Add<String> for JString {
+	type Output = JString;
+
+	fn add(self, right_hand_side: String) -> Self::Output {
+		format!("{}{}", self, right_hand_side).into()
+	}
+}
+
+impl Add<JString> for JString {
+	type Output = JString;
+
+	fn add(self, right_hand_side: JString) -> Self::Output {
 		format!("{}{}", self, right_hand_side).into()
 	}
 }

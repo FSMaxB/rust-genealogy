@@ -25,7 +25,7 @@ impl RelationType {
 	pub fn new(value: JString) -> Result<RelationType, Exception> {
 		if value.is_blank() {
 			throw!(IllegalArgumentException(
-				"Relation types can't have an empty value.".to_string()
+				"Relation types can't have an empty value.".into()
 			));
 		}
 

@@ -27,7 +27,7 @@ impl Slug {
 	/// ```
 	pub fn new(value: JString) -> Result<Slug, Exception> {
 		if value.is_blank() {
-			throw!(IllegalArgumentException("Slugs can't have an empty value.".to_string()));
+			throw!(IllegalArgumentException("Slugs can't have an empty value.".into()));
 		}
 
 		Ok(Slug { value })

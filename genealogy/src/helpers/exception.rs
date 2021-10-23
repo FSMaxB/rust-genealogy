@@ -1,3 +1,4 @@
+use crate::helpers::string::JString;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use url::ParseError;
@@ -5,9 +6,9 @@ use url::ParseError;
 /// Fake exception type to emulate Java exceptions used in the original
 #[derive(Debug)]
 pub enum Exception {
-	IllegalArgumentException(String),
+	IllegalArgumentException(JString),
 	UncheckedIO(std::io::Error),
-	RuntimeException(String, Box<dyn Error>),
+	RuntimeException(JString, Box<dyn Error>),
 	DateTimeException(chrono::format::ParseError),
 	IndexOutOfBoundsException(usize),
 	PatternSyntaxException(regex::Error),

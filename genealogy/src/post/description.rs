@@ -24,9 +24,7 @@ impl Description {
 	pub fn new(text: JString) -> Result<Description, Exception> {
 		let text = Utils::remove_outer_quotation_marks(text)?;
 		if text.is_blank() {
-			throw!(IllegalArgumentException(
-				"Description can't have an empty text.".to_string()
-			));
+			throw!(IllegalArgumentException("Description can't have an empty text.".into()));
 		}
 
 		Ok(Description { text })

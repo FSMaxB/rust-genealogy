@@ -22,7 +22,7 @@ impl Repository {
 	pub fn new(identifier: JString) -> Result<Repository, Exception> {
 		if identifier.is_blank() {
 			throw!(IllegalArgumentException(
-				"Repositories can't have an empty identifier.".to_string()
+				"Repositories can't have an empty identifier.".into()
 			));
 		}
 

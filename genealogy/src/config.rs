@@ -95,10 +95,9 @@ impl Config {
 		output_file.if_present(|file| {
 			let not_writable = Files::exists(file) && Files::is_writable(file);
 			if not_writable {
-				throw!(IllegalArgumentException(format!(
-					"Output path is not writable: {:?}",
-					file
-				)));
+				throw!(IllegalArgumentException(
+					JString::from("Output path is not writable: ") + file
+				));
 			}
 			Ok(())
 		})?;
@@ -127,17 +126,15 @@ impl Config {
 		// NOTE: In general, paths are NOT valid Unicode strings.
 		// E.g. on UNIX they are just bytes with some disallowed characters.
 		if !folder.exists() {
-			return Err(IllegalArgumentException(format!(
-				"Path doesn't exist: {}",
-				folder.to_string_lossy()
-			)));
+			return Err(IllegalArgumentException(
+				JString::from("Path doesn't exist: ") + &folder,
+			));
 		}
 
 		if !folder.is_dir() {
-			return Err(IllegalArgumentException(format!(
-				"Path is no directory: {}",
-				folder.to_string_lossy()
-			)));
+			return Err(IllegalArgumentException(
+				JString::from("Path is no directory: ") + &folder,
+			));
 		}
 
 		Ok(folder)

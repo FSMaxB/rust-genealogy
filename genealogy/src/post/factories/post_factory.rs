@@ -83,7 +83,7 @@ impl PostFactory {
 			let eager_lines = Utils::unchecked_files_read_all_lines(file)?;
 			Self::read_post(eager_lines)
 		})()
-		.map_err(|exception| RuntimeException(format!("Creating article failed: {:?}", file), exception.into()))
+		.map_err(|exception| RuntimeException(JString::from("Creating article failed: ") + file, exception.into()))
 	}
 
 	/// ```java
@@ -150,14 +150,15 @@ impl PostFactory {
 	fn key_value_pair_from(line: JString) -> Result<FrontMatterLine, Exception> {
 		let pair = line.split_limit(':', 2);
 		if pair.len() < 2 {
-			throw!(IllegalArgumentException(format!(
-				"Line doesn't seem to be a key/value pair (no colon): {}",
-				line
-			)));
+			throw!(IllegalArgumentException(
+				JString::from("Line doesn't seem to be a key/value pair (no colon): ") + line
+			));
 		}
 		let key = pair.get(0)?.strip();
 		if key.is_blank() {
-			throw!(IllegalArgumentException(format!(r#"Line "{}" has no key."#, line)));
+			throw!(IllegalArgumentException(
+				JString::from(r#"Line ""#) + line + r#"" has no key."#
+			));
 		}
 
 		let value = pair.get(1)?.strip();

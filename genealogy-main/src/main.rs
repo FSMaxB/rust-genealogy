@@ -34,7 +34,7 @@ fn main() -> Result<(), Exception> {
 
 	let relations = genealogy.infer_relations();
 	let recommendations = Recommender::recommend(relations.into(), 3)?;
-	let recommendations_as_json = recommendations_to_json(recommendations.into_iter())?;
+	let recommendations_as_json = recommendations_to_json(recommendations.into_iterator())?;
 	config
 		.output_file
 		.if_present(move |file| Utils::unchecked_files_write(file.clone(), recommendations_as_json))?;
@@ -62,17 +62,16 @@ fn create_genealogy(article_folder: Path, talk_folder: Path, video_folder: Path)
 }
 
 fn markdown_files_in(folder: Path) -> Result<impl Iterator<Item = Result<Path, Exception>>, Exception> {
-	Ok(
-		Box::<dyn Iterator<Item = _>>::from(Utils::unchecked_files_list(folder)?)
-			.filter(|result| result.as_ref().ok().map(|path| path.as_ref().is_file()).unwrap_or(true))
-			.filter(|result| {
-				result
-					.as_ref()
-					.ok()
-					.map(|path| path.as_ref().ends_with(".md"))
-					.unwrap_or(true)
-			}),
-	)
+	Ok(Utils::unchecked_files_list(folder)?
+		.into_iterator()
+		.filter(|result| result.as_ref().ok().map(|path| path.as_ref().is_file()).unwrap_or(true))
+		.filter(|result| {
+			result
+				.as_ref()
+				.ok()
+				.map(|path| path.as_ref().ends_with(".md"))
+				.unwrap_or(true)
+		}))
 }
 
 fn get_genealogists(posts: Vec<Post>) -> Vec<Rc<dyn Genealogist>> {

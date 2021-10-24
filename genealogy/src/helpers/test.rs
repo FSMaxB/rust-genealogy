@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::stream::Streamable;
 use std::cmp::PartialEq;
 use std::fmt::Debug;
 
@@ -76,19 +77,25 @@ impl<Value> AssertThat<Value> {
 	}
 }
 
-impl<Value> AssertThat<Value>
+impl<StreamableType> AssertThat<StreamableType>
 where
-	Value: IntoIterator,
+	StreamableType: Streamable,
+	StreamableType::Item: 'static,
 {
 	#[track_caller]
 	pub fn contains_exactly_in_any_order<ExpectedValues>(self, expected_values: ExpectedValues)
 	where
 		ExpectedValues: IntoIterator,
-		ExpectedValues::Item: Debug + PartialEq<Value::Item>,
-		Value::Item: Debug,
+		ExpectedValues::Item: Debug + PartialEq<StreamableType::Item>,
+		StreamableType::Item: Debug,
 	{
 		let expected_values = expected_values.into_iter().collect::<Vec<ExpectedValues::Item>>();
-		let actual_values = self.value.into_iter().collect::<Vec<Value::Item>>();
+		let actual_values = self
+			.value
+			.into_stream()
+			.into_iterator()
+			.collect::<Result<Vec<_>, _>>()
+			.unwrap();
 
 		if expected_values.len() != actual_values.len() {
 			panic!(
@@ -114,11 +121,16 @@ where
 	pub fn contains_exactly<ExpectedValues>(self, expected_values: ExpectedValues)
 	where
 		ExpectedValues: IntoIterator,
-		ExpectedValues::Item: Debug + PartialEq<Value::Item>,
-		Value::Item: Debug,
+		ExpectedValues::Item: Debug + PartialEq<StreamableType::Item>,
+		StreamableType::Item: Debug,
 	{
 		let expected_values = expected_values.into_iter().collect::<Vec<ExpectedValues::Item>>();
-		let actual_values = self.value.into_iter().collect::<Vec<Value::Item>>();
+		let actual_values = self
+			.value
+			.into_stream()
+			.into_iterator()
+			.collect::<Result<Vec<_>, _>>()
+			.unwrap();
 
 		if expected_values != actual_values {
 			panic!(

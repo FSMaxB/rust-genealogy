@@ -96,31 +96,47 @@ where
 		items.sort_by(comparator.compare);
 		Ok(Stream::of(items))
 	}
+
+	pub fn into_iterator(self) -> Box<dyn Iterator<Item = Result<Item, Exception>> + 'static> {
+		self.iterator
+	}
 }
 
-impl<Iter, Item, Error> From<Iter> for Stream<Item>
+impl<Iterable, Item, Error> From<Iterable> for Stream<Item>
 where
-	Iter: Iterator<Item = Result<Item, Error>> + 'static,
+	Iterable: IntoIterator<Item = Result<Item, Error>> + 'static,
 	Error: Into<Exception> + 'static,
 {
-	fn from(iterator: Iter) -> Self {
+	fn from(iterable: Iterable) -> Self {
 		Self {
-			iterator: Box::new(iterator.map(|result| result.map_err(Into::into))),
+			iterator: Box::new(iterable.into_iter().map(|result| result.map_err(Into::into))),
 		}
 	}
 }
 
-impl<Item> From<Stream<Item>> for Box<dyn Iterator<Item = Result<Item, Exception>> + 'static> {
-	fn from(stream: Stream<Item>) -> Self {
-		stream.iterator
+pub trait Streamable {
+	type Item;
+
+	fn into_stream(self) -> Stream<Self::Item>;
+}
+
+impl<Item> Streamable for Stream<Item> {
+	type Item = Item;
+
+	fn into_stream(self) -> Stream<Self::Item> {
+		self
 	}
 }
 
-impl<Item> IntoIterator for Stream<Item> {
-	type Item = Result<Item, Exception>;
-	type IntoIter = Box<dyn Iterator<Item = Self::Item> + 'static>;
+impl<Iterable> Streamable for Iterable
+where
+	Iterable: IntoIterator,
+	Iterable::Item: 'static,
+	Iterable::IntoIter: 'static,
+{
+	type Item = Iterable::Item;
 
-	fn into_iter(self) -> Self::IntoIter {
-		self.iterator
+	fn into_stream(self) -> Stream<Self::Item> {
+		self.into_iter().map(Result::<_, Exception>::Ok).into()
 	}
 }

@@ -7,7 +7,6 @@ use crate::helpers::iterator::ResultIteratorExtension;
 use crate::helpers::stream::Stream;
 use crate::post::Post;
 use std::collections::HashMap;
-use std::rc::Rc;
 
 pub mod relation;
 #[cfg(test)]
@@ -16,12 +15,12 @@ pub mod weights;
 
 pub struct Genealogy {
 	posts: Vec<Post>,
-	genealogists: Vec<Rc<dyn Genealogist>>,
+	genealogists: Vec<Genealogist>,
 	weights: Weights,
 }
 
 impl Genealogy {
-	pub fn new(posts: Vec<Post>, genealogists: Vec<Rc<dyn Genealogist>>, weights: Weights) -> Self {
+	pub fn new(posts: Vec<Post>, genealogists: Vec<Genealogist>, weights: Weights) -> Self {
 		Self {
 			posts,
 			genealogists,
@@ -67,7 +66,7 @@ impl Genealogy {
 
 fn infer_typed_relations(
 	posts: Vec<Post>,
-	genealogists: Vec<Rc<dyn Genealogist>>,
+	genealogists: Vec<Genealogist>,
 ) -> impl Iterator<Item = Result<TypedRelation, Exception>> {
 	// FIXME: I have to clone quite a lot here. It's just references, but still pretty horrible.
 	posts
@@ -92,12 +91,11 @@ mod test {
 	use crate::post::test::PostTestHelper;
 	use literally::hset;
 	use std::collections::HashSet;
-	use std::rc::Rc;
 
 	struct GenealogyTests {
 		posts: Posts,
-		tag_genealogist: Rc<dyn Genealogist>,
-		link_genealogist: Rc<dyn Genealogist>,
+		tag_genealogist: Genealogist,
+		link_genealogist: Genealogist,
 		weights: Weights,
 	}
 
@@ -108,22 +106,24 @@ mod test {
 			let posts = Posts::new()?;
 			Ok(Self {
 				posts: posts.clone(),
-				tag_genealogist: Rc::new({
+				tag_genealogist: {
 					let posts = posts.clone();
 					let tag_relation = tag_relation.clone();
 					move |post1: Post, post2: Post| {
 						let score = posts.tag_score(&post1, &post2);
 						TypedRelation::new(post1, post2, tag_relation.clone(), score)
 					}
-				}),
-				link_genealogist: Rc::new({
+				}
+				.into(),
+				link_genealogist: {
 					let posts = posts.clone();
 					let link_relation = link_relation.clone();
 					move |post1: Post, post2: Post| {
 						let score = posts.link_score(&post1, &post2);
 						TypedRelation::new(post1, post2, link_relation.clone(), score)
 					}
-				}),
+				}
+				.into(),
 				weights: Weights::new(
 					map_of!(tag_relation, posts.tag_weight, link_relation, posts.link_weight),
 					0.5,

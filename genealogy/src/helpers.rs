@@ -1,4 +1,6 @@
+pub mod collection;
 pub mod collector;
+pub mod comparator;
 pub mod completable_future;
 pub mod exception;
 pub mod files;
@@ -8,7 +10,6 @@ pub mod list;
 pub mod map;
 pub mod optional;
 pub mod path;
-pub mod comparator;
 pub mod set;
 pub mod r#static;
 pub mod stream;

@@ -1,12 +1,12 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
-use genealogy::genealogist::Genealogist;
+use genealogy::genealogist::GenealogistTrait;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
 
 pub struct TypeGenealogist;
 
-impl Genealogist for TypeGenealogist {
+impl GenealogistTrait for TypeGenealogist {
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		use Post::*;
 		let score = match post2 {

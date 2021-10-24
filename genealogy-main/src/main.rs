@@ -20,7 +20,6 @@ use genealogy::process_details::ProcessDetails;
 use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
-use std::rc::Rc;
 
 mod json;
 
@@ -75,7 +74,7 @@ fn markdown_files_in(folder: Path) -> Result<impl Iterator<Item = Result<Path, E
 		}))
 }
 
-fn get_genealogists(posts: Vec<Post>) -> Vec<Rc<dyn Genealogist>> {
+fn get_genealogists(posts: Vec<Post>) -> Vec<Genealogist> {
 	// NOTE: Not quite dynamic class loading, but hey, that's just not possible in Rust
 	let genealogist_services: Vec<Box<dyn GenealogistService>> = vec![
 		Box::new(SillyGenealogistService),

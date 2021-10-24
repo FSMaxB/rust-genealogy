@@ -1,6 +1,6 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
-use genealogy::genealogist::Genealogist;
+use genealogy::genealogist::GenealogistTrait;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
 
@@ -16,7 +16,7 @@ impl TagGenealogist {
 	}
 }
 
-impl Genealogist for TagGenealogist {
+impl GenealogistTrait for TagGenealogist {
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		let post2_tags = post2.tags();
 		let number_of_shared_tags = post1

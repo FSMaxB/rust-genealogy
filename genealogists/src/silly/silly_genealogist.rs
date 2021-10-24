@@ -1,6 +1,6 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
-use genealogy::genealogist::Genealogist;
+use genealogy::genealogist::GenealogistTrait;
 use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
 use std::collections::BTreeSet;
@@ -17,7 +17,7 @@ impl SillyGenealogist {
 	}
 }
 
-impl Genealogist for SillyGenealogist {
+impl GenealogistTrait for SillyGenealogist {
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		let post1_letters = title_letters(&post1);
 		let post2_letters = title_letters(&post2);

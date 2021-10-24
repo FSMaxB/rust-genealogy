@@ -1,6 +1,6 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
-use genealogy::genealogist::Genealogist;
+use genealogy::genealogist::GenealogistTrait;
 use genealogy::helpers::exception::Exception;
 use genealogy::helpers::optional::Optional;
 use genealogy::post::repository::Repository;
@@ -8,7 +8,7 @@ use genealogy::post::Post;
 
 pub struct RepoGenealogist;
 
-impl Genealogist for RepoGenealogist {
+impl GenealogistTrait for RepoGenealogist {
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		let score = determine_score(&post1, &post2);
 		TypedRelation::new(post1, post2, RelationType::new("repo".into())?, score)

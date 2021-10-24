@@ -20,7 +20,7 @@ use std::fmt::{Display, Formatter};
 pub struct Relation {
 	pub post1: Post,
 	pub post2: Post,
-	pub score: i64,
+	score: i64,
 }
 
 impl Relation {
@@ -43,6 +43,18 @@ impl Relation {
 		}
 
 		Ok(relation)
+	}
+
+	pub fn score(&self) -> i64 {
+		self.score
+	}
+
+	pub fn post1(&self) -> Post {
+		self.post1.clone()
+	}
+
+	pub fn post2(&self) -> Post {
+		self.post2.clone()
 	}
 
 	/// ```java

@@ -8,6 +8,7 @@ pub mod list;
 pub mod map;
 pub mod optional;
 pub mod path;
+pub mod comparator;
 pub mod set;
 pub mod r#static;
 pub mod stream;

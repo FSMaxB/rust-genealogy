@@ -130,18 +130,18 @@ mod test {
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<_, _>>()?;
+			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>()?;
 			let expected_relations = hset! {
-				Relation {
-					post1: self.posts.a.clone(),
-					post2: self.posts.b.clone(),
-					score: self.posts.weighted_tag_score(&self.posts.a, &self.posts.b) as i64,
-				},
-				Relation {
-					post1: self.posts.b.clone(),
-					post2: self.posts.a.clone(),
-					score: self.posts.weighted_tag_score(&self.posts.b, &self.posts.a) as i64,
-				},
+				Relation::new(
+					self.posts.a.clone(),
+					self.posts.b.clone(),
+					self.posts.weighted_tag_score(&self.posts.a, &self.posts.b) as i64,
+				)?,
+				Relation::new(
+					self.posts.b.clone(),
+					self.posts.a.clone(),
+					self.posts.weighted_tag_score(&self.posts.b, &self.posts.a) as i64,
+				)?,
 			};
 			assert_eq!(expected_relations, relations);
 			Ok(())
@@ -154,18 +154,18 @@ mod test {
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<_, _>>()?;
+			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>()?;
 			let expected_relations = hset! {
-				Relation {
-					post1: self.posts.a.clone(),
-					post2: self.posts.b.clone(),
-					score: self.posts.weighted_link_score(&self.posts.a, &self.posts.b) as i64,
-				},
-				Relation {
-					post1: self.posts.b.clone(),
-					post2: self.posts.a.clone(),
-					score: self.posts.weighted_link_score(&self.posts.b, &self.posts.a) as i64,
-				},
+				Relation::new(
+					self.posts.a.clone(),
+					self.posts.b.clone(),
+					self.posts.weighted_link_score(&self.posts.a, &self.posts.b) as i64,
+				)?,
+				Relation::new(
+					self.posts.b.clone(),
+					self.posts.a.clone(),
+					self.posts.weighted_link_score(&self.posts.b, &self.posts.a) as i64,
+				)?,
 			};
 			assert_eq!(expected_relations, relations);
 
@@ -179,7 +179,7 @@ mod test {
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<_, _>>().unwrap();
+			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>().unwrap();
 			let expected_relations = vec![
 				(self.posts.a.clone(), self.posts.b.clone()),
 				(self.posts.a.clone(), self.posts.c.clone()),
@@ -206,7 +206,7 @@ mod test {
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<_, _>>().unwrap();
+			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>().unwrap();
 			let expected_relations = vec![
 				(self.posts.a.clone(), self.posts.b.clone()),
 				(self.posts.a.clone(), self.posts.c.clone()),

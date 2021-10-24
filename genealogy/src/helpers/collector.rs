@@ -1,4 +1,5 @@
 use crate::helpers::exception::Exception;
+use crate::helpers::list::List;
 use crate::helpers::map::Map;
 use crate::helpers::set::Set;
 use std::collections::{HashMap, HashSet};
@@ -111,6 +112,30 @@ impl Collectors {
 				Ok(())
 			}),
 			finisher: Box::new(|map| Ok(map.into())),
+		}
+	}
+
+	#[allow(clippy::type_complexity)]
+	pub fn grouping_by<Input, Key>(
+		classifier: impl Fn(&Input) -> Key + 'static,
+	) -> Collector<Input, HashMap<Key, Vec<Input>>, Map<Key, List<Input>>>
+	where
+		Key: Hash + Eq,
+	{
+		Collector {
+			supplier: Box::new(|| Ok(HashMap::new())),
+			accumulator: Box::new(move |map, input| {
+				let vector = map.entry(classifier(&input)).or_insert_with(Vec::new);
+				vector.push(input);
+				Ok(())
+			}),
+			finisher: Box::new(|hash_map| {
+				Ok(hash_map
+					.into_iter()
+					.map(|(key, vector)| (key, List::from(vector)))
+					.collect::<HashMap<_, _>>()
+					.into())
+			}),
 		}
 	}
 

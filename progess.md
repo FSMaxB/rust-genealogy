@@ -46,9 +46,9 @@
   * Video.java [x]
   * VideoSlug.java [x]
 * ProcessDetails.java [x]
-* recommendation [ ]
+* recommendation [x]
   * Recommendation.java [x]
-  * Recommender.java [ ]
+  * Recommender.java [x]
 * Utils.java [x]
 
 ### Test

@@ -1,77 +1,65 @@
 use crate::genealogy::relation::Relation;
-use crate::helpers::exception::Exception;
+use crate::helpers::collector::Collectors;
+use crate::helpers::comparator::Comparator;
+use crate::helpers::exception::Exception::{self, IllegalArgumentException};
+use crate::helpers::stream::Stream;
+use crate::helpers::string::JString;
 use crate::recommendation::Recommendation;
-use resiter::Map;
-use std::cmp::Ordering;
-use std::collections::{HashMap, HashSet};
-use std::ops::Deref;
+use crate::throw;
 
+/// ```java
+/// // Don't judge me for the name - recommend a better one (see what I did there?)
+/// public class Recommender {
+///
+/// ```
 pub struct Recommender;
 
 impl Recommender {
-	pub fn recommend(
-		relations: impl Iterator<Item = Result<Relation, Exception>>,
-		per_post: usize,
-	) -> Result<impl Iterator<Item = Result<Recommendation, Exception>>, Exception> {
-		let by_post = relations
-			.map_ok(RelationSortedByPostThenByDecreasingScore::from)
-			.map_ok(|relation| (relation.post1.clone(), relation))
-			.try_fold(HashMap::new(), |mut map, result| {
-				let (post1, relation) = result?;
-				// NOTE: The HashSet already puts the relations into a sorted order
-				map.entry(post1).or_insert_with(HashSet::new).insert(relation);
-				Ok::<_, Exception>(map)
-			})?;
+	/// ```java
+	/// public Stream<Recommendation> recommend(Stream<Relation> relations, int perPost) {
+	/// 	if (perPost < 1)
+	/// 		throw new IllegalArgumentException(
+	/// 				"Number of recommendations per post must be greater zero: " + perPost);
+	///
+	/// 	Comparator<Relation> byPostThenByDecreasingScore =
+	/// 			comparing((Relation relation) -> relation.post1().slug())
+	/// 					.thenComparing(Relation::score)
+	/// 					.reversed();
+	/// 	Map<Post, List<Relation>> byPost = relations
+	/// 			.sorted(byPostThenByDecreasingScore)
+	/// 			.collect(groupingBy(Relation::post1));
+	/// 	return byPost
+	/// 			.entrySet().stream()
+	/// 			.map(postWithRelations -> Recommendation.from(
+	/// 					postWithRelations.getKey(),
+	/// 					postWithRelations.getValue().stream().map(Relation::post2),
+	/// 					perPost));
+	///
+	/// }
+	/// ```
+	pub fn recommend(relations: Stream<Relation>, per_post: i32) -> Result<Stream<Recommendation>, Exception> {
+		if per_post < 1 {
+			throw!(IllegalArgumentException(
+				JString::from("Number of recommendations per post must be greater zero: ") + per_post
+			));
+		}
 
-		Ok(by_post.into_iter().map(move |(post, sorted_relations)| {
+		let by_post_then_by_decreasing_score = Comparator::comparing(|relation: &Relation| relation.post1.slug())
+			.then_comparing(Relation::score)
+			.reversed();
+		let by_post = relations
+			.sorted(by_post_then_by_decreasing_score)?
+			.collect(Collectors::grouping_by(Relation::post1))?;
+		Ok(by_post.entry_set().stream().map(move |post_with_relations| {
 			Recommendation::from(
-				post,
-				sorted_relations
-					.into_iter()
-					.map(|relation| Ok::<_, Exception>(relation.post2.clone()))
-					.into(),
+				post_with_relations.get_key(),
+				post_with_relations
+					.get_value()
+					.stream()
+					.map(|relation| Ok(relation.post2())),
 				per_post,
 			)
 		}))
-	}
-}
-
-#[derive(PartialEq, Eq, Hash)]
-struct RelationSortedByPostThenByDecreasingScore(Relation);
-
-impl Deref for RelationSortedByPostThenByDecreasingScore {
-	type Target = Relation;
-
-	fn deref(&self) -> &Self::Target {
-		&self.0
-	}
-}
-
-impl From<Relation> for RelationSortedByPostThenByDecreasingScore {
-	fn from(relation: Relation) -> Self {
-		Self(relation)
-	}
-}
-
-impl From<RelationSortedByPostThenByDecreasingScore> for Relation {
-	fn from(relation: RelationSortedByPostThenByDecreasingScore) -> Self {
-		relation.0
-	}
-}
-
-impl PartialOrd for RelationSortedByPostThenByDecreasingScore {
-	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		Some(self.cmp(other))
-	}
-}
-
-impl Ord for RelationSortedByPostThenByDecreasingScore {
-	fn cmp(&self, other: &Self) -> Ordering {
-		match self.0.post1.slug().cmp(other.0.post1.slug()) {
-			Ordering::Equal => self.0.score.cmp(&other.0.score),
-			ordering => ordering,
-		}
-		.reverse()
 	}
 }
 
@@ -114,8 +102,8 @@ mod test {
 		}
 
 		fn for_one_post_one_relation(&self) -> Result<(), Exception> {
-			let recommendations = Recommender::recommend(vec![self.relation_ac.clone()].into_iter().map(Ok), 1)?
-				.collect::<Result<HashSet<_>, Exception>>()?;
+			let recommendations =
+				Recommender::recommend(Stream::of([self.relation_ac.clone()]), 1)?.collect(Collectors::to_set())?;
 			let expected_recommendations =
 				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_c.clone()])}};
 			assert_eq!(expected_recommendations, recommendations);
@@ -123,13 +111,9 @@ mod test {
 		}
 
 		fn for_one_post_two_relations(&self) -> Result<(), Exception> {
-			let recommendations = Recommender::recommend(
-				vec![self.relation_ab.clone(), self.relation_ac.clone()]
-					.into_iter()
-					.map(Ok),
-				1,
-			)?
-			.collect::<Result<HashSet<_>, Exception>>()?;
+			let recommendations =
+				Recommender::recommend(Stream::of([self.relation_ab.clone(), self.relation_ac.clone()]), 1)?
+					.collect(Collectors::to_set())?;
 			let expected_recommendations =
 				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_b.clone()])}};
 			assert_eq!(expected_recommendations, recommendations);
@@ -138,16 +122,14 @@ mod test {
 
 		fn for_many_posts_one_relation_each(&self) -> Result<(), Exception> {
 			let recommendations = Recommender::recommend(
-				vec![
+				Stream::of([
 					self.relation_ac.clone(),
 					self.relation_bc.clone(),
 					self.relation_cb.clone(),
-				]
-				.into_iter()
-				.map(Ok),
+				]),
 				1,
 			)?
-			.collect::<Result<HashSet<_>, Exception>>()?;
+			.collect(Collectors::to_set())?;
 			let expected_recommendations = hset! {
 				Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_c.clone()])},
 				Recommendation {post: self.post_b.clone(), recommended_posts: List::of([self.post_c.clone()])},
@@ -159,19 +141,17 @@ mod test {
 
 		fn for_many_posts_two_relations_each(&self) -> Result<(), Exception> {
 			let recommendations = Recommender::recommend(
-				vec![
+				Stream::of([
 					self.relation_ab.clone(),
 					self.relation_ac.clone(),
 					self.relation_ba.clone(),
 					self.relation_bc.clone(),
 					self.relation_ca.clone(),
 					self.relation_cb.clone(),
-				]
-				.into_iter()
-				.map(Ok),
+				]),
 				1,
 			)?
-			.collect::<Result<HashSet<_>, Exception>>()?;
+			.collect(Collectors::to_set())?;
 			let expected_recommendations = hset! {
 				Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_b.clone()])},
 				Recommendation {post: self.post_b.clone(), recommended_posts: List::of([self.post_c.clone()])},

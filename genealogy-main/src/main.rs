@@ -34,8 +34,8 @@ fn main() -> Result<(), Exception> {
 	let genealogy = create_genealogy(config.article_folder, config.talk_folder, config.video_folder)?;
 
 	let relations = genealogy.infer_relations();
-	let recommendations = Recommender::recommend(relations, 3)?;
-	let recommendations_as_json = recommendations_to_json(recommendations)?;
+	let recommendations = Recommender::recommend(relations.into(), 3)?;
+	let recommendations_as_json = recommendations_to_json(recommendations.into_iter())?;
 	config
 		.output_file
 		.if_present(move |file| Utils::unchecked_files_write(file.clone(), recommendations_as_json))?;

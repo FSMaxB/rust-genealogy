@@ -1,6 +1,9 @@
 use crate::helpers::collector::Collector;
+use crate::helpers::comparator::Comparator;
 use crate::helpers::exception::Exception;
+use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::list::List;
+use crate::throw;
 use resiter::{Filter, FlatMap, Map};
 use std::convert::identity;
 
@@ -54,8 +57,13 @@ where
 		iterable.into_iter().map(Result::<_, Exception>::Ok).into()
 	}
 
-	pub fn limit(self, limit: usize) -> Self {
-		self.iterator.take(limit).into()
+	pub fn limit(self, limit: i32) -> Result<Self, Exception> {
+		if limit < 0 {
+			throw!(IllegalArgumentException(
+				format!("Limit must be non-negative but was {}", limit).into()
+			));
+		}
+		Ok(self.iterator.take(limit as usize).into())
 	}
 
 	pub fn to_list(self) -> Result<List<Item>, Exception> {
@@ -76,6 +84,12 @@ where
 
 	pub fn skip(self, amount: usize) -> Self {
 		self.iterator.skip(amount).into()
+	}
+
+	pub fn sorted(self, comparator: Comparator<Item>) -> Result<Self, Exception> {
+		let mut items = self.iterator.collect::<Result<Vec<_>, _>>()?;
+		items.sort_by(comparator.compare);
+		Ok(Stream::of(items))
 	}
 }
 
@@ -103,22 +117,5 @@ impl<'a, Item> IntoIterator for Stream<'a, Item> {
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.iterator
-	}
-}
-
-pub trait StreamExtensions<'a> {
-	type Item;
-
-	fn stream(self) -> Stream<'a, Self::Item>;
-}
-
-impl<'a, Item> StreamExtensions<'a> for &'a [Item]
-where
-	Item: 'a,
-{
-	type Item = &'a Item;
-
-	fn stream(self) -> Stream<'a, Self::Item> {
-		Stream::of(self.iter())
 	}
 }

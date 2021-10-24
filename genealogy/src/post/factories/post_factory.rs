@@ -3,7 +3,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::{IllegalArgumentException, RuntimeException};
 use crate::helpers::list::List;
 use crate::helpers::path::Path;
-use crate::helpers::stream::{Stream, StreamExtensions};
+use crate::helpers::stream::Stream;
 use crate::helpers::string::JString;
 use crate::post::factories::raw_front_matter::RawFrontMatter;
 use crate::post::factories::raw_post::RawPost;

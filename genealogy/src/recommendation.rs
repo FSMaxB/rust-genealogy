@@ -39,9 +39,9 @@ impl Recommendation {
 	pub(super) fn from(
 		post: Post,
 		sorted_recommendations: Stream<Post>,
-		per_post: usize,
+		per_post: i32,
 	) -> Result<Recommendation, Exception> {
-		let recommendations = sorted_recommendations.limit(per_post).to_list()?;
+		let recommendations = sorted_recommendations.limit(per_post)?.to_list()?;
 		Ok(Recommendation {
 			post,
 			recommended_posts: recommendations,

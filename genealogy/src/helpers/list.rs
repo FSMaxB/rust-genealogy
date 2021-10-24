@@ -1,6 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IndexOutOfBoundsException;
-use crate::helpers::stream::{Stream, StreamExtensions};
+use crate::helpers::stream::Stream;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::ops::Deref;
 use std::rc::Rc;
@@ -34,6 +34,13 @@ impl<Element> List<Element> {
 
 	pub fn of(iterable: impl IntoIterator<Item = Element>) -> Self {
 		iterable.into_iter().collect()
+	}
+
+	pub fn stream(&self) -> Stream<'static, Element>
+	where
+		Element: Clone + 'static,
+	{
+		Stream::of(self.vector.as_ref().clone())
 	}
 }
 
@@ -94,17 +101,6 @@ where
 {
 	fn eq(&self, other: &List<Element>) -> bool {
 		other.vector.as_ref() == self
-	}
-}
-
-impl<Element> StreamExtensions<'static> for List<Element>
-where
-	Element: Clone + 'static,
-{
-	type Item = Element;
-
-	fn stream(self) -> Stream<'static, Self::Item> {
-		Stream::of(self.vector.as_ref().clone().into_iter())
 	}
 }
 

@@ -1,3 +1,4 @@
+use crate::helpers::stream::Stream;
 use std::collections::HashSet;
 use std::rc::Rc;
 
@@ -12,6 +13,13 @@ impl<Key> Set<Key> {
 		Key: Clone,
 	{
 		set.set.as_ref().clone().into()
+	}
+
+	pub fn stream(self) -> Stream<'static, Key>
+	where
+		Key: Clone + 'static,
+	{
+		Stream::of(self.set.as_ref().clone())
 	}
 }
 
@@ -36,5 +44,23 @@ where
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.set.as_ref().clone().into_iter()
+	}
+}
+
+impl<Key> PartialEq<HashSet<Key>> for Set<Key>
+where
+	HashSet<Key>: PartialEq,
+{
+	fn eq(&self, hash_set: &HashSet<Key>) -> bool {
+		self.set.as_ref().eq(hash_set)
+	}
+}
+
+impl<Key> PartialEq<Set<Key>> for HashSet<Key>
+where
+	HashSet<Key>: PartialEq,
+{
+	fn eq(&self, set: &Set<Key>) -> bool {
+		set.set.as_ref().eq(self)
 	}
 }

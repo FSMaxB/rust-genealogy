@@ -1,5 +1,6 @@
-use std::collections::HashMap;
-use std::hash::Hash;
+use crate::helpers::set::Set;
+use std::collections::{HashMap, HashSet};
+use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
 #[derive(Clone, Debug)]
@@ -31,6 +32,63 @@ impl<Key, Value> Map<Key, Value> {
 	{
 		self.map.get(&key).map(Clone::clone).unwrap_or(default)
 	}
+
+	pub fn entry_set(self) -> Set<Entry<Key, Value>>
+	where
+		Key: Clone + Eq + Hash,
+		Value: Clone,
+	{
+		self.map
+			.iter()
+			.map(|(key, value)| Entry {
+				key: key.clone(),
+				value: value.clone(),
+			})
+			.collect::<HashSet<_>>()
+			.into()
+	}
+}
+
+#[derive(Clone)]
+pub struct Entry<Key, Value> {
+	key: Key,
+	value: Value,
+}
+
+impl<Key, Value> Entry<Key, Value> {
+	pub fn get_key(&self) -> Key
+	where
+		Key: Clone,
+	{
+		self.key.clone()
+	}
+
+	pub fn get_value(&self) -> Value
+	where
+		Value: Clone,
+	{
+		self.value.clone()
+	}
+}
+
+impl<Key, Value> PartialEq for Entry<Key, Value>
+where
+	Key: Eq,
+{
+	fn eq(&self, other: &Self) -> bool {
+		self.key.eq(&other.key)
+	}
+}
+
+impl<Key, Value> Eq for Entry<Key, Value> where Key: Eq {}
+
+impl<Key, Value> Hash for Entry<Key, Value>
+where
+	Key: Hash,
+{
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		self.key.hash(state)
+	}
 }
 
 impl<Key, Value> From<HashMap<Key, Value>> for Map<Key, Value> {
@@ -51,6 +109,24 @@ macro_rules! map_of {
 	};
 }
 
+impl<Key, Value> PartialEq<HashMap<Key, Value>> for Map<Key, Value>
+where
+	HashMap<Key, Value>: PartialEq,
+{
+	fn eq(&self, hash_map: &HashMap<Key, Value>) -> bool {
+		self.map.as_ref().eq(hash_map)
+	}
+}
+
+impl<Key, Value> PartialEq<Map<Key, Value>> for HashMap<Key, Value>
+where
+	HashMap<Key, Value>: PartialEq,
+{
+	fn eq(&self, map: &Map<Key, Value>) -> bool {
+		map.map.as_ref().eq(self)
+	}
+}
+
 #[cfg(test)]
 mod test {
 	use super::*;
@@ -68,13 +144,13 @@ mod test {
 		let expected: HashMap<&'static str, &'static str> = hmap! {"hello" => "world"};
 		let actual = map_of!("hello", "world");
 
-		assert_eq!(&expected, actual.map.as_ref());
+		assert_eq!(expected, actual);
 	}
 
 	#[test]
 	fn map_of_two() {
 		let expected: HashMap<&'static str, &'static str> = hmap! {"hello" => "hello", "world" => "world"};
 		let actual = map_of!("hello", "hello", "world", "world");
-		assert_eq!(&expected, actual.map.as_ref());
+		assert_eq!(expected, actual);
 	}
 }

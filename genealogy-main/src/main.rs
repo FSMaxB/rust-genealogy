@@ -33,7 +33,8 @@ fn main() -> Result<(), Exception> {
 	let genealogy = create_genealogy(config.article_folder, config.talk_folder, config.video_folder)?;
 
 	let relations = genealogy.infer_relations();
-	let recommendations = Recommender::recommend(relations.into(), 3)?;
+	let recommender = Recommender::new();
+	let recommendations = recommender.recommend(relations.into(), 3)?;
 	let recommendations_as_json = recommendations_to_json(recommendations.into_iterator())?;
 	config
 		.output_file

@@ -10,11 +10,18 @@ use crate::throw;
 /// ```java
 /// // Don't judge me for the name - recommend a better one (see what I did there?)
 /// public class Recommender {
-///
 /// ```
 pub struct Recommender;
 
 impl Recommender {
+	/// ```java
+	/// public class Recommender {
+	/// ```
+	#[allow(clippy::new_without_default)]
+	pub fn new() -> Self {
+		Self
+	}
+
 	/// ```java
 	/// public Stream<Recommendation> recommend(Stream<Relation> relations, int perPost) {
 	/// 	if (perPost < 1)
@@ -37,7 +44,7 @@ impl Recommender {
 	///
 	/// }
 	/// ```
-	pub fn recommend(relations: Stream<Relation>, per_post: i32) -> Result<Stream<Recommendation>, Exception> {
+	pub fn recommend(&self, relations: Stream<Relation>, per_post: i32) -> Result<Stream<Recommendation>, Exception> {
 		if per_post < 1 {
 			throw!(IllegalArgumentException(
 				JString::from("Number of recommendations per post must be greater zero: ") + per_post
@@ -63,13 +70,14 @@ impl Recommender {
 	}
 }
 
+#[allow(non_snake_case)]
 #[cfg(test)]
 mod test {
 	use super::*;
 	use crate::helpers::list::List;
+	use crate::helpers::test::assert_that;
 	use crate::post::test::PostTestHelper;
 	use crate::post::Post;
-	use literally::hset;
 
 	/// ```java
 	/// class RecommenderTests {
@@ -96,6 +104,7 @@ mod test {
 		relation_bc: Relation,
 		relation_ca: Relation,
 		relation_cb: Relation,
+		recommender: Recommender,
 	}
 
 	impl RecommenderTests {
@@ -127,49 +136,102 @@ mod test {
 				relation_bc: RelationTestHelper::create(post_b.clone(), post_c.clone(), 70)?,
 				relation_ca: RelationTestHelper::create(post_c.clone(), post_a, 80)?,
 				relation_cb: RelationTestHelper::create(post_c, post_b, 60)?,
+				recommender: Recommender::new(),
 			})
 		}
 
-		fn for_one_post_one_relation(&self) -> Result<(), Exception> {
-			let recommendations =
-				Recommender::recommend(Stream::of([self.relation_ac.clone()]), 1)?.collect(Collectors::to_set())?;
-			let expected_recommendations =
-				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_c.clone()])}};
-			assert_eq!(expected_recommendations, recommendations);
+		/// ```java
+		/// @Test
+		///	void forOnePost_oneRelation() {
+		///		var recommendations = recommender.recommend(
+		///				Stream.of(relation_AC),
+		///				1);
+		///
+		///		assertThat(recommendations).containsExactlyInAnyOrder(
+		///				new Recommendation(postA, List.of(postC)));
+		///	}
+		/// ```
+		fn for_one_post__one_relation(&self) -> Result<(), Exception> {
+			let recommendations = self.recommender.recommend(Stream::of([self.relation_ac.clone()]), 1)?;
+
+			assert_that(recommendations).contains_exactly_in_any_order([Recommendation::new(
+				self.post_a.clone(),
+				List::of([self.post_c.clone()]),
+			)]);
 			Ok(())
 		}
 
-		fn for_one_post_two_relations(&self) -> Result<(), Exception> {
-			let recommendations =
-				Recommender::recommend(Stream::of([self.relation_ab.clone(), self.relation_ac.clone()]), 1)?
-					.collect(Collectors::to_set())?;
-			let expected_recommendations =
-				hset! {Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_b.clone()])}};
-			assert_eq!(expected_recommendations, recommendations);
+		/// ```java
+		/// @Test
+		///	void forOnePost_twoRelations() {
+		///		var recommendations = recommender.recommend(
+		///				Stream.of(relation_AB, relation_AC),
+		///				1);
+		///
+		///		assertThat(recommendations).containsExactlyInAnyOrder(
+		///				new Recommendation(postA, List.of(postB)));
+		///	}
+		/// ```
+		fn for_one_post__two_relations(&self) -> Result<(), Exception> {
+			let recommendations = self
+				.recommender
+				.recommend(Stream::of([self.relation_ab.clone(), self.relation_ac.clone()]), 1)?;
+
+			assert_that(recommendations).contains_exactly_in_any_order([Recommendation::new(
+				self.post_a.clone(),
+				List::of([self.post_b.clone()]),
+			)]);
 			Ok(())
 		}
 
-		fn for_many_posts_one_relation_each(&self) -> Result<(), Exception> {
-			let recommendations = Recommender::recommend(
+		/// ```java
+		/// @Test
+		///	void forManyPosts_oneRelationEach() {
+		///		var recommendations = recommender.recommend(
+		///				Stream.of(relation_AC, relation_BC, relation_CB),
+		///				1);
+		///
+		///		assertThat(recommendations).containsExactlyInAnyOrder(
+		///				new Recommendation(postA, List.of(postC)),
+		///				new Recommendation(postB, List.of(postC)),
+		///				new Recommendation(postC, List.of(postB))
+		///		);
+		///	}
+		/// ```
+		fn for_many_posts__one_relation_each(&self) -> Result<(), Exception> {
+			let recommendations = self.recommender.recommend(
 				Stream::of([
 					self.relation_ac.clone(),
 					self.relation_bc.clone(),
 					self.relation_cb.clone(),
 				]),
 				1,
-			)?
-			.collect(Collectors::to_set())?;
-			let expected_recommendations = hset! {
-				Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_c.clone()])},
-				Recommendation {post: self.post_b.clone(), recommended_posts: List::of([self.post_c.clone()])},
-				Recommendation {post: self.post_c.clone(), recommended_posts: List::of([self.post_b.clone()])},
-			};
-			assert_eq!(expected_recommendations, recommendations);
+			)?;
+
+			assert_that(recommendations).contains_exactly_in_any_order([
+				Recommendation::new(self.post_a.clone(), List::of([self.post_c.clone()])),
+				Recommendation::new(self.post_b.clone(), List::of([self.post_c.clone()])),
+				Recommendation::new(self.post_c.clone(), List::of([self.post_b.clone()])),
+			]);
 			Ok(())
 		}
 
-		fn for_many_posts_two_relations_each(&self) -> Result<(), Exception> {
-			let recommendations = Recommender::recommend(
+		/// ```java
+		/// @Test
+		///	void forManyPosts_twoRelationsEach() {
+		///		var recommendations = recommender.recommend(
+		///				Stream.of(relation_AB, relation_AC, relation_BA, relation_BC, relation_CA, relation_CB),
+		///				1);
+		///
+		///		assertThat(recommendations).containsExactlyInAnyOrder(
+		///				new Recommendation(postA, List.of(postB)),
+		///				new Recommendation(postB, List.of(postC)),
+		///				new Recommendation(postC, List.of(postA))
+		///		);
+		///	}
+		/// ```
+		fn for_many_posts__two_relations_each(&self) -> Result<(), Exception> {
+			let recommendations = self.recommender.recommend(
 				Stream::of([
 					self.relation_ab.clone(),
 					self.relation_ac.clone(),
@@ -179,14 +241,22 @@ mod test {
 					self.relation_cb.clone(),
 				]),
 				1,
-			)?
-			.collect(Collectors::to_set())?;
-			let expected_recommendations = hset! {
-				Recommendation {post: self.post_a.clone(), recommended_posts: List::of([self.post_b.clone()])},
-				Recommendation {post: self.post_b.clone(), recommended_posts: List::of([self.post_c.clone()])},
-				Recommendation {post: self.post_c.clone(), recommended_posts: List::of([self.post_a.clone()])},
-			};
-			assert_eq!(expected_recommendations, recommendations);
+			)?;
+
+			assert_that(recommendations).contains_exactly_in_any_order([
+				Recommendation {
+					post: self.post_a.clone(),
+					recommended_posts: List::of([self.post_b.clone()]),
+				},
+				Recommendation {
+					post: self.post_b.clone(),
+					recommended_posts: List::of([self.post_c.clone()]),
+				},
+				Recommendation {
+					post: self.post_c.clone(),
+					recommended_posts: List::of([self.post_a.clone()]),
+				},
+			]);
 			Ok(())
 		}
 	}
@@ -201,30 +271,28 @@ mod test {
 	}
 
 	#[test]
-	fn for_one_post_one_relation() {
-		RecommenderTests::new().unwrap().for_one_post_one_relation().unwrap();
-	}
-
-	#[ignore]
-	#[test]
-	fn for_one_post_two_relations() {
-		RecommenderTests::new().unwrap().for_one_post_two_relations().unwrap();
+	fn for_one_post__one_relation() {
+		RecommenderTests::new().unwrap().for_one_post__one_relation().unwrap();
 	}
 
 	#[test]
-	fn for_many_posts_one_relation_each() {
+	fn for_one_post__two_relations() {
+		RecommenderTests::new().unwrap().for_one_post__two_relations().unwrap();
+	}
+
+	#[test]
+	fn for_many_posts__one_relation_each() {
 		RecommenderTests::new()
 			.unwrap()
-			.for_many_posts_one_relation_each()
+			.for_many_posts__one_relation_each()
 			.unwrap();
 	}
 
-	#[ignore]
 	#[test]
-	fn for_many_posts_two_relations_each() {
+	fn for_many_posts__two_relations_each() {
 		RecommenderTests::new()
 			.unwrap()
-			.for_many_posts_two_relations_each()
+			.for_many_posts__two_relations_each()
 			.unwrap();
 	}
 }

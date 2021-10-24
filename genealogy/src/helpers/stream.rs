@@ -4,8 +4,8 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::list::List;
 use crate::throw;
-use resiter::FlatMap;
 use std::convert::identity;
+use std::iter::once;
 
 pub struct Stream<'a, Item> {
 	iterator: Box<dyn Iterator<Item = Result<Item, Exception>> + 'a>,
@@ -29,8 +29,11 @@ where
 		NewItem: 'a,
 	{
 		self.iterator
-			.flat_map_ok(move |item| mapper(item).iterator)
-			.map(|result| result.and_then(identity))
+			.flat_map(move |result| {
+				result
+					.map(|item| mapper(item).iterator)
+					.unwrap_or_else(|exception| Box::new(once(Err(exception))))
+			})
 			.into()
 	}
 

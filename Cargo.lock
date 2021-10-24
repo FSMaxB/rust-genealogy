@@ -129,7 +129,6 @@ dependencies = [
  "parking_lot",
  "pin-project",
  "regex",
- "resiter",
  "rustc_version_runtime",
  "serde",
  "url",
@@ -141,7 +140,6 @@ version = "0.1.0"
 dependencies = [
  "genealogists",
  "genealogy",
- "resiter",
  "serde",
  "serde_json",
 ]
@@ -361,12 +359,6 @@ name = "regex-syntax"
 version = "0.6.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
-
-[[package]]
-name = "resiter"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd69ab1e90258b7769f0b5c46bfd802b8206d0707ced4ca4b9d5681b744de1be"
 
 [[package]]
 name = "rustc_version"

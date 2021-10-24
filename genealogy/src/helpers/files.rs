@@ -32,7 +32,7 @@ impl Files {
 			.collect()
 	}
 
-	pub fn lines(path: impl AsRef<std::path::Path>) -> Result<Stream<'static, JString>, Exception> {
+	pub fn lines(path: impl AsRef<std::path::Path>) -> Result<Stream<JString>, Exception> {
 		let file = File::open(path)?;
 		Ok(BufReader::new(file)
 			.lines()
@@ -40,7 +40,7 @@ impl Files {
 			.into())
 	}
 
-	pub fn list(directory: impl AsRef<std::path::Path>) -> Result<Stream<'static, Path>, Exception> {
+	pub fn list(directory: impl AsRef<std::path::Path>) -> Result<Stream<Path>, Exception> {
 		Ok(directory
 			.as_ref()
 			.read_dir()?

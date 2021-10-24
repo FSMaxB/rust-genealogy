@@ -15,7 +15,7 @@ impl<Key> Set<Key> {
 		set.set.as_ref().clone().into()
 	}
 
-	pub fn stream(self) -> Stream<'static, Key>
+	pub fn stream(self) -> Stream<Key>
 	where
 		Key: Clone + 'static,
 	{

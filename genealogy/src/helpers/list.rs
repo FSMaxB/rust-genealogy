@@ -36,7 +36,7 @@ impl<Element> List<Element> {
 		iterable.into_iter().collect()
 	}
 
-	pub fn stream(&self) -> Stream<'static, Element>
+	pub fn stream(&self) -> Stream<Element>
 	where
 		Element: Clone + 'static,
 	{

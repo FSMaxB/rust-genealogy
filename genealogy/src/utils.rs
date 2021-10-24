@@ -39,7 +39,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_list(dir: Path) -> Result<Stream<'static, Path>, Exception> {
+	pub fn unchecked_files_list(dir: Path) -> Result<Stream<Path>, Exception> {
 		Files::list(dir)
 	}
 
@@ -78,7 +78,7 @@ impl Utils {
 	/// 	}
 	/// }
 	/// ```
-	pub fn unchecked_files_lines(file: Path) -> Result<Stream<'static, JString>, Exception> {
+	pub fn unchecked_files_lines(file: Path) -> Result<Stream<JString>, Exception> {
 		Files::lines(file)
 	}
 
@@ -88,9 +88,9 @@ impl Utils {
 	/// 	return Stream.of(streams).flatMap(s -> s);
 	/// }
 	/// ```
-	pub fn concat<'a, Element>(streams: impl IntoIterator<Item = Stream<'a, Element>> + 'a) -> Stream<'a, Element>
+	pub fn concat<Element>(streams: impl IntoIterator<Item = Stream<Element>> + 'static) -> Stream<Element>
 	where
-		Element: 'a,
+		Element: 'static,
 	{
 		Stream::of(streams).flat_map(|s| s)
 	}

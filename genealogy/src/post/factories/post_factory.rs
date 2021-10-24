@@ -124,7 +124,7 @@ impl PostFactory {
 	///				.takeWhile(not(FRONT_MATTER_SEPARATOR::equals));
 	///	}
 	/// ```
-	fn read_front_matter(markdown_file: List<JString>) -> Stream<'static, JString> {
+	fn read_front_matter(markdown_file: List<JString>) -> Stream<JString> {
 		markdown_file
 			.stream()
 			.map(|string| Ok(string.strip()))
@@ -171,7 +171,7 @@ impl PostFactory {
 	///				.skip(1);
 	///	}
 	/// ```
-	fn extract_content(markdown_file: List<JString>) -> Stream<'static, JString> {
+	fn extract_content(markdown_file: List<JString>) -> Stream<JString> {
 		markdown_file
 			.stream()
 			.drop_while(|line| line.strip() != Self::FRONT_MATTER_SEPARATOR())

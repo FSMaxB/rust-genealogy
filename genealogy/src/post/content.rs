@@ -5,14 +5,14 @@ use crate::helpers::string::JString;
 /// @FunctionalInterface
 /// public interface Content extends Supplier<Stream<String>> {}
 /// ```
-pub type Content = Box<dyn FnOnce() -> Stream<'static, JString>>;
+pub type Content = Box<dyn FnOnce() -> Stream<JString>>;
 
 pub trait ContentExtensions {
-	fn get(self) -> Stream<'static, JString>;
+	fn get(self) -> Stream<JString>;
 }
 
 impl ContentExtensions for Content {
-	fn get(self) -> Stream<'static, JString> {
+	fn get(self) -> Stream<JString> {
 		self()
 	}
 }

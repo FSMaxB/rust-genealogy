@@ -7,26 +7,26 @@ use crate::throw;
 use std::convert::identity;
 use std::iter::once;
 
-pub struct Stream<'a, Item> {
-	iterator: Box<dyn Iterator<Item = Result<Item, Exception>> + 'a>,
+pub struct Stream<Item> {
+	iterator: Box<dyn Iterator<Item = Result<Item, Exception>> + 'static>,
 }
 
-impl<'a, Item> Stream<'a, Item>
+impl<Item> Stream<Item>
 where
-	Item: 'a,
+	Item: 'static,
 {
-	pub fn map<NewItem>(self, mut mapper: impl FnMut(Item) -> Result<NewItem, Exception> + 'a) -> Stream<'a, NewItem>
+	pub fn map<NewItem>(self, mut mapper: impl FnMut(Item) -> Result<NewItem, Exception> + 'static) -> Stream<NewItem>
 	where
-		NewItem: 'a,
+		NewItem: 'static,
 	{
 		self.iterator
 			.map(move |result| result.map(|item| (&mut mapper)(item)).and_then(identity))
 			.into()
 	}
 
-	pub fn flat_map<NewItem>(self, mut mapper: impl FnMut(Item) -> Stream<'a, NewItem> + 'a) -> Stream<'a, NewItem>
+	pub fn flat_map<NewItem>(self, mut mapper: impl FnMut(Item) -> Stream<NewItem> + 'static) -> Stream<NewItem>
 	where
-		NewItem: 'a,
+		NewItem: 'static,
 	{
 		self.iterator
 			.flat_map(move |result| {
@@ -37,7 +37,7 @@ where
 			.into()
 	}
 
-	pub fn filter(self, mut predicate: impl FnMut(&Item) -> bool + 'a) -> Self {
+	pub fn filter(self, mut predicate: impl FnMut(&Item) -> bool + 'static) -> Self {
 		self.iterator
 			.filter(move |result| result.as_ref().ok().map(|item| predicate(item)).unwrap_or(true))
 			.into()
@@ -55,9 +55,9 @@ where
 		(collector.finisher)(accumulated)
 	}
 
-	pub fn of<Iterable>(iterable: Iterable) -> Stream<'a, Iterable::Item>
+	pub fn of<Iterable>(iterable: Iterable) -> Stream<Iterable::Item>
 	where
-		Iterable: IntoIterator<Item = Item> + 'a,
+		Iterable: IntoIterator<Item = Item> + 'static,
 	{
 		iterable.into_iter().map(Result::<_, Exception>::Ok).into()
 	}
@@ -75,13 +75,13 @@ where
 		self.iterator.collect()
 	}
 
-	pub fn drop_while(self, predicate: impl Fn(&Item) -> bool + 'a) -> Self {
+	pub fn drop_while(self, predicate: impl Fn(&Item) -> bool + 'static) -> Self {
 		self.iterator
 			.skip_while(move |result| result.as_ref().map(|item| (&predicate)(item)).unwrap_or(false))
 			.into()
 	}
 
-	pub fn take_while(self, predicate: impl Fn(&Item) -> bool + 'a) -> Self {
+	pub fn take_while(self, predicate: impl Fn(&Item) -> bool + 'static) -> Self {
 		self.iterator
 			.take_while(move |result| result.as_ref().map(|item| (&predicate)(item)).unwrap_or(false))
 			.into()
@@ -98,9 +98,9 @@ where
 	}
 }
 
-impl<'a, Iter, Item, Error> From<Iter> for Stream<'a, Item>
+impl<Iter, Item, Error> From<Iter> for Stream<Item>
 where
-	Iter: Iterator<Item = Result<Item, Error>> + 'a,
+	Iter: Iterator<Item = Result<Item, Error>> + 'static,
 	Error: Into<Exception> + 'static,
 {
 	fn from(iterator: Iter) -> Self {
@@ -110,15 +110,15 @@ where
 	}
 }
 
-impl<'a, Item> From<Stream<'a, Item>> for Box<dyn Iterator<Item = Result<Item, Exception>> + 'a> {
-	fn from(stream: Stream<'a, Item>) -> Self {
+impl<Item> From<Stream<Item>> for Box<dyn Iterator<Item = Result<Item, Exception>> + 'static> {
+	fn from(stream: Stream<Item>) -> Self {
 		stream.iterator
 	}
 }
 
-impl<'a, Item> IntoIterator for Stream<'a, Item> {
+impl<Item> IntoIterator for Stream<Item> {
 	type Item = Result<Item, Exception>;
-	type IntoIter = Box<dyn Iterator<Item = Self::Item> + 'a>;
+	type IntoIter = Box<dyn Iterator<Item = Self::Item> + 'static>;
 
 	fn into_iter(self) -> Self::IntoIter {
 		self.iterator

@@ -71,6 +71,21 @@ mod test {
 	use crate::post::Post;
 	use literally::hset;
 
+	/// ```java
+	/// class RecommenderTests {
+	/// 	private final Post postA = PostTestHelper.createWithSlug("a");
+	///		private final Post postB = PostTestHelper.createWithSlug("b");
+	///		private final Post postC = PostTestHelper.createWithSlug("c");
+	///
+	///		private final Relation relation_AB = RelationTestHelper.create(postA, postB, 60L);
+	///		private final Relation relation_AC = RelationTestHelper.create(postA, postC, 40L);
+	///		private final Relation relation_BA = RelationTestHelper.create(postB, postA, 50L);
+	///		private final Relation relation_BC = RelationTestHelper.create(postB, postC, 70L);
+	///		private final Relation relation_CA = RelationTestHelper.create(postC, postA, 80L);
+	///		private final Relation relation_CB = RelationTestHelper.create(postC, postB, 60L);
+	///
+	///		private final Recommender recommender = new Recommender();
+	/// ```
 	struct RecommenderTests {
 		post_a: Post,
 		post_b: Post,
@@ -84,6 +99,20 @@ mod test {
 	}
 
 	impl RecommenderTests {
+		/// ```java
+		/// private final Post postA = PostTestHelper.createWithSlug("a");
+		///	private final Post postB = PostTestHelper.createWithSlug("b");
+		///	private final Post postC = PostTestHelper.createWithSlug("c");
+		///
+		///	private final Relation relation_AB = RelationTestHelper.create(postA, postB, 60L);
+		///	private final Relation relation_AC = RelationTestHelper.create(postA, postC, 40L);
+		///	private final Relation relation_BA = RelationTestHelper.create(postB, postA, 50L);
+		///	private final Relation relation_BC = RelationTestHelper.create(postB, postC, 70L);
+		///	private final Relation relation_CA = RelationTestHelper.create(postC, postA, 80L);
+		///	private final Relation relation_CB = RelationTestHelper.create(postC, postB, 60L);
+		///
+		///	private final Recommender recommender = new Recommender();
+		/// ```
 		fn new() -> Result<Self, Exception> {
 			let post_a = PostTestHelper::create_with_slug("a".into())?;
 			let post_b = PostTestHelper::create_with_slug("b".into())?;

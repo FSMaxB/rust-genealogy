@@ -3,7 +3,6 @@ use crate::helpers::list::List;
 use crate::helpers::path::Path;
 use crate::helpers::stream::Stream;
 use crate::helpers::string::JString;
-use resiter::Map;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 
@@ -29,8 +28,7 @@ impl Files {
 		let file = File::open(path)?;
 		BufReader::new(file)
 			.lines()
-			.map_ok(JString::from)
-			.map_err(Exception::from)
+			.map(|result| result.map(JString::from).map_err(Exception::from))
 			.collect()
 	}
 
@@ -38,8 +36,7 @@ impl Files {
 		let file = File::open(path)?;
 		Ok(BufReader::new(file)
 			.lines()
-			.map_ok(JString::from)
-			.map_err(Exception::from)
+			.map(|result| result.map(JString::from).map_err(Exception::from))
 			.into())
 	}
 
@@ -47,7 +44,7 @@ impl Files {
 		Ok(directory
 			.as_ref()
 			.read_dir()?
-			.map_ok(|dir_entry| dir_entry.path().into())
+			.map(|result| result.map(|dir_entry| dir_entry.path().into()))
 			.into())
 	}
 

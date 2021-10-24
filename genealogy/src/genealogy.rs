@@ -6,7 +6,6 @@ use crate::helpers::exception::Exception;
 use crate::helpers::iterator::ResultIteratorExtension;
 use crate::helpers::stream::Stream;
 use crate::post::Post;
-use resiter::Map;
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -50,9 +49,18 @@ impl Genealogy {
 		let weights = self.weights.clone();
 		sorted_typed_relations
 			.into_result_iterator()
-			.map_ok(|(_, value)| value)
-			.flat_map(|post_with_relations| post_with_relations.into_result_iterator().map_ok(|(_, value)| value))
-			.map_ok(move |relations| Relation::aggregate(Stream::of(relations), weights.clone()))
+			.map(|result| result.map(|(_, value)| value))
+			.flat_map(|post_with_relations| {
+				post_with_relations
+					.into_result_iterator()
+					.map(|result| result.map(|(_, value)| value))
+			})
+			.map(move |result| {
+				result.map({
+					let weights = weights.clone();
+					move |relations| Relation::aggregate(Stream::of(relations), weights)
+				})
+			})
 			.map(|result| result.and_then(std::convert::identity))
 	}
 }

@@ -20,7 +20,6 @@ use genealogy::process_details::ProcessDetails;
 use genealogy::recommendation::recommender::Recommender;
 use genealogy::recommendation::Recommendation;
 use genealogy::utils::Utils;
-use resiter::{AndThen, Filter};
 use std::rc::Rc;
 
 mod json;
@@ -45,10 +44,17 @@ fn main() -> Result<(), Exception> {
 fn create_genealogy(article_folder: Path, talk_folder: Path, video_folder: Path) -> Result<Genealogy, Exception> {
 	let posts: Vec<Box<dyn Iterator<Item = Result<Post, Exception>>>> = vec![
 		Box::new(
-			markdown_files_in(article_folder)?.and_then_ok(|path| ArticleFactory::create_article(path).map(Post::from)),
+			markdown_files_in(article_folder)?
+				.map(|result| result.and_then(|path| ArticleFactory::create_article(path).map(Post::from))),
 		),
-		Box::new(markdown_files_in(talk_folder)?.and_then_ok(|path| TalkFactory::create_talk(path).map(Post::from))),
-		Box::new(markdown_files_in(video_folder)?.and_then_ok(|path| VideoFactory::create_video(path).map(Post::from))),
+		Box::new(
+			markdown_files_in(talk_folder)?
+				.map(|result| result.and_then(|path| TalkFactory::create_talk(path).map(Post::from))),
+		),
+		Box::new(
+			markdown_files_in(video_folder)?
+				.map(|result| result.and_then(|path| VideoFactory::create_video(path).map(Post::from))),
+		),
 	];
 	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());
@@ -58,8 +64,14 @@ fn create_genealogy(article_folder: Path, talk_folder: Path, video_folder: Path)
 fn markdown_files_in(folder: Path) -> Result<impl Iterator<Item = Result<Path, Exception>>, Exception> {
 	Ok(
 		Box::<dyn Iterator<Item = _>>::from(Utils::unchecked_files_list(folder)?)
-			.filter_ok(|path| path.as_ref().is_file())
-			.filter_ok(|path| path.as_ref().ends_with(".md")),
+			.filter(|result| result.as_ref().ok().map(|path| path.as_ref().is_file()).unwrap_or(true))
+			.filter(|result| {
+				result
+					.as_ref()
+					.ok()
+					.map(|path| path.as_ref().ends_with(".md"))
+					.unwrap_or(true)
+			}),
 	)
 }
 

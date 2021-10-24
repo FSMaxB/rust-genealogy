@@ -4,7 +4,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
 use crate::helpers::list::List;
 use crate::throw;
-use resiter::{Filter, FlatMap, Map};
+use resiter::FlatMap;
 use std::convert::identity;
 
 pub struct Stream<'a, Item> {
@@ -34,8 +34,10 @@ where
 			.into()
 	}
 
-	pub fn filter(self, predicate: impl FnMut(&Item) -> bool + 'a) -> Self {
-		self.iterator.filter_ok(predicate).into()
+	pub fn filter(self, mut predicate: impl FnMut(&Item) -> bool + 'a) -> Self {
+		self.iterator
+			.filter(move |result| result.as_ref().ok().map(|item| predicate(item)).unwrap_or(true))
+			.into()
 	}
 
 	pub fn collect<Accumulated, Reduced>(
@@ -100,7 +102,7 @@ where
 {
 	fn from(iterator: Iter) -> Self {
 		Self {
-			iterator: Box::new(iterator.map_err(Into::into)),
+			iterator: Box::new(iterator.map(|result| result.map_err(Into::into))),
 		}
 	}
 }

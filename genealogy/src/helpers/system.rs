@@ -17,4 +17,8 @@ impl System {
 		}
 		.map(JString::from)
 	}
+
+	pub fn out_println(string: JString) {
+		println!("{}", string);
+	}
 }

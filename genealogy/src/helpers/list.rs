@@ -22,6 +22,10 @@ impl<Element> List<Element> {
 		}
 	}
 
+	pub fn is_empty(&self) -> bool {
+		self.vector.as_ref().borrow().is_empty()
+	}
+
 	pub fn get(&self, index: usize) -> Result<Element, Exception>
 	where
 		Element: Clone,

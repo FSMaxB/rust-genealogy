@@ -12,6 +12,7 @@ pub mod map;
 pub mod objects;
 pub mod optional;
 pub mod path;
+pub mod service_loader;
 pub mod set;
 pub mod r#static;
 pub mod stream;

@@ -38,6 +38,10 @@ impl JString {
 		self.text.as_ref().splitn(limit, separator).map(JString::from).collect()
 	}
 
+	pub fn replace(&self, target: &str, replacement: impl AsRef<str>) -> JString {
+		self.text.as_ref().replace(target, replacement.as_ref()).into()
+	}
+
 	pub fn replace_all<Replacement: Replacer>(
 		&self,
 		regex: &'static str,

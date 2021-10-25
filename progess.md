@@ -25,7 +25,7 @@
   * Genealogy.java [x]
   * Relation.java [x]
   * Weights.java [x]
-* Main.java [ ]
+* Main.java [x]
 * post [x]
   * Article.java [x]
   * Content.java [x]

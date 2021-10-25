@@ -17,6 +17,10 @@ impl Files {
 		path.as_ref().is_dir()
 	}
 
+	pub fn is_regular_file(path: impl AsRef<std::path::Path>) -> bool {
+		path.as_ref().is_file()
+	}
+
 	pub fn is_writable(path: impl AsRef<std::path::Path>) -> bool {
 		match path.as_ref().metadata() {
 			Ok(metadata) => !metadata.permissions().readonly(),

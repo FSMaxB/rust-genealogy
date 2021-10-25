@@ -15,6 +15,7 @@ pub enum Exception {
 	SecurityException,
 	URISyntaxException(url::ParseError),
 	NoSuchElementException(&'static str),
+	ServiceConfigurationError(&'static str),
 }
 
 impl Display for Exception {
@@ -45,6 +46,9 @@ impl Display for Exception {
 			}
 			NoSuchElementException(message) => {
 				write!(formatter, "NoSuchElementException: {}", message)
+			}
+			ServiceConfigurationError(message) => {
+				write!(formatter, "ServiceConfigurationError: {}", message)
 			}
 		}
 	}

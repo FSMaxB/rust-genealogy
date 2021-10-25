@@ -51,8 +51,25 @@ impl<T> Optional<T> {
 		self.0.map(mapper).transpose().map(Optional::from)
 	}
 
-	pub fn if_present(&self, action: impl FnOnce(&T) -> Result<(), Exception>) -> Result<(), Exception> {
-		self.0.as_ref().map(action).unwrap_or(Ok(()))
+	pub fn if_present(&self, action: impl FnOnce(T) -> Result<(), Exception>) -> Result<(), Exception>
+	where
+		T: Clone,
+	{
+		self.0.as_ref().cloned().map(action).unwrap_or(Ok(()))
+	}
+
+	pub fn if_present_or_else(
+		&self,
+		action: impl FnOnce(T) -> Result<(), Exception>,
+		fallback_action: impl FnOnce(),
+	) -> Result<(), Exception>
+	where
+		T: Clone,
+	{
+		self.0.as_ref().cloned().map(action).unwrap_or_else(|| {
+			fallback_action();
+			Ok(())
+		})
 	}
 
 	pub fn as_ref(&self) -> Optional<&T> {

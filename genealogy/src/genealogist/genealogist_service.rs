@@ -2,6 +2,7 @@ use crate::genealogist::Genealogist;
 use crate::helpers::collection::Collection;
 use crate::helpers::exception::Exception;
 use crate::post::Post;
+use std::sync::Arc;
 
 /// ```java
 /// /**
@@ -12,8 +13,9 @@ use crate::post::Post;
 /// }
 /// ```
 /// Type erased wrapper since in Java every interface is always automatically type erased.
+#[derive(Clone)]
 pub struct GenealogistService {
-	genealogist_service: Box<dyn GenealogistServiceTrait>,
+	genealogist_service: Arc<dyn GenealogistServiceTrait + Send + Sync>,
 }
 
 impl GenealogistService {
@@ -43,11 +45,11 @@ pub trait GenealogistServiceTrait {
 /// Helper to create instance of the type erased wrapper.
 impl<GenealogistServiceType> From<GenealogistServiceType> for GenealogistService
 where
-	GenealogistServiceType: GenealogistServiceTrait + 'static,
+	GenealogistServiceType: GenealogistServiceTrait + Send + Sync + 'static,
 {
 	fn from(genealogist_service: GenealogistServiceType) -> Self {
 		Self {
-			genealogist_service: Box::new(genealogist_service),
+			genealogist_service: Arc::new(genealogist_service),
 		}
 	}
 }

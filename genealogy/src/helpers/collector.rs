@@ -2,6 +2,7 @@ use crate::helpers::exception::Exception;
 use crate::helpers::list::List;
 use crate::helpers::map::Map;
 use crate::helpers::set::Set;
+use crate::helpers::string::JString;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
@@ -136,6 +137,18 @@ impl Collectors {
 					.collect::<HashMap<_, _>>()
 					.into())
 			}),
+		}
+	}
+
+	pub fn joining(delimiter: &'static str) -> Collector<JString, String, JString> {
+		Collector {
+			supplier: Box::new(|| Ok(String::new())),
+			accumulator: Box::new(|joined, string| {
+				joined.push_str(delimiter);
+				joined.push_str(string.as_ref());
+				Ok(())
+			}),
+			finisher: Box::new(|string| Ok(string.into())),
 		}
 	}
 

@@ -32,6 +32,13 @@ impl GenealogistTrait for RepoGenealogist {
 
 impl RepoGenealogist {
 	/// ```java
+	/// public class RepoGenealogist implements Genealogist {
+	/// ```
+	pub fn new() -> Self {
+		Self
+	}
+
+	/// ```java
 	/// private long determineScore(Post post1, Post post2) {
 	///		var repo1 = getRepository(post1);
 	///		var repo2 = getRepository(post2);

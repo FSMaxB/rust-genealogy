@@ -1,9 +1,9 @@
 # Progress of rust implementation
 
 ## Genealogists
-* repo [ ]
+* repo [x]
   * RepoGenealogist.java [x]
-  * RepoGenealogistService.java [ ]
+  * RepoGenealogistService.java [x]
 * silly [ ]
   * SillyGenealogist.java [ ]
   * SillyGenealogistService.java [ ]

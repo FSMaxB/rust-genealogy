@@ -54,6 +54,6 @@ impl Recommendation {
 	///	}
 	/// ```
 	pub fn recommended_posts(&self) -> List<Post> {
-		List::copy_of(&self.recommended_posts)
+		List::copy_of(self.recommended_posts.clone())
 	}
 }

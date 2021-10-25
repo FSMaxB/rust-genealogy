@@ -69,7 +69,7 @@ impl Config {
 	/// ```
 	fn from_raw_config(raw: List<JString>) -> Result<Config, Exception> {
 		#[allow(clippy::len_zero)]
-		if raw.len() == 0 {
+		if raw.length() == 0 {
 			throw!(IllegalArgumentException("No article path defined".into()));
 		}
 
@@ -77,7 +77,7 @@ impl Config {
 		let talk_folder = Self::read_folder(raw.get(1)?)?;
 		let video_folder = Self::read_folder(raw.get(2)?)?;
 
-		let output_filename = if raw.len() >= 4 {
+		let output_filename = if raw.length() >= 4 {
 			Optional::of(raw.get(3)?)
 		} else {
 			Optional::empty()
@@ -141,7 +141,7 @@ impl Config {
 	/// ```
 	pub fn create(args: List<JString>) -> Result<CompletableFuture<Config>, Exception> {
 		#[allow(clippy::len_zero)]
-		let raw_config = if args.len() > 0 {
+		let raw_config = if args.length() > 0 {
 			CompletableFuture::completed_future(args)
 		} else {
 			Self::read_project_config()?

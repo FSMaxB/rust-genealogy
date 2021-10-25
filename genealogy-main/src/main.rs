@@ -31,7 +31,7 @@ fn main() -> Result<(), Exception> {
 	let config = Config::create(args)?.join()?;
 	let genealogy = create_genealogy(config.article_folder, config.talk_folder, config.video_folder)?;
 
-	let relations = genealogy.infer_relations();
+	let relations = genealogy.infer_relations()?;
 	let recommender = Recommender::new();
 	let recommendations = recommender.recommend(relations.into(), 3)?;
 	let recommendations_as_json = recommendations_to_json(recommendations.into_iterator())?;
@@ -58,7 +58,7 @@ fn create_genealogy(article_folder: Path, talk_folder: Path, video_folder: Path)
 	];
 	let posts = posts.into_iter().flatten().collect::<Result<Vec<_>, _>>()?;
 	let genealogists = get_genealogists(posts.clone());
-	Ok(Genealogy::new(posts, genealogists, Weights::all_equal()))
+	Ok(Genealogy::new(posts.into(), genealogists.into(), Weights::all_equal()))
 }
 
 fn markdown_files_in(folder: Path) -> Result<impl Iterator<Item = Result<Path, Exception>>, Exception> {

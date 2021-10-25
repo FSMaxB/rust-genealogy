@@ -100,6 +100,15 @@ where
 	pub fn into_iterator(self) -> Box<dyn Iterator<Item = Result<Item, Exception>> + 'static> {
 		self.iterator
 	}
+
+	pub fn for_each(self, mut action: impl FnMut(Item) -> Result<(), Exception> + 'static) -> Result<(), Exception> {
+		self.iterator
+			.fold(Ok(()), move |result, item| match result {
+				Ok(_) => item.map(|item| action(item)).and_then(identity),
+				exception => exception,
+			})
+			.into()
+	}
 }
 
 impl<Iterable, Item, Error> From<Iterable> for Stream<Item>

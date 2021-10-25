@@ -7,7 +7,7 @@ use crate::utils::Utils;
 /// ```java
 /// public record Title(String text) {
 /// ```
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Title {
 	pub text: JString,
 }

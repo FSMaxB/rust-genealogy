@@ -2,25 +2,39 @@ use crate::genealogist::typed_relation::TypedRelation;
 use crate::genealogist::Genealogist;
 use crate::genealogy::relation::Relation;
 use crate::genealogy::weights::Weights;
+use crate::helpers::collection::Collection;
 use crate::helpers::exception::Exception;
-use crate::helpers::iterator::ResultIteratorExtension;
+use crate::helpers::list::ArrayList;
+use crate::helpers::map::{JHashMap, Map};
 use crate::helpers::stream::Stream;
 use crate::post::Post;
-use std::collections::HashMap;
 
 pub mod relation;
 #[cfg(test)]
 pub mod relation_test_helper;
 pub mod weights;
 
+/// ```java
+/// public class Genealogy {
+/// 	private final Collection<Post> posts;
+/// 	private final Collection<Genealogist> genealogists;
+/// 	private final Weights weights;
+/// ```
 pub struct Genealogy {
-	posts: Vec<Post>,
-	genealogists: Vec<Genealogist>,
+	posts: Collection<Post>,
+	genealogists: Collection<Genealogist>,
 	weights: Weights,
 }
 
 impl Genealogy {
-	pub fn new(posts: Vec<Post>, genealogists: Vec<Genealogist>, weights: Weights) -> Self {
+	/// ```java
+	/// public Genealogy(Collection<Post> posts, Collection<Genealogist> genealogists, Weights weights) {
+	///		this.posts = requireNonNull(posts);
+	///		this.genealogists = requireNonNull(genealogists);
+	///		this.weights = requireNonNull(weights);
+	///	}
+	/// ```
+	pub fn new(posts: Collection<Post>, genealogists: Collection<Genealogist>, weights: Weights) -> Self {
 		Self {
 			posts,
 			genealogists,
@@ -28,65 +42,115 @@ impl Genealogy {
 		}
 	}
 
-	pub fn infer_relations(&self) -> impl Iterator<Item = Result<Relation, Exception>> {
-		self.aggregate_typed_relations(infer_typed_relations(self.posts.clone(), self.genealogists.clone()))
+	/// ```java
+	/// public Stream<Relation> inferRelations() {
+	///		return aggregateTypedRelations(inferTypedRelations());
+	///	}
+	/// ```
+	pub fn infer_relations(&self) -> Result<Stream<Relation>, Exception> {
+		self.aggregate_typed_relations(self.infer_typed_relations())
 	}
 
-	fn aggregate_typed_relations(
-		&self,
-		mut typed_relations: impl Iterator<Item = Result<TypedRelation, Exception>>,
-	) -> impl Iterator<Item = Result<Relation, Exception>> {
-		let sorted_typed_relations = typed_relations.try_fold(HashMap::new(), |mut map, result| {
-			let relation = result?;
-			map.entry(relation.post1.clone())
-				.or_insert_with(HashMap::new)
-				.entry(relation.post2.clone())
-				.or_insert_with(Vec::new)
-				.push(relation);
-			Ok(map)
-		});
-		let weights = self.weights.clone();
-		sorted_typed_relations
-			.into_result_iterator()
-			.map(|result| result.map(|(_, value)| value))
-			.flat_map(|post_with_relations| {
-				post_with_relations
-					.into_result_iterator()
-					.map(|result| result.map(|(_, value)| value))
+	/// ```java
+	/// private Stream<Relation> aggregateTypedRelations(Stream<TypedRelation> typedRelations) {
+	///		Map<Post, Map<Post, Collection<TypedRelation>>> sortedTypedRelations = new HashMap<>();
+	///		typedRelations.forEach(relation -> sortedTypedRelations
+	///				.computeIfAbsent(relation.post1(), __ -> new HashMap<>())
+	///				.computeIfAbsent(relation.post2(), __ -> new ArrayList<>())
+	///				.add(relation));
+	///		return sortedTypedRelations
+	///				.values().stream()
+	///				.flatMap(postWithRelations -> postWithRelations.values().stream())
+	///				.map(relations -> Relation.aggregate(relations.stream(), weights));
+	///	}
+	/// ```
+	fn aggregate_typed_relations(&self, typed_relations: Stream<TypedRelation>) -> Result<Stream<Relation>, Exception> {
+		let sorted_typed_relations: Map<Post, Map<Post, Collection<TypedRelation>>> = Map::new();
+		typed_relations.for_each({
+			let sorted_typed_relations = sorted_typed_relations.clone();
+			move |relation| {
+				sorted_typed_relations
+					.clone()
+					.compute_if_absent(relation.post1(), |_| JHashMap::new())
+					.compute_if_absent(relation.post2(), |_| ArrayList::new())
+					.add(relation);
+				Ok(())
+			}
+		})?;
+
+		Ok(sorted_typed_relations
+			.values()
+			.stream()
+			.flat_map(|post_with_relations| post_with_relations.values().stream())
+			.map({
+				let weights = self.weights.clone();
+				move |relations| Relation::aggregate(relations.stream(), weights.clone())
+			}))
+	}
+
+	/// ```java
+	/// private Stream<TypedRelation> inferTypedRelations() {
+	///		record Posts(Post post1, Post post2) { }
+	///		record PostResearch(Genealogist genealogist, Posts posts) { }
+	///		return posts.stream()
+	///				.flatMap(post1 -> posts.stream()
+	///						.map(post2 -> new Posts(post1, post2)))
+	///				// no need to compare posts with themselves
+	///				.filter(posts -> posts.post1 != posts.post2)
+	///				.flatMap(posts -> genealogists.stream()
+	///						.map(genealogist -> new PostResearch(genealogist, posts)))
+	///				.map(research -> research.genealogist()
+	///						.infer(research.posts().post1(), research.posts().post2()));
+	///	}
+	/// ```
+	fn infer_typed_relations(&self) -> Stream<TypedRelation> {
+		#[derive(Clone)]
+		struct Posts {
+			post1: Post,
+			post2: Post,
+		}
+
+		impl Posts {
+			fn new(post1: Post, post2: Post) -> Result<Self, Exception> {
+				Ok(Self { post1, post2 })
+			}
+		}
+
+		struct PostResearch {
+			genealogist: Genealogist,
+			posts: Posts,
+		}
+
+		impl PostResearch {
+			fn new(genealogist: Genealogist, posts: Posts) -> Result<Self, Exception> {
+				Ok(Self { genealogist, posts })
+			}
+		}
+
+		self.posts.stream()
+			.flat_map({
+				let posts = self.posts.clone();
+				move |post1| posts.stream().map(move |post2| Posts::new(post1.clone(), post2))
 			})
-			.map(move |result| {
-				result.map({
-					let weights = weights.clone();
-					move |relations| Relation::aggregate(Stream::of(relations), weights)
+			// no need to compare posts with themselves
+			.filter(|posts| posts.post1 != posts.post2)
+			.flat_map({
+				let genealogists = self.genealogists.clone();
+				move |posts| genealogists.stream().map({
+					let posts = posts.clone();
+					move |genealogist| PostResearch::new(genealogist, posts.clone())
 				})
 			})
-			.map(|result| result.and_then(std::convert::identity))
+			.map(|research| research.genealogist.infer(research.posts.post1, research.posts.post2))
 	}
-}
-
-fn infer_typed_relations(
-	posts: Vec<Post>,
-	genealogists: Vec<Genealogist>,
-) -> impl Iterator<Item = Result<TypedRelation, Exception>> {
-	// FIXME: I have to clone quite a lot here. It's just references, but still pretty horrible.
-	posts
-		.clone()
-		.into_iter()
-		.flat_map(move |post1| posts.clone().into_iter().map(move |post2| (post1.clone(), post2)))
-		.filter(|(post1, post2)| post1 != post2)
-		.flat_map(move |posts| {
-			genealogists
-				.clone()
-				.into_iter()
-				.map(move |genealogist| (genealogist, posts.clone()))
-		})
-		.map(|(genealogist, (post1, post2))| genealogist.infer(post1, post2))
 }
 
 #[cfg(test)]
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
+	use crate::helpers::collector::Collectors;
+	use crate::helpers::list::List;
 	use crate::map_of;
 	use crate::post::test::PostTestHelper;
 	use literally::hset;
@@ -133,12 +197,12 @@ mod test {
 
 		fn one_genealogist_two_posts(&self) -> Result<(), Exception> {
 			let genealogy = Genealogy::new(
-				vec![self.posts.a.clone(), self.posts.b.clone()],
-				vec![self.tag_genealogist.clone()],
+				List::of([self.posts.a.clone(), self.posts.b.clone()]),
+				List::of([self.tag_genealogist.clone()]),
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>()?;
+			let relations = genealogy.infer_relations()?.collect(Collectors::to_set())?;
 			let expected_relations = hset! {
 				Relation::new(
 					self.posts.a.clone(),
@@ -157,12 +221,12 @@ mod test {
 
 		fn other_genealogist_two_posts(&self) -> Result<(), Exception> {
 			let genealogy = Genealogy::new(
-				vec![self.posts.a.clone(), self.posts.b.clone()],
-				vec![self.link_genealogist.clone()],
+				List::of([self.posts.a.clone(), self.posts.b.clone()]),
+				List::of([self.link_genealogist.clone()]),
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>()?;
+			let relations = genealogy.infer_relations()?.collect(Collectors::to_set())?;
 			let expected_relations = hset! {
 				Relation::new(
 					self.posts.a.clone(),
@@ -182,12 +246,12 @@ mod test {
 
 		fn one_genealogist_three_posts(&self) -> Result<(), Exception> {
 			let genealogy = Genealogy::new(
-				vec![self.posts.a.clone(), self.posts.b.clone(), self.posts.c.clone()],
-				vec![self.tag_genealogist.clone()],
+				List::of([self.posts.a.clone(), self.posts.b.clone(), self.posts.c.clone()]),
+				List::of([self.tag_genealogist.clone()]),
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>().unwrap();
+			let relations = genealogy.infer_relations()?.collect(Collectors::to_set())?;
 			let expected_relations = vec![
 				(self.posts.a.clone(), self.posts.b.clone()),
 				(self.posts.a.clone(), self.posts.c.clone()),
@@ -209,12 +273,12 @@ mod test {
 
 		fn two_genealogists_three_posts(&self) -> Result<(), Exception> {
 			let genealogy = Genealogy::new(
-				vec![self.posts.a.clone(), self.posts.b.clone(), self.posts.c.clone()],
-				vec![self.tag_genealogist.clone(), self.link_genealogist.clone()],
+				List::of([self.posts.a.clone(), self.posts.b.clone(), self.posts.c.clone()]),
+				List::of([self.tag_genealogist.clone(), self.link_genealogist.clone()]),
 				self.weights.clone(),
 			);
 
-			let relations = genealogy.infer_relations().collect::<Result<HashSet<_>, _>>().unwrap();
+			let relations = genealogy.infer_relations()?.collect(Collectors::to_set())?;
 			let expected_relations = vec![
 				(self.posts.a.clone(), self.posts.b.clone()),
 				(self.posts.a.clone(), self.posts.c.clone()),

@@ -12,7 +12,7 @@ use crate::throw;
 /// ```
 ///
 /// compareTo is automatically implemented by the PartialOrd and Ord derives
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Slug {
 	pub value: JString,
 }

@@ -33,7 +33,7 @@ impl From<&Recommendation> for SerializedRecommendation {
 	fn from(recommendation: &Recommendation) -> Self {
 		let recommendations = recommendation
 			.recommended_posts()
-			.iter()
+			.into_iter()
 			.map(SerializedPost::from)
 			.collect();
 		Self {
@@ -48,8 +48,8 @@ struct SerializedPost {
 	title: JString,
 }
 
-impl From<&Post> for SerializedPost {
-	fn from(post: &Post) -> Self {
+impl From<Post> for SerializedPost {
+	fn from(post: Post) -> Self {
 		Self {
 			title: post.title().text.clone(),
 		}

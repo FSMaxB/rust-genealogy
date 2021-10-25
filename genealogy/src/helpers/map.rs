@@ -1,20 +1,30 @@
+use crate::helpers::collection::Collection;
 use crate::helpers::set::Set;
+use std::cell::{RefCell, RefMut};
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
+pub type JHashMap<Key, Value> = Map<Key, Value>;
+
 #[derive(Clone, Debug)]
 pub struct Map<Key, Value> {
-	map: Rc<HashMap<Key, Value>>,
+	map: Rc<RefCell<HashMap<Key, Value>>>,
 }
 
 impl<Key, Value> Map<Key, Value> {
+	pub fn new() -> Self {
+		Self {
+			map: Default::default(),
+		}
+	}
+
 	pub fn copy_of(map: Map<Key, Value>) -> Map<Key, Value>
 	where
 		Key: Clone,
 		Value: Clone,
 	{
-		map.map.as_ref().clone().into()
+		map.map.as_ref().borrow().clone().into()
 	}
 
 	pub fn get(&self, key: Key) -> Option<Value>
@@ -22,7 +32,7 @@ impl<Key, Value> Map<Key, Value> {
 		Key: Hash + Eq,
 		Value: Clone,
 	{
-		self.map.get(&key).cloned()
+		self.map.as_ref().borrow().get(&key).cloned()
 	}
 
 	pub fn get_or_default(&self, key: Key, default: Value) -> Value
@@ -30,7 +40,12 @@ impl<Key, Value> Map<Key, Value> {
 		Key: Eq + Hash,
 		Value: Clone,
 	{
-		self.map.get(&key).map(Clone::clone).unwrap_or(default)
+		self.map
+			.as_ref()
+			.borrow()
+			.get(&key)
+			.map(Clone::clone)
+			.unwrap_or(default)
 	}
 
 	pub fn entry_set(self) -> Set<Entry<Key, Value>>
@@ -39,6 +54,8 @@ impl<Key, Value> Map<Key, Value> {
 		Value: Clone,
 	{
 		self.map
+			.as_ref()
+			.borrow()
 			.iter()
 			.map(|(key, value)| Entry {
 				key: key.clone(),
@@ -46,6 +63,28 @@ impl<Key, Value> Map<Key, Value> {
 			})
 			.collect::<HashSet<_>>()
 			.into()
+	}
+
+	pub fn compute_if_absent(
+		&mut self,
+		key: Key,
+		mapping_function: impl FnOnce(Key) -> Value + 'static,
+	) -> RefMut<Value>
+	where
+		Key: Clone + Eq + Hash,
+	{
+		RefMut::map(self.map.borrow_mut(), move |hash_map| {
+			hash_map
+				.entry(key)
+				.or_insert_with_key(|key| mapping_function(key.clone()))
+		})
+	}
+
+	pub fn values(self) -> Collection<Value>
+	where
+		Value: Clone,
+	{
+		self.map.as_ref().borrow().values().cloned().collect::<Vec<_>>().into()
 	}
 }
 
@@ -93,7 +132,9 @@ where
 
 impl<Key, Value> From<HashMap<Key, Value>> for Map<Key, Value> {
 	fn from(hash_map: HashMap<Key, Value>) -> Self {
-		Self { map: Rc::new(hash_map) }
+		Self {
+			map: Rc::new(hash_map.into()),
+		}
 	}
 }
 
@@ -114,7 +155,7 @@ where
 	HashMap<Key, Value>: PartialEq,
 {
 	fn eq(&self, hash_map: &HashMap<Key, Value>) -> bool {
-		self.map.as_ref().eq(hash_map)
+		self.map.as_ref().borrow().eq(hash_map)
 	}
 }
 
@@ -123,7 +164,7 @@ where
 	HashMap<Key, Value>: PartialEq,
 {
 	fn eq(&self, map: &Map<Key, Value>) -> bool {
-		map.map.as_ref().eq(self)
+		map.map.as_ref().borrow().eq(self)
 	}
 }
 
@@ -136,7 +177,7 @@ mod test {
 	#[test]
 	fn map_of_none() {
 		let map: Map<(), ()> = map_of!();
-		assert!(map.map.is_empty())
+		assert!(map.map.as_ref().borrow().is_empty())
 	}
 
 	#[test]

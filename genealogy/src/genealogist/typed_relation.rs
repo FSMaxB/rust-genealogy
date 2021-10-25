@@ -46,6 +46,14 @@ impl TypedRelation {
 		})
 	}
 
+	pub fn post1(&self) -> Post {
+		self.post1.clone()
+	}
+
+	pub fn post2(&self) -> Post {
+		self.post2.clone()
+	}
+
 	pub fn score(&self) -> i64 {
 		self.score
 	}

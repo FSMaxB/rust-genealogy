@@ -148,7 +148,7 @@ impl PostFactory {
 	/// ```
 	fn key_value_pair_from(line: JString) -> Result<FrontMatterLine, Exception> {
 		let pair = line.split_limit(':', 2);
-		if pair.len() < 2 {
+		if pair.length() < 2 {
 			throw!(IllegalArgumentException(
 				"Line doesn't seem to be a key/value pair (no colon): " + line
 			));

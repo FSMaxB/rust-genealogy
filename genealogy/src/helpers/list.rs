@@ -2,12 +2,16 @@ use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IndexOutOfBoundsException;
 use crate::helpers::stream::Stream;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::cell::RefCell;
+use std::hash::{Hash, Hasher};
 use std::ops::Deref;
 use std::rc::Rc;
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash)]
+pub type ArrayList<Element> = List<Element>;
+
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct List<Element> {
-	vector: Rc<Vec<Element>>,
+	vector: Rc<RefCell<Vec<Element>>>,
 }
 
 impl<Element> List<Element> {
@@ -22,14 +26,19 @@ impl<Element> List<Element> {
 	where
 		Element: Clone,
 	{
-		self.vector.get(index).cloned().ok_or(IndexOutOfBoundsException(index))
+		self.vector
+			.as_ref()
+			.borrow()
+			.get(index)
+			.cloned()
+			.ok_or(IndexOutOfBoundsException(index))
 	}
 
-	pub fn copy_of(list: impl AsRef<[Element]>) -> Self
+	pub fn copy_of(list: impl IntoIterator<Item = Element>) -> Self
 	where
 		Element: Clone,
 	{
-		list.as_ref().to_vec().into()
+		list.into_iter().collect::<Vec<_>>().into()
 	}
 
 	pub fn of(iterable: impl IntoIterator<Item = Element>) -> Self {
@@ -40,7 +49,33 @@ impl<Element> List<Element> {
 	where
 		Element: Clone + 'static,
 	{
-		Stream::of(self.vector.as_ref().clone())
+		Stream::of(self.vector.as_ref().borrow().clone())
+	}
+
+	pub fn add(&mut self, element: Element) -> bool
+	where
+		Element: PartialEq,
+	{
+		let mut vector = self.vector.borrow_mut();
+		if !vector.contains(&element) {
+			vector.push(element);
+			true
+		} else {
+			false
+		}
+	}
+
+	pub fn length(&self) -> usize {
+		self.vector.as_ref().borrow().len()
+	}
+}
+
+impl<Element> Hash for List<Element>
+where
+	Vec<Element>: Hash,
+{
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		self.vector.as_ref().borrow().hash(state)
 	}
 }
 
@@ -65,23 +100,15 @@ where
 		D: Deserializer<'de>,
 	{
 		Ok(Self {
-			vector: Rc::new(Vec::deserialize(deserializer)?),
+			vector: Rc::new(Vec::deserialize(deserializer)?.into()),
 		})
-	}
-}
-
-impl<Element> Deref for List<Element> {
-	type Target = [Element];
-
-	fn deref(&self) -> &Self::Target {
-		self.vector.as_ref()
 	}
 }
 
 impl<Element> FromIterator<Element> for List<Element> {
 	fn from_iter<Iterable: IntoIterator<Item = Element>>(iterable: Iterable) -> Self {
 		Self {
-			vector: Rc::new(Vec::from_iter(iterable)),
+			vector: Rc::new(Vec::from_iter(iterable).into()),
 		}
 	}
 }
@@ -91,7 +118,7 @@ where
 	Element: PartialEq,
 {
 	fn eq(&self, other: &Vec<Element>) -> bool {
-		self.vector.as_ref() == other
+		self.vector.as_ref().borrow().deref() == other
 	}
 }
 
@@ -100,7 +127,7 @@ where
 	Element: PartialEq,
 {
 	fn eq(&self, other: &List<Element>) -> bool {
-		other.vector.as_ref() == self
+		other.vector.as_ref().borrow().deref() == self
 	}
 }
 
@@ -112,20 +139,14 @@ where
 	type IntoIter = <Vec<Element> as IntoIterator>::IntoIter;
 
 	fn into_iter(self) -> Self::IntoIter {
-		self.vector.as_ref().clone().into_iter()
+		self.vector.as_ref().borrow().clone().into_iter()
 	}
 }
 
 impl<Element> From<Vec<Element>> for List<Element> {
 	fn from(vector: Vec<Element>) -> Self {
 		Self {
-			vector: Rc::new(vector),
+			vector: Rc::new(vector.into()),
 		}
-	}
-}
-
-impl<Element> AsRef<[Element]> for List<Element> {
-	fn as_ref(&self) -> &[Element] {
-		self.vector.as_ref()
 	}
 }

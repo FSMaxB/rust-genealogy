@@ -1,8 +1,8 @@
 use crate::r#type::type_genealogist::TypeGenealogist;
 use genealogy::genealogist::genealogist_service::GenealogistServiceTrait;
 use genealogy::genealogist::Genealogist;
+use genealogy::helpers::collection::Collection;
 use genealogy::helpers::exception::Exception;
-use genealogy::helpers::stream::Stream;
 use genealogy::post::Post;
 
 /// ```java
@@ -21,7 +21,7 @@ impl GenealogistServiceTrait for TypeGenealogistService {
 	///	}
 	/// ```
 	#[allow(unused_variables)]
-	fn procure(&self, posts: Stream<Post>) -> Result<Genealogist, Exception> {
+	fn procure(&self, posts: Collection<Post>) -> Result<Genealogist, Exception> {
 		Ok(TypeGenealogist::new().into())
 	}
 }

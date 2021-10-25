@@ -10,8 +10,8 @@ use genealogy::genealogy::weights::Weights;
 use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
 use genealogy::helpers::exception::Exception::RuntimeException;
+use genealogy::helpers::list::List;
 use genealogy::helpers::path::Path;
-use genealogy::helpers::stream::Stream;
 use genealogy::helpers::string::JString;
 use genealogy::post::factories::article_factory::ArticleFactory;
 use genealogy::post::factories::talk_factory::TalkFactory;
@@ -85,7 +85,7 @@ fn get_genealogists(posts: Vec<Post>) -> Vec<Genealogist> {
 	];
 	genealogist_services
 		.into_iter()
-		.map(move |service| service.procure(Stream::of(posts.clone())).unwrap())
+		.map(move |service| service.procure(List::of(posts.clone())).unwrap())
 		.collect()
 }
 

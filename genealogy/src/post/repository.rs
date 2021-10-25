@@ -6,7 +6,7 @@ use crate::throw;
 /// ```java
 /// public record Repository(String identifier) {
 /// ```
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Repository {
 	pub identifier: JString,
 }

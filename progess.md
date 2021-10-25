@@ -2,7 +2,7 @@
 
 ## Genealogists
 * repo [ ]
-  * RepoGenealogist.java [ ]
+  * RepoGenealogist.java [x]
   * RepoGenealogistService.java [ ]
 * silly [ ]
   * SillyGenealogist.java [ ]

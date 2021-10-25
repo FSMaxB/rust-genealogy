@@ -1,7 +1,7 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::NoSuchElementException;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Optional<T>(Option<T>);
 
 impl<T> Optional<T> {
@@ -22,10 +22,17 @@ impl<T> Optional<T> {
 		self.0.is_some()
 	}
 
-	pub fn get(&self) -> Result<&T, Exception> {
+	pub fn is_empty(&self) -> bool {
+		self.0.is_none()
+	}
+
+	pub fn get(&self) -> Result<T, Exception>
+	where
+		T: Clone,
+	{
 		match &self.0 {
 			None => Err(NoSuchElementException("No value present")),
-			Some(value) => Ok(value),
+			Some(value) => Ok(value.clone()),
 		}
 	}
 

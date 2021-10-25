@@ -2,6 +2,7 @@ use crate::helpers::collector::Collector;
 use crate::helpers::exception::Exception::{self, IllegalArgumentException};
 use crate::helpers::files::Files;
 use crate::helpers::list::List;
+use crate::helpers::objects::Objects;
 use crate::helpers::optional::Optional;
 use crate::helpers::path::Path;
 use crate::helpers::stream::Stream;
@@ -102,9 +103,9 @@ impl Utils {
 	/// ```
 	pub fn collect_equal_element<Element>() -> Collector<Element, Optional<Element>, Optional<Element>>
 	where
-		Element: Debug + PartialEq + 'static,
+		Element: Clone + Debug + PartialEq + 'static,
 	{
-		Self::collect_equal_element_with_predicate(Element::eq)
+		Self::collect_equal_element_with_predicate(Objects::equals)
 	}
 
 	/// ```java
@@ -129,15 +130,15 @@ impl Utils {
 	/// }
 	/// ```
 	pub fn collect_equal_element_with_predicate<Element>(
-		equals: impl Fn(&Element, &Element) -> bool + 'static,
+		equals: impl Fn(Element, Element) -> bool + 'static,
 	) -> Collector<Element, Optional<Element>, Optional<Element>>
 	where
-		Element: Debug + 'static,
+		Element: Clone + Debug + 'static,
 	{
 		Collector::of(
 			|| Ok(Optional::empty()),
-			move |left, right| {
-				if left.is_present() && !equals(left.get()?, &right) {
+			move |left, right: Element| {
+				if left.is_present() && !equals(left.get()?, right.clone()) {
 					throw!(IllegalArgumentException(
 						format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
 					));

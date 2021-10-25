@@ -72,7 +72,7 @@ impl Relation {
 	///	}
 	/// ```
 	pub(super) fn aggregate(typed_relations: Stream<TypedRelation>, weights: Weights) -> Result<Relation, Exception> {
-		#[derive(Debug, PartialEq, Eq)]
+		#[derive(Clone, Debug, PartialEq, Eq)]
 		struct Posts {
 			post1: Post,
 			post2: Post,

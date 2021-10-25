@@ -108,6 +108,13 @@ where
 			exception => exception,
 		})
 	}
+
+	pub fn count(self) -> Result<i64, Exception> {
+		self.iterator.fold(Ok(0), |result, item| match result {
+			Ok(count) => item.map(|_| count + 1),
+			exception => exception,
+		})
+	}
 }
 
 impl Stream<i32> {

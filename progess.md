@@ -8,7 +8,7 @@
   * SillyGenealogist.java [x]
   * SillyGenealogistService.java [x]
 * tags [ ]
-  * TagGenealogist.java [ ]
+  * TagGenealogist.java [x]
   * TagGenealogistService.java [ ]
 * type [ ]
   * TypeGenealogist.java [ ]

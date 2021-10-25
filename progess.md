@@ -52,8 +52,8 @@
 * Utils.java [x]
 
 ### Test
-* genealogy [ ]
-  * GenealogyTests.java [ ]
+* genealogy [x]
+  * GenealogyTests.java [x]
   * RelationTestHelper.java [x]
   * RelationTests.java [x]
   * WeightsTests.java [x]

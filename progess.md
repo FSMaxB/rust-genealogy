@@ -11,12 +11,12 @@
   * TagGenealogist.java [x]
   * TagGenealogistService.java [x]
 * type [ ]
-  * TypeGenealogist.java [ ]
+  * TypeGenealogist.java [x]
   * TypeGenealogistService.java [ ]
 
 ## Genealogy
 * Config.java [x]
-* genealogist [ ]
+* genealogist [x]
   * Genealogist.java [x]
   * GenealogistService.java [x]
   * RelationType.java [x]

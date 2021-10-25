@@ -211,5 +211,6 @@ fn main() -> Result<(), Exception> {
 	// This can't be done automatically in Rust since there is no Reflection or class loader.
 	meta_inf_services();
 
-	Main::main(List::of(args().map(JString::from)))
+	// Note: Java doesn't get the first parameter as native processes do.
+	Main::main(List::of(args().skip(1).map(JString::from)))
 }

@@ -86,7 +86,7 @@ impl Config {
 		let output_file = output_filename
 			.map(|file| Ok::<_, Exception>(Path::of(System::get_property("user.dir")?).resolve(file)))?;
 		output_file.if_present(|file| {
-			let not_writable = Files::exists(file.clone()) && Files::is_writable(file.clone());
+			let not_writable = Files::exists(file.clone()) && !Files::is_writable(file.clone());
 			if not_writable {
 				throw!(IllegalArgumentException("Output path is not writable: " + file));
 			}

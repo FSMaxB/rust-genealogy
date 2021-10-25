@@ -11,6 +11,7 @@ use genealogy::genealogy::Genealogy;
 use genealogy::helpers::exception::Exception;
 use genealogy::helpers::exception::Exception::RuntimeException;
 use genealogy::helpers::path::Path;
+use genealogy::helpers::stream::Stream;
 use genealogy::helpers::string::JString;
 use genealogy::post::factories::article_factory::ArticleFactory;
 use genealogy::post::factories::talk_factory::TalkFactory;
@@ -76,15 +77,15 @@ fn markdown_files_in(folder: Path) -> Result<impl Iterator<Item = Result<Path, E
 
 fn get_genealogists(posts: Vec<Post>) -> Vec<Genealogist> {
 	// NOTE: Not quite dynamic class loading, but hey, that's just not possible in Rust
-	let genealogist_services: Vec<Box<dyn GenealogistService>> = vec![
-		Box::new(SillyGenealogistService),
-		Box::new(TagGenealogistService),
-		Box::new(RepoGenealogistService),
-		Box::new(TypeGenealogistService),
+	let genealogist_services: Vec<GenealogistService> = vec![
+		SillyGenealogistService.into(),
+		TagGenealogistService.into(),
+		RepoGenealogistService.into(),
+		TypeGenealogistService.into(),
 	];
 	genealogist_services
 		.into_iter()
-		.map(move |service| service.procure(Box::new(posts.clone().into_iter())).unwrap())
+		.map(move |service| service.procure(Stream::of(posts.clone())).unwrap())
 		.collect()
 }
 

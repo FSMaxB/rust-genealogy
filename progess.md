@@ -18,7 +18,7 @@
 * Config.java [x]
 * genealogist [ ]
   * Genealogist.java [x]
-  * GenealogistService.java [ ]
+  * GenealogistService.java [x]
   * RelationType.java [x]
   * TypedRelation.java [x]
 * genealogy [x]

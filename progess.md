@@ -10,9 +10,9 @@
 * tags [x]
   * TagGenealogist.java [x]
   * TagGenealogistService.java [x]
-* type [ ]
+* type [x]
   * TypeGenealogist.java [x]
-  * TypeGenealogistService.java [ ]
+  * TypeGenealogistService.java [x]
 
 ## Genealogy
 * Config.java [x]

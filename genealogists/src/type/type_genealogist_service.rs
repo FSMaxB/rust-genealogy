@@ -5,10 +5,23 @@ use genealogy::helpers::exception::Exception;
 use genealogy::helpers::stream::Stream;
 use genealogy::post::Post;
 
+/// ```java
+/// public class TypeGenealogistService implements GenealogistService {
+/// ```
 pub struct TypeGenealogistService;
 
+/// ```java
+/// public class TypeGenealogistService implements GenealogistService {
+/// ```
 impl GenealogistServiceTrait for TypeGenealogistService {
-	fn procure(&self, _posts: Stream<Post>) -> Result<Genealogist, Exception> {
-		Ok(TypeGenealogist.into())
+	/// ```java
+	/// @Override
+	///	public Genealogist procure(Collection<Post> posts) {
+	///		return new TypeGenealogist();
+	///	}
+	/// ```
+	#[allow(unused_variables)]
+	fn procure(&self, posts: Stream<Post>) -> Result<Genealogist, Exception> {
+		Ok(TypeGenealogist::new().into())
 	}
 }

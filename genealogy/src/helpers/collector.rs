@@ -140,15 +140,14 @@ impl Collectors {
 		}
 	}
 
-	pub fn joining(delimiter: &'static str) -> Collector<JString, String, JString> {
+	pub fn joining(delimiter: &'static str) -> Collector<JString, Vec<String>, JString> {
 		Collector {
-			supplier: Box::new(|| Ok(String::new())),
-			accumulator: Box::new(|joined, string| {
-				joined.push_str(delimiter);
-				joined.push_str(string.as_ref());
+			supplier: Box::new(|| Ok(Vec::new())),
+			accumulator: Box::new(|strings, string| {
+				strings.push(string.to_string());
 				Ok(())
 			}),
-			finisher: Box::new(|string| Ok(string.into())),
+			finisher: Box::new(|strings| Ok(strings.join(delimiter).into())),
 		}
 	}
 

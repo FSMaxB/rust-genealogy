@@ -170,8 +170,8 @@ impl Main {
 	fn recommendations_to_json(recommendations: Stream<Recommendation>) -> Result<JString, Exception> {
 		let frame = JString::from(
 			r#"[
-	$RECOMMENDATIONS
-	]
+$RECOMMENDATIONS
+]
 "#,
 		);
 		let recommendation = JString::from(

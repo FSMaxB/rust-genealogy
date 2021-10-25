@@ -54,7 +54,7 @@ impl GenealogistTrait for TagGenealogist {
 			.count()?;
 		let number_of_post1_tags = post1.tags().size();
 		let score = ((100.0 * 2.0 * (number_of_shared_tags as f64))
-			/ ((number_of_post1_tags * post2_tags.size()) as f64))
+			/ ((number_of_post1_tags + post2_tags.size()) as f64))
 			.round() as i64;
 		TypedRelation::new(post1, post2, Self::TYPE(), score)
 	}

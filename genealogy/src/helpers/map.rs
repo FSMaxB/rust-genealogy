@@ -13,6 +13,7 @@ pub struct Map<Key, Value> {
 }
 
 impl<Key, Value> Map<Key, Value> {
+	#[allow(clippy::new_without_default)]
 	pub fn new() -> Self {
 		Self {
 			map: Default::default(),

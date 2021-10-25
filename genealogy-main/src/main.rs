@@ -1,3 +1,4 @@
+#![allow(clippy::tabs_in_doc_comments)]
 use genealogists::meta_inf_services::meta_inf_services;
 use genealogy::config::Config;
 use genealogy::genealogist::genealogist_service::GenealogistService;
@@ -103,6 +104,7 @@ impl Main {
 	///	}
 	/// ```
 	fn markdown_files_in(folder: Path) -> Result<Stream<Path>, Exception> {
+		#[allow(clippy::redundant_closure)] // doesn't compile without the closure
 		Ok(Utils::unchecked_files_list(folder)?
 			.filter(|file| Files::is_regular_file(file))
 			.filter(|file| file.to_string().ends_with(".md")))

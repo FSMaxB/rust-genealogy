@@ -56,6 +56,7 @@ impl JString {
 	}
 
 	pub fn chars(&self) -> Stream<i32> {
+		#[allow(clippy::needless_collect)] // it is needed because of lifetimes
 		let utf16_code_units = self.text.encode_utf16().collect::<Vec<_>>();
 		utf16_code_units
 			.into_iter()

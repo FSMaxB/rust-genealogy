@@ -74,6 +74,7 @@ impl<Element> List<Element> {
 	}
 }
 
+#[allow(clippy::derive_hash_xor_eq)]
 impl<Element> Hash for List<Element>
 where
 	Vec<Element>: Hash,

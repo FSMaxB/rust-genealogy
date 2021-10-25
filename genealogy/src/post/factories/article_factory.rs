@@ -248,7 +248,7 @@ mod test {
 		assert_that(&article.description.text).is_equal_to("Very blog, much post, so wow");
 		assert_that(&article.slug.value).is_equal_to("cool-blog-post");
 		assert_that(article.content.get().to_list().unwrap()).contains_exactly([
-			"".into(),
+			"",
 			"Lorem ipsum dolor sit amet.",
 			"Ut enim ad minim veniam.",
 			"Duis aute irure dolor in reprehenderit.",

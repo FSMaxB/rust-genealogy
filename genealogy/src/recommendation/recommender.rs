@@ -74,6 +74,7 @@ impl Recommender {
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate::genealogy::relation_test_helper::RelationTestHelper;
 	use crate::helpers::list::List;
 	use crate::helpers::test::assert_that;
 	use crate::post::test::PostTestHelper;
@@ -258,15 +259,6 @@ mod test {
 				},
 			]);
 			Ok(())
-		}
-	}
-
-	struct RelationTestHelper;
-
-	impl RelationTestHelper {
-		// WTF: Why a static method just to call the constructor with the exact same arguments. WTF x2
-		fn create(post1: Post, post2: Post, score: i64) -> Result<Relation, Exception> {
-			Relation::new(post1, post2, score)
 		}
 	}
 

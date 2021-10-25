@@ -12,10 +12,3 @@ Roadmap
 2. **Incrementally transform the code to idiomatic rust**
 
 Currently still 1.
-
-Comments
---------
-I used special comments throughout the code base.
-* FIXME, TODO: You probably know what those mean already.
-* RUSTIFICATION: Notes to myself on what to do later on when rustifying.
-* WTF: Me just wondering about what the original code base was doing and maybe even a TODO of sorts.

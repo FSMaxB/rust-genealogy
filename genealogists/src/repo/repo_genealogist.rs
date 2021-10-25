@@ -6,6 +6,7 @@ use genealogy::helpers::objects::Objects;
 use genealogy::helpers::optional::Optional;
 use genealogy::post::repository::Repository;
 use genealogy::post::Post;
+use genealogy::r#static;
 
 /// ```java
 /// public class RepoGenealogist implements Genealogist {
@@ -26,11 +27,16 @@ impl GenealogistTrait for RepoGenealogist {
 	/// ```
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
 		let score = self.determine_score(post1.clone(), post2.clone());
-		TypedRelation::new(post1, post2, RelationType::new("repo".into())?, score)
+		TypedRelation::new(post1, post2, Self::TYPE(), score)
 	}
 }
 
 impl RepoGenealogist {
+	// ```java
+	// private static final RelationType TYPE = new RelationType("repo");
+	// ```
+	r#static!(TYPE: RelationType = RelationType::new("repo".into()).unwrap());
+
 	/// ```java
 	/// public class RepoGenealogist implements Genealogist {
 	/// ```

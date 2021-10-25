@@ -2,7 +2,6 @@ use crate::helpers::exception::Exception;
 use crate::helpers::list::List;
 use crate::helpers::stream::Stream;
 use regex::{Regex, Replacer};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::ops::{Add, Deref};
 use std::sync::Arc;
@@ -167,25 +166,5 @@ impl Add<JString> for &str {
 
 	fn add(self, right_hand_side: JString) -> Self::Output {
 		format!("{}{}", self, right_hand_side).into()
-	}
-}
-
-impl Serialize for JString {
-	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-	where
-		S: Serializer,
-	{
-		self.text.as_ref().serialize(serializer)
-	}
-}
-
-impl<'de> Deserialize<'de> for JString {
-	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-	where
-		D: Deserializer<'de>,
-	{
-		Ok(Self {
-			text: Arc::new(String::deserialize(deserializer)?),
-		})
 	}
 }

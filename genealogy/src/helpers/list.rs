@@ -1,7 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IndexOutOfBoundsException;
 use crate::helpers::stream::Stream;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::cell::RefCell;
 use std::hash::{Hash, Hasher};
 use std::ops::Deref;
@@ -81,32 +80,6 @@ where
 {
 	fn hash<H: Hasher>(&self, state: &mut H) {
 		self.vector.as_ref().borrow().hash(state)
-	}
-}
-
-impl<Element> Serialize for List<Element>
-where
-	Element: Serialize,
-{
-	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-	where
-		S: Serializer,
-	{
-		self.vector.as_ref().serialize(serializer)
-	}
-}
-
-impl<'de, Element> Deserialize<'de> for List<Element>
-where
-	Element: Deserialize<'de>,
-{
-	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-	where
-		D: Deserializer<'de>,
-	{
-		Ok(Self {
-			vector: Rc::new(Vec::deserialize(deserializer)?.into()),
-		})
 	}
 }
 

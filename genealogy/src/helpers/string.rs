@@ -1,5 +1,6 @@
 use crate::helpers::exception::Exception;
 use crate::helpers::list::List;
+use crate::helpers::stream::Stream;
 use regex::{Regex, Replacer};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
@@ -44,6 +45,19 @@ impl JString {
 	) -> Result<JString, Exception> {
 		let regex = Regex::new(regex)?;
 		Ok(regex.replace_all(self.text.as_ref(), replacement).as_ref().into())
+	}
+
+	pub fn to_lower_case(&self) -> Self {
+		self.text.to_lowercase().into()
+	}
+
+	pub fn chars(&self) -> Stream<i32> {
+		let utf16_code_units = self.text.encode_utf16().collect::<Vec<_>>();
+		utf16_code_units
+			.into_iter()
+			.map(i32::from)
+			.map(Result::<_, Exception>::Ok)
+			.into()
 	}
 }
 

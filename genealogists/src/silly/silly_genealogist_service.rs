@@ -9,6 +9,6 @@ pub struct SillyGenealogistService;
 
 impl GenealogistServiceTrait for SillyGenealogistService {
 	fn procure(&self, _posts: Stream<Post>) -> Result<Genealogist, Exception> {
-		Ok(SillyGenealogist::new()?.into())
+		Ok(SillyGenealogist::new().into())
 	}
 }

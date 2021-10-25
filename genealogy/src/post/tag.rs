@@ -46,7 +46,7 @@ impl Tag {
 			.map(|string| Ok(Tag::new(string)))
 			// An UnmodifiableSet isn't really necessary in rust since it
 			// can only be modified via mutable reference anyways.
-			.collect(Collectors::to_set())
+			.collect(Collectors::to_unmodifiable_set())
 	}
 }
 

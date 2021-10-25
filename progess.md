@@ -5,7 +5,7 @@
   * RepoGenealogist.java [x]
   * RepoGenealogistService.java [x]
 * silly [ ]
-  * SillyGenealogist.java [ ]
+  * SillyGenealogist.java [x]
   * SillyGenealogistService.java [ ]
 * tags [ ]
   * TagGenealogist.java [ ]

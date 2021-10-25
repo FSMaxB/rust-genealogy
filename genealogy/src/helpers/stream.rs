@@ -2,6 +2,7 @@ use crate::helpers::collector::Collector;
 use crate::helpers::comparator::Comparator;
 use crate::helpers::exception::Exception;
 use crate::helpers::exception::Exception::IllegalArgumentException;
+use crate::helpers::integer::Integer;
 use crate::helpers::list::List;
 use crate::throw;
 use std::convert::identity;
@@ -102,12 +103,16 @@ where
 	}
 
 	pub fn for_each(self, mut action: impl FnMut(Item) -> Result<(), Exception> + 'static) -> Result<(), Exception> {
-		self.iterator
-			.fold(Ok(()), move |result, item| match result {
-				Ok(_) => item.map(|item| action(item)).and_then(identity),
-				exception => exception,
-			})
-			.into()
+		self.iterator.fold(Ok(()), move |result, item| match result {
+			Ok(_) => item.map(|item| action(item)).and_then(identity),
+			exception => exception,
+		})
+	}
+}
+
+impl Stream<i32> {
+	pub fn boxed(self) -> Stream<Integer> {
+		self.map(|integer| Ok(integer.into()))
 	}
 }
 

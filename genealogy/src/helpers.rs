@@ -5,6 +5,7 @@ pub mod completable_future;
 pub mod exception;
 pub mod files;
 pub mod indexing;
+pub mod integer;
 pub mod iterator;
 pub mod list;
 pub mod map;

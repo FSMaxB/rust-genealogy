@@ -83,7 +83,7 @@ impl Collectors {
 		}
 	}
 
-	pub fn to_set<Input>() -> Collector<Input, HashSet<Input>, Set<Input>>
+	pub fn to_unmodifiable_set<Input>() -> Collector<Input, HashSet<Input>, Set<Input>>
 	where
 		Input: Hash + Eq + 'static,
 	{

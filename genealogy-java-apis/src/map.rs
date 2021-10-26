@@ -87,6 +87,13 @@ impl<Key, Value> Map<Key, Value> {
 	{
 		self.map.as_ref().borrow().values().cloned().collect::<Vec<_>>().into()
 	}
+
+	pub fn of(key_values: impl IntoIterator<Item = (Key, Value)>) -> Self
+	where
+		Key: Hash + Eq,
+	{
+		key_values.into_iter().collect::<HashMap<Key, Value>>().into()
+	}
 }
 
 #[derive(Clone)]
@@ -145,9 +152,9 @@ macro_rules! map_of {
 		genealogy_java_apis::map::Map::from(::std::collections::HashMap::new())
 	};
 	($($key: expr, $value: expr), + $(,) ?) => {
-		genealogy_java_apis::map::Map::from(genealogy_java_apis::hmap!{
-			$($key => $value),+
-		})
+		genealogy_java_apis::map::Map::of([
+			$(($key, $value)),+
+		])
 	};
 }
 
@@ -173,7 +180,6 @@ where
 mod test {
 	use super::*;
 	use crate as genealogy_java_apis;
-	use literally::hmap;
 	use std::collections::HashMap;
 
 	#[test]
@@ -184,7 +190,9 @@ mod test {
 
 	#[test]
 	fn map_of_one() {
-		let expected: HashMap<&'static str, &'static str> = hmap! {"hello" => "world"};
+		let mut expected = HashMap::new();
+		expected.insert("hello", "world");
+
 		let actual = map_of!("hello", "world");
 
 		assert_eq!(expected, actual);
@@ -192,8 +200,12 @@ mod test {
 
 	#[test]
 	fn map_of_two() {
-		let expected: HashMap<&'static str, &'static str> = hmap! {"hello" => "hello", "world" => "world"};
+		let mut expected = HashMap::new();
+		expected.insert("hello", "hello");
+		expected.insert("world", "world");
+
 		let actual = map_of!("hello", "hello", "world", "world");
+
 		assert_eq!(expected, actual);
 	}
 }

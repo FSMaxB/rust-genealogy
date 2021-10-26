@@ -26,4 +26,3 @@ pub mod time;
 pub mod uri;
 
 pub use lazy_static::lazy_static;
-pub use literally::hmap;

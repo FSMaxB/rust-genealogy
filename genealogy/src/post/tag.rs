@@ -1,8 +1,8 @@
-use crate::helpers::collector::Collectors;
-use crate::helpers::exception::Exception;
-use crate::helpers::set::Set;
-use crate::helpers::stream::Stream;
-use crate::helpers::string::JString;
+use genealogy_java_apis::collector::Collectors;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::set::Set;
+use genealogy_java_apis::stream::Stream;
+use genealogy_java_apis::string::JString;
 
 /// ```java
 /// public record Tag(String text) {
@@ -57,8 +57,8 @@ impl Tag {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::helpers::string::jstrings;
-	use crate::helpers::test::assert_that;
+	use genealogy_java_apis::string::jstrings;
+	use genealogy_java_apis::test::assert_that;
 
 	/// ```java
 	/// @Test

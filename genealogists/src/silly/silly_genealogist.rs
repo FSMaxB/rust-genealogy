@@ -1,12 +1,12 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
 use genealogy::genealogist::GenealogistTrait;
-use genealogy::helpers::collector::Collectors;
-use genealogy::helpers::exception::Exception;
-use genealogy::helpers::integer::Integer;
-use genealogy::helpers::set::{JHashSet, Set};
 use genealogy::post::Post;
-use genealogy::r#static;
+use genealogy_java_apis::collector::Collectors;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::integer::Integer;
+use genealogy_java_apis::r#static;
+use genealogy_java_apis::set::{JHashSet, Set};
 
 /// ```java
 /// public class SillyGenealogist implements Genealogist {

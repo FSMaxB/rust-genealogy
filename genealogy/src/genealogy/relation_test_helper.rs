@@ -1,6 +1,6 @@
 use crate::genealogy::relation::Relation;
-use crate::helpers::exception::Exception;
 use crate::post::Post;
+use genealogy_java_apis::exception::Exception;
 
 /// ```java
 /// public class RelationTestHelper {

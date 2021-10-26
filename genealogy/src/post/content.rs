@@ -1,5 +1,5 @@
-use crate::helpers::stream::Stream;
-use crate::helpers::string::JString;
+use genealogy_java_apis::stream::Stream;
+use genealogy_java_apis::string::JString;
 
 /// ```java
 /// @FunctionalInterface

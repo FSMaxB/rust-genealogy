@@ -1,5 +1,5 @@
 use genealogy::genealogist::genealogist_service::GenealogistService;
-use genealogy::helpers::service_loader::ServiceLoader;
+use genealogy_java_apis::service_loader::ServiceLoader;
 
 /// ```java
 /// # org.codefx.java_after_eight.genealogists.repo.RepoGenealogist

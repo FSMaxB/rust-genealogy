@@ -1,11 +1,11 @@
 use crate::genealogy::relation::Relation;
-use crate::helpers::collector::Collectors;
-use crate::helpers::comparator::Comparator;
-use crate::helpers::exception::Exception::{self, IllegalArgumentException};
-use crate::helpers::stream::Stream;
-use crate::helpers::string::JString;
 use crate::recommendation::Recommendation;
-use crate::throw;
+use genealogy_java_apis::collector::Collectors;
+use genealogy_java_apis::comparator::Comparator;
+use genealogy_java_apis::exception::Exception::{self, IllegalArgumentException};
+use genealogy_java_apis::stream::Stream;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::throw;
 
 /// ```java
 /// // Don't judge me for the name - recommend a better one (see what I did there?)
@@ -75,10 +75,10 @@ impl Recommender {
 mod test {
 	use super::*;
 	use crate::genealogy::relation_test_helper::RelationTestHelper;
-	use crate::helpers::list::List;
-	use crate::helpers::test::assert_that;
 	use crate::post::test::PostTestHelper;
 	use crate::post::Post;
+	use genealogy_java_apis::list::List;
+	use genealogy_java_apis::test::assert_that;
 
 	/// ```java
 	/// class RecommenderTests {

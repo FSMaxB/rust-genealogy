@@ -1,13 +1,13 @@
-use crate::helpers::optional::Optional;
-use crate::helpers::set::Set;
-use crate::helpers::time::LocalDate;
-use crate::helpers::uri::URI;
 use crate::post::description::Description;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
 use crate::post::Post;
+use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::set::Set;
+use genealogy_java_apis::time::LocalDate;
+use genealogy_java_apis::uri::URI;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 

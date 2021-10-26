@@ -1,4 +1,4 @@
-use crate::helpers::exception::Exception;
+use crate::exception::Exception;
 use std::ops::Index;
 use std::panic::{catch_unwind, RefUnwindSafe};
 

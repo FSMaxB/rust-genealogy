@@ -1,13 +1,13 @@
 use crate::collect_equal_element;
 use crate::genealogist::typed_relation::TypedRelation;
 use crate::genealogy::weights::Weights;
-use crate::helpers::collector::Collectors;
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::stream::Stream;
-use crate::helpers::string::JString;
 use crate::post::Post;
-use crate::throw;
+use genealogy_java_apis::collector::Collectors;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+use genealogy_java_apis::stream::Stream;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::throw;
 use std::fmt::{Display, Formatter};
 
 /// ```java
@@ -110,9 +110,9 @@ impl Display for Relation {
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
-	use crate::helpers::test::assert_that;
-	use crate::map_of;
 	use crate::post::test::PostTestHelper;
+	use genealogy_java_apis::map_of;
+	use genealogy_java_apis::test::assert_that;
 
 	/// ```java
 	/// class RelationTests {

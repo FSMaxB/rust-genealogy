@@ -1,5 +1,5 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::NoSuchElementException;
+use crate::exception::Exception;
+use crate::exception::Exception::NoSuchElementException;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Optional<T>(Option<T>);

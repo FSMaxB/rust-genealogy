@@ -1,6 +1,6 @@
 use crate::genealogist::relation_type::RelationType;
-use crate::helpers::map::Map;
-use crate::map_of;
+use genealogy_java_apis::map::Map;
+use genealogy_java_apis::map_of;
 
 /// ```java
 /// public class Weights {
@@ -47,8 +47,8 @@ impl Weights {
 mod test {
 	use crate::genealogist::relation_type::RelationType;
 	use crate::genealogy::weights::Weights;
-	use crate::helpers::test::assert_that;
-	use crate::{map_of, r#static};
+	use genealogy_java_apis::test::assert_that;
+	use genealogy_java_apis::{map_of, r#static};
 
 	/// ```java
 	/// class WeightsTests {

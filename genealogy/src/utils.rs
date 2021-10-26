@@ -1,13 +1,13 @@
-use crate::helpers::collector::Collector;
-use crate::helpers::exception::Exception::{self, IllegalArgumentException};
-use crate::helpers::files::Files;
-use crate::helpers::list::List;
-use crate::helpers::objects::Objects;
-use crate::helpers::optional::Optional;
-use crate::helpers::path::Path;
-use crate::helpers::stream::Stream;
-use crate::helpers::string::JString;
-use crate::throw;
+use genealogy_java_apis::collector::Collector;
+use genealogy_java_apis::exception::Exception::{self, IllegalArgumentException};
+use genealogy_java_apis::files::Files;
+use genealogy_java_apis::list::List;
+use genealogy_java_apis::objects::Objects;
+use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::path::Path;
+use genealogy_java_apis::stream::Stream;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::throw;
 use std::fmt::Debug;
 
 /// ```java
@@ -203,10 +203,10 @@ mod test {
 	/// ```
 	#[allow(non_snake_case)]
 	mod collect_equal_element {
-		use crate::helpers::exception::Exception::IllegalArgumentException;
-		use crate::helpers::optional::Optional;
-		use crate::helpers::stream::Stream;
-		use crate::helpers::test::assert_that;
+		use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+		use genealogy_java_apis::optional::Optional;
+		use genealogy_java_apis::stream::Stream;
+		use genealogy_java_apis::test::assert_that;
 
 		/// ```java
 		/// @Test

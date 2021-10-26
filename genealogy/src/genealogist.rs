@@ -1,6 +1,6 @@
 use crate::genealogist::typed_relation::TypedRelation;
-use crate::helpers::exception::Exception;
 use crate::post::Post;
+use genealogy_java_apis::exception::Exception;
 use std::rc::Rc;
 
 pub mod genealogist_service;

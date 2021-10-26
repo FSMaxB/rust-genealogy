@@ -1,4 +1,3 @@
-use crate::helpers::time::LocalDate;
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::slug::Slug;
@@ -6,6 +5,8 @@ use crate::post::tag::Tag;
 use crate::post::talk::Talk;
 use crate::post::title::Title;
 use crate::post::video::Video;
+use genealogy_java_apis::set::Set;
+use genealogy_java_apis::time::LocalDate;
 use std::rc::Rc;
 
 pub mod article;
@@ -33,7 +34,6 @@ pub enum Post {
 	Video(Rc<Video>),
 }
 
-use crate::helpers::set::Set;
 use Post::*;
 
 impl Post {
@@ -96,11 +96,11 @@ impl Post {
 #[cfg(test)]
 pub mod test {
 	use super::*;
-	use crate::helpers::exception::Exception;
-	use crate::helpers::optional::Optional;
-	use crate::helpers::stream::Stream;
-	use crate::helpers::string::JString;
-	use crate::helpers::time::LocalDateExtension;
+	use genealogy_java_apis::exception::Exception;
+	use genealogy_java_apis::optional::Optional;
+	use genealogy_java_apis::stream::Stream;
+	use genealogy_java_apis::string::JString;
+	use genealogy_java_apis::time::LocalDateExtension;
 
 	/// ```java
 	/// public class PostTestHelper {

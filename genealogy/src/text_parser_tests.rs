@@ -1,6 +1,6 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::string::JString;
-use crate::helpers::test::assert_that;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::test::assert_that;
 
 /// ```java
 /// public interface QuotationTests {

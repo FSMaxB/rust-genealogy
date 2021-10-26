@@ -2,12 +2,12 @@ use crate::genealogist::typed_relation::TypedRelation;
 use crate::genealogist::Genealogist;
 use crate::genealogy::relation::Relation;
 use crate::genealogy::weights::Weights;
-use crate::helpers::collection::Collection;
-use crate::helpers::exception::Exception;
-use crate::helpers::list::ArrayList;
-use crate::helpers::map::{JHashMap, Map};
-use crate::helpers::stream::Stream;
 use crate::post::Post;
+use genealogy_java_apis::collection::Collection;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::list::ArrayList;
+use genealogy_java_apis::map::{JHashMap, Map};
+use genealogy_java_apis::stream::Stream;
 
 pub mod relation;
 #[cfg(test)]
@@ -149,10 +149,10 @@ impl Genealogy {
 mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
-	use crate::helpers::list::List;
-	use crate::helpers::test::assert_that;
-	use crate::map_of;
 	use crate::post::test::PostTestHelper;
+	use genealogy_java_apis::list::List;
+	use genealogy_java_apis::map_of;
+	use genealogy_java_apis::test::assert_that;
 
 	/// ```java
 	/// class GenealogyTests {

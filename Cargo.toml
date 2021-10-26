@@ -4,4 +4,5 @@ members = [
 	'genealogy',
 	'genealogists',
 	'genealogy-main',
+	'genealogy-java-apis',
 ]

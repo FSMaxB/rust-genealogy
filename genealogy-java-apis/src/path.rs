@@ -1,4 +1,4 @@
-use crate::helpers::string::JString;
+use crate::string::JString;
 use std::fmt::{Display, Formatter};
 use std::ops::Add;
 use std::path::PathBuf;

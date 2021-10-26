@@ -1,6 +1,6 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IndexOutOfBoundsException;
-use crate::helpers::stream::Stream;
+use crate::exception::Exception;
+use crate::exception::Exception::IndexOutOfBoundsException;
+use crate::stream::Stream;
 use std::cell::RefCell;
 use std::hash::{Hash, Hasher};
 use std::ops::Deref;

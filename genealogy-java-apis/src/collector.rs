@@ -1,8 +1,8 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::list::List;
-use crate::helpers::map::Map;
-use crate::helpers::set::Set;
-use crate::helpers::string::JString;
+use crate::exception::Exception;
+use crate::list::List;
+use crate::map::Map;
+use crate::set::Set;
+use crate::string::JString;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
@@ -248,7 +248,7 @@ impl AccumulatedDoubleAverage {
 	/// 	return intermediateSum;
 	/// }
 	/// ```
-	pub(super) fn sum_with_compensation(&mut self, value: f64) {
+	pub(crate) fn sum_with_compensation(&mut self, value: f64) {
 		let tmp = value - self.low_order_bits;
 		let sum = self.high_order_bits;
 		let velvel = sum + tmp; // Little wolf of rounding error
@@ -272,7 +272,7 @@ impl AccumulatedDoubleAverage {
 	/// 		return tmp;
 	/// }
 	/// ```
-	pub(super) fn compute_final_sum(&self) -> f64 {
+	pub(crate) fn compute_final_sum(&self) -> f64 {
 		// Better error bounds to add both terms as the final sum
 		let tmp = self.high_order_bits + self.low_order_bits;
 		if tmp.is_nan() && self.simple_sum.is_finite() {

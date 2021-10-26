@@ -1,9 +1,9 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
 use genealogy::genealogist::GenealogistTrait;
-use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
-use genealogy::r#static;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::r#static;
 
 /// ```java
 /// public class TagGenealogist implements Genealogist {

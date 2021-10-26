@@ -1,4 +1,6 @@
-use crate::helpers::string::JString;
+use genealogy_java_apis::process_handle::ProcessHandle;
+use genealogy_java_apis::runtime::Runtime;
+use genealogy_java_apis::string::JString;
 
 /// ```java
 /// public class ProcessDetails {
@@ -13,11 +15,13 @@ impl ProcessDetails {
 	/// 			Runtime.version().major());
 	/// }
 	/// ```
+	/// Note: Uses the full rust version, not just the major version,
+	/// which up till now (2021) has only ever been 1.
 	pub fn details() -> JString {
 		format!(
 			"Process ID: {} | Rust version: {}",
-			std::process::id(),
-			rustc_version_runtime::version()
+			ProcessHandle::current().pid(),
+			Runtime::version(),
 		)
 		.into()
 	}

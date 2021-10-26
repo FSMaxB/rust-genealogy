@@ -1,5 +1,5 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::string::JString;
+use crate::exception::Exception;
+use crate::string::JString;
 use url::Url;
 
 #[derive(Debug)]

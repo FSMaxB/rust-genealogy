@@ -1,12 +1,12 @@
 use genealogy::genealogist::relation_type::RelationType;
 use genealogy::genealogist::typed_relation::TypedRelation;
 use genealogy::genealogist::GenealogistTrait;
-use genealogy::helpers::exception::Exception;
-use genealogy::helpers::objects::Objects;
-use genealogy::helpers::optional::Optional;
 use genealogy::post::repository::Repository;
 use genealogy::post::Post;
-use genealogy::r#static;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::objects::Objects;
+use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::r#static;
 
 /// ```java
 /// public class RepoGenealogist implements Genealogist {

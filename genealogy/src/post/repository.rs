@@ -1,7 +1,7 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string::JString;
-use crate::throw;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::throw;
 
 /// ```java
 /// public record Repository(String identifier) {
@@ -35,7 +35,7 @@ impl Repository {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::helpers::test::assert_that;
+	use genealogy_java_apis::test::assert_that;
 
 	#[test]
 	fn empty_text__exception() {

@@ -1,5 +1,5 @@
-use crate::helpers::collection::Collection;
-use crate::helpers::set::Set;
+use crate::collection::Collection;
+use crate::set::Set;
 use std::cell::{RefCell, RefMut};
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
@@ -142,10 +142,10 @@ impl<Key, Value> From<HashMap<Key, Value>> for Map<Key, Value> {
 #[macro_export]
 macro_rules! map_of {
 	() => {
-		crate::helpers::map::Map::from(::std::collections::HashMap::new())
+		genealogy_java_apis::map::Map::from(::std::collections::HashMap::new())
 	};
 	($($key: expr, $value: expr), + $(,) ?) => {
-		crate::helpers::map::Map::from(::literally::hmap!{
+		genealogy_java_apis::map::Map::from(genealogy_java_apis::hmap!{
 			$($key => $value),+
 		})
 	};
@@ -172,6 +172,7 @@ where
 #[cfg(test)]
 mod test {
 	use super::*;
+	use crate as genealogy_java_apis;
 	use literally::hmap;
 	use std::collections::HashMap;
 

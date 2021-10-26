@@ -1,7 +1,7 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::list::List;
-use crate::helpers::stream::Stream;
 use crate::post::Post;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::list::List;
+use genealogy_java_apis::stream::Stream;
 
 pub mod recommender;
 

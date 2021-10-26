@@ -1,9 +1,3 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::RuntimeException;
-use crate::helpers::list::List;
-use crate::helpers::path::Path;
-use crate::helpers::string::JString;
-use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::post::article::Article;
 use crate::post::description::Description;
 use crate::post::factories::post_factory::PostFactory;
@@ -12,6 +6,12 @@ use crate::post::repository::Repository;
 use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::RuntimeException;
+use genealogy_java_apis::list::List;
+use genealogy_java_apis::path::Path;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::time::{LocalDate, LocalDateExtension};
 
 /// ```java
 /// public final class ArticleFactory {
@@ -90,10 +90,10 @@ impl ArticleFactory {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::helpers::test::assert_that;
-	use crate::helpers::time::LocalDate;
-	use crate::helpers::time::LocalDateExtension;
 	use crate::post::content::ContentExtensions;
+	use genealogy_java_apis::test::assert_that;
+	use genealogy_java_apis::time::LocalDate;
+	use genealogy_java_apis::time::LocalDateExtension;
 
 	/// ```java
 	/// @Test

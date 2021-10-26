@@ -1,9 +1,9 @@
 use crate::tags::tag_genealogist::TagGenealogist;
 use genealogy::genealogist::genealogist_service::GenealogistServiceTrait;
 use genealogy::genealogist::Genealogist;
-use genealogy::helpers::collection::Collection;
-use genealogy::helpers::exception::Exception;
 use genealogy::post::Post;
+use genealogy_java_apis::collection::Collection;
+use genealogy_java_apis::exception::Exception;
 
 /// ```java
 /// public class TagGenealogistService implements GenealogistService {

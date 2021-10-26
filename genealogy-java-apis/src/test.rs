@@ -1,5 +1,5 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::stream::Streamable;
+use crate::exception::Exception;
+use crate::stream::Streamable;
 use std::cmp::PartialEq;
 use std::fmt::Debug;
 

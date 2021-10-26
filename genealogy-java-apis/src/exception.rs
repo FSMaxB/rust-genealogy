@@ -1,4 +1,4 @@
-use crate::helpers::string::JString;
+use crate::string::JString;
 use std::error::Error;
 use std::fmt::{Display, Formatter};
 use url::ParseError;

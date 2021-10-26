@@ -1,7 +1,7 @@
 use crate::genealogist::Genealogist;
-use crate::helpers::collection::Collection;
-use crate::helpers::exception::Exception;
 use crate::post::Post;
+use genealogy_java_apis::collection::Collection;
+use genealogy_java_apis::exception::Exception;
 use std::sync::Arc;
 
 /// ```java

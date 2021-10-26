@@ -1,8 +1,8 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::map::Map;
-use crate::helpers::optional::Optional;
-use crate::helpers::string::JString;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+use genealogy_java_apis::map::Map;
+use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::string::JString;
 
 /// ```java
 /// class RawFrontMatter {

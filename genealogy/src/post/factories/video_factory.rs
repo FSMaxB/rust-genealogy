@@ -1,7 +1,3 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::RuntimeException;
-use crate::helpers::path::Path;
-use crate::helpers::time::{LocalDate, LocalDateExtension};
 use crate::post::description::Description;
 use crate::post::factories::post_factory::PostFactory;
 use crate::post::factories::raw_post::RawPost;
@@ -11,6 +7,10 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::video::Video;
 use crate::post::video_slug::VideoSlug;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::RuntimeException;
+use genealogy_java_apis::path::Path;
+use genealogy_java_apis::time::{LocalDate, LocalDateExtension};
 
 /// ```java
 /// public final class VideoFactory {

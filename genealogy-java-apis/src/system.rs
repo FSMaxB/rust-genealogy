@@ -1,5 +1,5 @@
-use crate::helpers::exception::Exception::{self, SecurityException};
-use crate::helpers::string::JString;
+use crate::exception::Exception::{self, SecurityException};
+use crate::string::JString;
 use crate::throw;
 
 pub enum System {}

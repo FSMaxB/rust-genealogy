@@ -1,13 +1,13 @@
-use crate::helpers::completable_future::CompletableFuture;
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::files::Files;
-use crate::helpers::list::List;
-use crate::helpers::optional::Optional;
-use crate::helpers::path::Path;
-use crate::helpers::string::JString;
-use crate::helpers::system::System;
-use crate::{r#static, throw};
+use genealogy_java_apis::completable_future::CompletableFuture;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+use genealogy_java_apis::files::Files;
+use genealogy_java_apis::list::List;
+use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::path::Path;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::system::System;
+use genealogy_java_apis::{r#static, throw};
 
 /// ```java
 /// public record Config(

@@ -1,9 +1,9 @@
 use crate::genealogist::relation_type::RelationType;
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string::JString;
 use crate::post::Post;
-use crate::throw;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::throw;
 
 /// ```java
 /// public record TypedRelation(

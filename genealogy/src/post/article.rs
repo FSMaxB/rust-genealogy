@@ -1,6 +1,3 @@
-use crate::helpers::optional::Optional;
-use crate::helpers::set::Set;
-use crate::helpers::time::LocalDate;
 use crate::post::content::Content;
 use crate::post::description::Description;
 use crate::post::repository::Repository;
@@ -9,6 +6,9 @@ use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::Post;
 use debug_stub_derive::DebugStub;
+use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::set::Set;
+use genealogy_java_apis::time::LocalDate;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 

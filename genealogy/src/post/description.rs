@@ -1,8 +1,8 @@
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::string::JString;
-use crate::throw;
 use crate::utils::Utils;
+use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::exception::Exception::IllegalArgumentException;
+use genealogy_java_apis::string::JString;
+use genealogy_java_apis::throw;
 
 /// ```java
 /// public record Description(String text) {
@@ -38,8 +38,8 @@ impl Description {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::helpers::test::assert_that;
 	use crate::text_parser_tests::{self, test_text_parser};
+	use genealogy_java_apis::test::assert_that;
 
 	/// ```java
 	/// @Test

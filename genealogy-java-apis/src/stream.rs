@@ -1,9 +1,9 @@
-use crate::helpers::collector::Collector;
-use crate::helpers::comparator::Comparator;
-use crate::helpers::exception::Exception;
-use crate::helpers::exception::Exception::IllegalArgumentException;
-use crate::helpers::integer::Integer;
-use crate::helpers::list::List;
+use crate::collector::Collector;
+use crate::comparator::Comparator;
+use crate::exception::Exception;
+use crate::exception::Exception::IllegalArgumentException;
+use crate::integer::Integer;
+use crate::list::List;
 use crate::throw;
 use std::convert::identity;
 use std::iter::once;

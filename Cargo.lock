@@ -113,11 +113,19 @@ name = "genealogists"
 version = "0.1.0"
 dependencies = [
  "genealogy",
- "lazy_static",
+ "genealogy-java-apis",
 ]
 
 [[package]]
 name = "genealogy"
+version = "0.1.0"
+dependencies = [
+ "debug_stub_derive",
+ "genealogy-java-apis",
+]
+
+[[package]]
+name = "genealogy-java-apis"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -129,6 +137,7 @@ dependencies = [
  "pin-project",
  "regex",
  "rustc_version_runtime",
+ "semver",
  "url",
 ]
 
@@ -138,6 +147,7 @@ version = "0.1.0"
 dependencies = [
  "genealogists",
  "genealogy",
+ "genealogy-java-apis",
 ]
 
 [[package]]

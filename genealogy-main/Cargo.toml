@@ -9,3 +9,4 @@ edition = "2021"
 [dependencies]
 genealogists = {path = "../genealogists"}
 genealogy = {path = "../genealogy"}
+genealogy-java-apis = {path = "../genealogy-java-apis"}

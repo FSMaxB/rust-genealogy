@@ -1,4 +1,4 @@
-use crate::helpers::stream::Stream;
+use crate::stream::Stream;
 use std::cell::RefCell;
 use std::collections::HashSet;
 use std::hash::Hash;

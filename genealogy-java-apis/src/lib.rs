@@ -25,4 +25,5 @@ pub mod test;
 pub mod time;
 pub mod uri;
 
+pub use genealogy_macros::record;
 pub use lazy_static::lazy_static;

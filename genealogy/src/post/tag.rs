@@ -1,33 +1,23 @@
 use genealogy_java_apis::collector::Collectors;
 use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::record;
 use genealogy_java_apis::set::Set;
 use genealogy_java_apis::stream::Stream;
 use genealogy_java_apis::string::JString;
 
 /// ```java
 /// public record Tag(String text) {
+/// 	public Tag {
+/// 		requireNonNull(text);
+/// 	}
 /// ```
+#[record]
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Tag {
-	pub text: JString,
+	text: JString,
 }
 
 impl Tag {
-	/// ```java
-	/// public Tag {
-	/// 	requireNonNull(text);
-	/// }
-	/// ```
-	pub fn new(text: JString) -> Tag {
-		Tag { text }
-	}
-
-	/// Used for tests extracting(Tag::text)
-	#[cfg(test)]
-	pub fn text(self) -> JString {
-		self.text
-	}
-
 	/// ```java
 	/// public static Set<Tag> from(String tagsText) {
 	///		return Stream.of(tagsText

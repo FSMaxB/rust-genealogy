@@ -34,12 +34,15 @@ impl<Value> AssertThat<Value> {
 		}
 	}
 
-	pub fn extracting<Extracted>(self, extractor: impl FnMut(Value::Item) -> Extracted) -> AssertThat<Vec<Extracted>>
+	pub fn extracting<Extracted>(
+		self,
+		mut extractor: impl FnMut(&Value::Item) -> Extracted,
+	) -> AssertThat<Vec<Extracted>>
 	where
 		Value: IntoIterator,
 	{
 		AssertThat {
-			value: self.value.into_iter().map(extractor).collect(),
+			value: self.value.into_iter().map(move |value| extractor(&value)).collect(),
 		}
 	}
 

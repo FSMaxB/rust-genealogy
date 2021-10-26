@@ -10,10 +10,11 @@ pub mod recommender;
 ///		Post post,
 ///		List<Post> recommendedPosts) {
 /// ```
+// FIXME: Add overrides to the #[record] macro so it can be used here
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Recommendation {
 	pub post: Post,
-	pub recommended_posts: List<Post>,
+	recommended_posts: List<Post>,
 }
 
 impl Recommendation {

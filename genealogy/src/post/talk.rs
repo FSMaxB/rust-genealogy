@@ -25,6 +25,7 @@ use std::rc::Rc;
 /// The `implements Post` can't be emulated directly since there is no
 /// inheritance in rust and traits cannot be `sealed`. Therefore [`Post`]
 /// is an enum instead and the `implements` is emulated by a [`From`] implementation.
+// FIXME: Add overrides to #[record] so it can be used here.
 #[derive(Debug)]
 pub struct Talk {
 	pub title: Title,

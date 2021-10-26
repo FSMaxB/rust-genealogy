@@ -6,6 +6,7 @@ use genealogy_java_apis::throw;
 /// ```java
 /// public record Repository(String identifier) {
 /// ```
+// FIXME: Make constructor optional in #[record] so it can be used here.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Repository {
 	pub identifier: JString,

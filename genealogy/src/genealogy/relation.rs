@@ -7,7 +7,7 @@ use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::exception::Exception::IllegalArgumentException;
 use genealogy_java_apis::stream::Stream;
 use genealogy_java_apis::string::JString;
-use genealogy_java_apis::throw;
+use genealogy_java_apis::{record, throw};
 use std::fmt::{Display, Formatter};
 
 /// ```java
@@ -16,6 +16,7 @@ use std::fmt::{Display, Formatter};
 ///		Post post2,
 ///		long score) {
 /// ```
+// FIXME: Add optional constructor generation to #[record] so it can be used here
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
 	pub post1: Post,
@@ -72,16 +73,11 @@ impl Relation {
 	///	}
 	/// ```
 	pub(super) fn aggregate(typed_relations: Stream<TypedRelation>, weights: Weights) -> Result<Relation, Exception> {
+		#[record]
 		#[derive(Clone, Debug, PartialEq, Eq)]
 		struct Posts {
 			post1: Post,
 			post2: Post,
-		}
-
-		impl Posts {
-			fn new(post1: Post, post2: Post) -> Self {
-				Self { post1, post2 }
-			}
 		}
 
 		typed_relations
@@ -93,7 +89,7 @@ impl Relation {
 				Collectors::averaging_double(move |rel: TypedRelation| {
 					Ok((rel.score() as f64) * weights.weight_of(rel.r#type))
 				}),
-				|posts, score| posts.map(|ps| Relation::new(ps.post1, ps.post2, score.round() as i64)),
+				|posts, score| posts.map(|ps| Relation::new(ps.post1(), ps.post2(), score.round() as i64)),
 			))?
 			.or_else_throw(|| IllegalArgumentException("Can't create relation from zero typed relations.".into()))
 	}

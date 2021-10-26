@@ -8,7 +8,8 @@ use genealogy_java_apis::list::List;
 use genealogy_java_apis::path::Path;
 use genealogy_java_apis::stream::Stream;
 use genealogy_java_apis::string::JString;
-use genealogy_java_apis::{r#static, throw};
+use genealogy_java_apis::{r#static, record, throw};
+
 /// ```java
 /// final class PostFactory {
 /// 	private PostFactory() {
@@ -183,26 +184,8 @@ impl PostFactory {
 /// ```java
 /// private record FrontMatterLine(String key, String value) { }
 /// ```
+#[record]
 struct FrontMatterLine {
 	key: JString,
 	value: JString,
-}
-
-impl FrontMatterLine {
-	/// ```java
-	/// private record FrontMatterLine(String key, String value) { }
-	/// ```
-	fn new(key: JString, value: JString) -> Self {
-		Self { key, value }
-	}
-
-	/// NOTE: For use as to_map key mapper.
-	fn key(&self) -> JString {
-		self.key.clone()
-	}
-
-	/// NOTE: For use as to_map value mapper.
-	fn value(&self) -> JString {
-		self.value.clone()
-	}
 }

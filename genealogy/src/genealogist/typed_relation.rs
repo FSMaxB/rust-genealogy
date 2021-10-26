@@ -12,6 +12,7 @@ use genealogy_java_apis::throw;
 ///		RelationType type,
 ///		long score) {
 /// ```
+// FIXME: Make constructor optional in the #[record] macro so it can be used here
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub struct TypedRelation {
 	pub post1: Post,

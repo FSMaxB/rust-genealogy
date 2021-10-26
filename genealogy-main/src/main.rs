@@ -188,7 +188,7 @@ $RECOMMENDED_POSTS
 		let recs = recommendations
 			.map(move |rec| {
 				let posts = rec
-					.recommended_posts
+					.recommended_posts()
 					.stream()
 					.map(|rec_art| Ok(rec_art.title().text.clone()))
 					.map({

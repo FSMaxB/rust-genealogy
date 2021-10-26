@@ -132,12 +132,22 @@ dependencies = [
  "debug_stub_derive",
  "dirs",
  "futures-lite",
+ "genealogy-macros",
  "lazy_static",
  "pin-project",
  "regex",
  "rustc_version_runtime",
  "semver",
  "url",
+]
+
+[[package]]
+name = "genealogy-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote 1.0.10",
+ "syn 1.0.80",
 ]
 
 [[package]]

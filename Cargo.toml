@@ -1,8 +1,9 @@
 [workspace]
 resolver = "2"
 members = [
-	'genealogy',
 	'genealogists',
-	'genealogy-main',
+	'genealogy',
 	'genealogy-java-apis',
+	'genealogy-macros',
+	'genealogy-main',
 ]

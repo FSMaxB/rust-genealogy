@@ -12,6 +12,7 @@ use genealogy_java_apis::throw;
 /// ```
 ///
 /// compareTo is automatically implemented by the PartialOrd and Ord derives
+// FIXME: Make constructor optional in #[record] so it can be used here.
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Slug {
 	pub value: JString,

@@ -16,6 +16,7 @@ use genealogy_java_apis::{r#static, throw};
 /// 	Path videoFolder,
 /// 	Optional<Path> outputFile) {
 /// ```
+// FIXME: Allow not generating a constructor so #[record] can be used here
 pub struct Config {
 	pub article_folder: Path,
 	pub talk_folder: Path,
@@ -34,8 +35,9 @@ impl Config {
 	/// @Deprecated
 	/// public Config { }
 	/// ```
+	// FIXME: Call this constructor `new` and add an option to not generate a constructor in the record macro
 	#[deprecated(note = "use static factory methods")]
-	pub fn constructor() -> Self {
+	pub fn new() -> Self {
 		Self {
 			article_folder: Default::default(),
 			talk_folder: Default::default(),

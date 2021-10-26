@@ -7,6 +7,7 @@ use genealogy_java_apis::collection::Collection;
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::list::ArrayList;
 use genealogy_java_apis::map::{JHashMap, Map};
+use genealogy_java_apis::record;
 use genealogy_java_apis::stream::Stream;
 
 pub mod relation;
@@ -104,43 +105,33 @@ impl Genealogy {
 	///	}
 	/// ```
 	fn infer_typed_relations(&self) -> Stream<TypedRelation> {
+		#[record]
 		#[derive(Clone)]
 		struct Posts {
 			post1: Post,
 			post2: Post,
 		}
 
-		impl Posts {
-			fn new(post1: Post, post2: Post) -> Result<Self, Exception> {
-				Ok(Self { post1, post2 })
-			}
-		}
-
+		#[record]
 		struct PostResearch {
 			genealogist: Genealogist,
 			posts: Posts,
 		}
 
-		impl PostResearch {
-			fn new(genealogist: Genealogist, posts: Posts) -> Result<Self, Exception> {
-				Ok(Self { genealogist, posts })
-			}
-		}
-
 		self.posts.stream()
 			.flat_map({
 				let posts = self.posts.clone();
-				move |post1| posts.stream().map(move |post2| Posts::new(post1.clone(), post2))
+				move |post1| posts.stream().map(move |post2| Ok(Posts::new(post1.clone(), post2)))
 			})
 			// no need to compare posts with themselves
-			.filter(|posts| posts.post1 != posts.post2)
+			.filter(|posts| posts.post1() != posts.post2())
 			.flat_map({
 				let genealogists = self.genealogists.clone();
 				move |posts| genealogists.stream().map({
-					move |genealogist| PostResearch::new(genealogist, posts.clone())
+					move |genealogist| Ok(PostResearch::new(genealogist, posts.clone()))
 				})
 			})
-			.map(|research| research.genealogist.infer(research.posts.post1, research.posts.post2))
+			.map(|research| research.genealogist().infer(research.posts().post1(), research.posts().post2()))
 	}
 }
 

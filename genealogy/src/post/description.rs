@@ -7,6 +7,7 @@ use genealogy_java_apis::throw;
 /// ```java
 /// public record Description(String text) {
 /// ```
+// FIXME: Make constructor optional in #[record] so it can be used here.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Description {
 	pub text: JString,

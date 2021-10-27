@@ -5,6 +5,7 @@ pub mod comparator;
 pub mod completable_future;
 pub mod exception;
 pub mod files;
+pub mod function;
 pub mod indexing;
 pub mod integer;
 pub mod iterator;

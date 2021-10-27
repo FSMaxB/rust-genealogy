@@ -141,6 +141,7 @@ mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
 	use crate::post::test::PostTestHelper;
+	use genealogy_java_apis::function::BiFunction;
 	use genealogy_java_apis::list::List;
 	use genealogy_java_apis::map_of;
 	use genealogy_java_apis::test::assert_that;
@@ -267,7 +268,7 @@ mod test {
 				posts: posts.clone(),
 				tag_relation: tag_relation.clone(),
 				link_relation: link_relation.clone(),
-				tag_genealogist: {
+				tag_genealogist: BiFunction::from({
 					let posts = posts.clone();
 					let tag_relation = tag_relation.clone();
 					move |post1: Post, post2: Post| {
@@ -278,9 +279,9 @@ mod test {
 							posts.tag_score(post1, post2) as i64,
 						)
 					}
-				}
+				})
 				.into(),
-				link_genealogist: {
+				link_genealogist: BiFunction::from({
 					let posts = posts;
 					let link_relation = link_relation.clone();
 					move |post1: Post, post2: Post| {
@@ -291,7 +292,7 @@ mod test {
 							posts.link_score(post1, post2) as i64,
 						)
 					}
-				}
+				})
 				.into(),
 				weights: Weights::new(
 					map_of!(tag_relation, Self::TAG_WEIGHT, link_relation, Self::LINK_WEIGHT,),

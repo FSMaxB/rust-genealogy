@@ -1,6 +1,7 @@
 use crate::stream::Stream;
 use std::cell::RefCell;
 use std::collections::HashSet;
+use std::fmt::{Display, Formatter, Write};
 use std::hash::Hash;
 use std::rc::Rc;
 
@@ -98,5 +99,22 @@ where
 {
 	fn eq(&self, set: &Set<Element>) -> bool {
 		set.set.as_ref().borrow().eq(self)
+	}
+}
+
+impl<Element> Display for Set<Element>
+where
+	Element: Display,
+{
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		let size = self.size();
+		formatter.write_char('[')?;
+		for (index, element) in self.set.as_ref().borrow().iter().enumerate() {
+			element.fmt(formatter)?;
+			if index < (size as usize - 1) {
+				formatter.write_str(", ")?;
+			}
+		}
+		formatter.write_char(']')
 	}
 }

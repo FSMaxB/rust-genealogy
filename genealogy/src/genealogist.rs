@@ -1,6 +1,8 @@
 use crate::genealogist::typed_relation::TypedRelation;
 use crate::post::Post;
 use genealogy_java_apis::exception::Exception;
+use genealogy_java_apis::function::BiFunction;
+use std::fmt::{Display, Formatter};
 use std::rc::Rc;
 
 pub mod genealogist_service;
@@ -28,7 +30,7 @@ impl Genealogist {
 /// ```java
 /// public interface Genealogist {
 /// ```
-pub trait GenealogistTrait {
+pub trait GenealogistTrait: Display {
 	/// ```java
 	/// 	TypedRelation infer(Post post1, Post post2);
 	/// ```
@@ -36,12 +38,9 @@ pub trait GenealogistTrait {
 }
 
 // NOTE: In Java this is automatically implemented
-impl<Function> GenealogistTrait for Function
-where
-	Function: Fn(Post, Post) -> Result<TypedRelation, Exception>,
-{
+impl GenealogistTrait for BiFunction<Post, Post, Result<TypedRelation, Exception>> {
 	fn infer(&self, post1: Post, post2: Post) -> Result<TypedRelation, Exception> {
-		self(post1, post2)
+		self.apply(post1, post2)
 	}
 }
 
@@ -54,5 +53,11 @@ where
 		Self {
 			geneaologist: Rc::new(genealogist),
 		}
+	}
+}
+
+impl Display for Genealogist {
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		self.geneaologist.fmt(formatter)
 	}
 }

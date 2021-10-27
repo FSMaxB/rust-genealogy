@@ -8,7 +8,6 @@ use genealogy_java_apis::exception::Exception::IllegalArgumentException;
 use genealogy_java_apis::stream::Stream;
 use genealogy_java_apis::string::JString;
 use genealogy_java_apis::{record, throw};
-use std::fmt::{Display, Formatter};
 
 /// ```java
 /// public record Relation(
@@ -80,12 +79,6 @@ impl Relation {
 				|posts, score| posts.map(|ps| Relation::new(ps.post1(), ps.post2(), score.round() as i64)),
 			))?
 			.or_else_throw(|| IllegalArgumentException("Can't create relation from zero typed relations.".into()))
-	}
-}
-
-impl Display for Relation {
-	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
-		write!(formatter, "{:?}", self)
 	}
 }
 

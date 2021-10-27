@@ -7,6 +7,7 @@ use crate::post::title::Title;
 use crate::post::video::Video;
 use genealogy_java_apis::set::Set;
 use genealogy_java_apis::time::LocalDate;
+use std::fmt::{Display, Formatter};
 use std::rc::Rc;
 
 pub mod article;
@@ -89,6 +90,16 @@ impl Post {
 			Article(article) => article.slug(),
 			Talk(talk) => talk.slug(),
 			Video(video) => video.slug(),
+		}
+	}
+}
+
+impl Display for Post {
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		match self {
+			Article(article) => article.fmt(formatter),
+			Talk(talk) => talk.fmt(formatter),
+			Video(video) => video.fmt(formatter),
 		}
 	}
 }

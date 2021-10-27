@@ -4,9 +4,10 @@ use proc_macro2::TokenStream as TokenStream2;
 use quote::{quote, ToTokens};
 use std::collections::HashMap;
 use syn::parse::{Parse, ParseStream};
+use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{parse_macro_input, Attribute, Field, Fields, FieldsNamed, Ident, Visibility};
-use syn::{ItemStruct, Lit, Token, Type};
+use syn::{parse_macro_input, Attribute, ExprField, Field, Fields, FieldsNamed, Ident, Visibility};
+use syn::{parse_quote, ItemStruct, Lit, Token, Type};
 
 /// Takes a struct and implements both a constructor and accessors, similarly to a Java record.
 ///
@@ -139,6 +140,9 @@ impl ToTokens for Record {
 		let mut accessors = TokenStream2::new();
 		fields.to_accessors(&mut accessors);
 
+		let mut display = TokenStream2::new();
+		fields.to_display_implementation(&self.name, &mut display);
+
 		tokens.extend(quote! {
 			#attributes
 			#visibility struct #name {
@@ -150,6 +154,8 @@ impl ToTokens for Record {
 
 				#accessors
 			}
+
+			#display
 		});
 	}
 }
@@ -196,6 +202,32 @@ impl RecordFields {
 		for field in &self.0 {
 			field.to_accessor(tokens);
 		}
+	}
+
+	fn to_display_implementation(&self, record_name: &Ident, tokens: &mut TokenStream2) {
+		let field_format = self
+			.0
+			.iter()
+			.map(|field| format!("{}={{}}", field.name))
+			.collect::<Vec<_>>();
+		let format_string = format!("{}[{}]", record_name, field_format.join(", "));
+
+		let format_arguments = self
+			.0
+			.iter()
+			.map(|field| -> ExprField {
+				let name = &field.name;
+				parse_quote!(self.#name)
+			})
+			.collect::<Punctuated<_, Token!(,)>>();
+
+		tokens.extend(quote! {
+			impl ::std::fmt::Display for #record_name {
+				fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+					::std::write!(formatter, #format_string, #format_arguments)
+				}
+			}
+		})
 	}
 }
 

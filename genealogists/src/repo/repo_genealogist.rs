@@ -7,6 +7,7 @@ use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::objects::Objects;
 use genealogy_java_apis::optional::Optional;
 use genealogy_java_apis::r#static;
+use std::fmt::{Display, Formatter};
 
 /// ```java
 /// public class RepoGenealogist implements Genealogist {
@@ -92,5 +93,11 @@ impl RepoGenealogist {
 			Video(video) => video.repository(),
 			_ => Optional::empty(),
 		}
+	}
+}
+
+impl Display for RepoGenealogist {
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		formatter.write_str("RepoGenealogist")
 	}
 }

@@ -1,5 +1,6 @@
 use crate::exception::Exception;
 use crate::exception::Exception::NoSuchElementException;
+use std::fmt::{Display, Formatter};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Optional<T>(Option<T>);
@@ -74,6 +75,18 @@ impl<T> Optional<T> {
 
 	pub fn as_ref(&self) -> Optional<&T> {
 		self.0.as_ref().into()
+	}
+}
+
+impl<T> Display for Optional<T>
+where
+	T: Display,
+{
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		match &self.0 {
+			None => formatter.write_str("Optional.empty"),
+			Some(value) => write!(formatter, "Optional[{}]", value),
+		}
 	}
 }
 

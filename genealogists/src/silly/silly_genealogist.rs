@@ -7,6 +7,7 @@ use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::integer::Integer;
 use genealogy_java_apis::r#static;
 use genealogy_java_apis::set::{JHashSet, Set};
+use std::fmt::{Display, Formatter};
 
 /// ```java
 /// public class SillyGenealogist implements Genealogist {
@@ -70,5 +71,11 @@ impl SillyGenealogist {
 			.chars()
 			.boxed()
 			.collect(Collectors::to_unmodifiable_set())
+	}
+}
+
+impl Display for SillyGenealogist {
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		formatter.write_str("SillyGenealogist")
 	}
 }

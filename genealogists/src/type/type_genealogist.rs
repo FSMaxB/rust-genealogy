@@ -4,6 +4,7 @@ use genealogy::genealogist::GenealogistTrait;
 use genealogy::post::Post;
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::r#static;
+use std::fmt::{Display, Formatter};
 
 /// ```java
 /// public class TypeGenealogist implements Genealogist {
@@ -49,5 +50,11 @@ impl GenealogistTrait for TypeGenealogist {
 		};
 
 		TypedRelation::new(post1, post2, Self::TYPE(), score)
+	}
+}
+
+impl Display for TypeGenealogist {
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		formatter.write_str("TypeGenealogist")
 	}
 }

@@ -13,7 +13,7 @@ use genealogy_java_apis::{record, throw};
 ///
 /// compareTo is automatically implemented by the PartialOrd and Ord derives
 #[record(constructor = false)]
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(PartialOrd, Ord)]
 pub struct Slug {
 	value: JString,
 }

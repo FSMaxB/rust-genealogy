@@ -2,6 +2,7 @@ use crate::exception::Exception;
 use crate::exception::Exception::IndexOutOfBoundsException;
 use crate::stream::Stream;
 use std::cell::RefCell;
+use std::fmt::{Display, Formatter, Write};
 use std::hash::{Hash, Hasher};
 use std::ops::Deref;
 use std::rc::Rc;
@@ -126,5 +127,22 @@ impl<Element> From<Vec<Element>> for List<Element> {
 		Self {
 			vector: Rc::new(vector.into()),
 		}
+	}
+}
+
+impl<Element> Display for List<Element>
+where
+	Element: Display,
+{
+	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
+		let size = self.vector.borrow().len();
+		formatter.write_char('[')?;
+		for (index, element) in self.vector.as_ref().borrow().iter().enumerate() {
+			element.fmt(formatter)?;
+			if index < (size - 1) {
+				formatter.write_str(", ")?;
+			}
+		}
+		formatter.write_char(']')
 	}
 }

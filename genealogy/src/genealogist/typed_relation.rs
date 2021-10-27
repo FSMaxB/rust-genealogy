@@ -13,7 +13,6 @@ use genealogy_java_apis::{record, throw};
 ///		long score) {
 /// ```
 #[record(constructor = false)]
-#[derive(PartialEq, Eq, Hash, Clone)]
 pub struct TypedRelation {
 	post1: Post,
 	post2: Post,

@@ -46,7 +46,6 @@ fn record_with_two_attribute() {
 #[test]
 fn record_with_derive() {
 	#[record]
-	#[derive(Clone)]
 	struct Record {}
 
 	let record = Record::new();

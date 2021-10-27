@@ -1,6 +1,7 @@
 use crate::post::Post;
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::list::List;
+use genealogy_java_apis::record;
 use genealogy_java_apis::stream::Stream;
 
 pub mod recommender;
@@ -9,28 +10,20 @@ pub mod recommender;
 /// public record Recommendation(
 ///		Post post,
 ///		List<Post> recommendedPosts) {
+///
+/// 	public Recommendation {
+///			requireNonNull(post);
+///			requireNonNull(recommendedPosts);
+///		}
 /// ```
-// FIXME: Add overrides to the #[record] macro so it can be used here
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[record]
 pub struct Recommendation {
-	pub post: Post,
+	post: Post,
+	#[omit]
 	recommended_posts: List<Post>,
 }
 
 impl Recommendation {
-	/// ```java
-	/// public Recommendation {
-	///		requireNonNull(post);
-	///		requireNonNull(recommendedPosts);
-	///	}
-	/// ```
-	pub fn new(post: Post, recommended_posts: List<Post>) -> Self {
-		Self {
-			post,
-			recommended_posts,
-		}
-	}
-
 	/// ```java
 	/// static Recommendation from(Post post, Stream<Post> sortedRecommendations, int perPost) {
 	///		var recommendations = sortedRecommendations.limit(perPost).toList();

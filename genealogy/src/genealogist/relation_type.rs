@@ -10,7 +10,6 @@ use genealogy_java_apis::{record, throw};
 /// 	// can be plugged in via services, which means their type is unknown at runtime.
 /// ```
 #[record(constructor = false)]
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct RelationType {
 	value: JString,
 }

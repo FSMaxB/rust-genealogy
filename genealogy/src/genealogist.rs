@@ -1,8 +1,9 @@
 use crate::genealogist::typed_relation::TypedRelation;
 use crate::post::Post;
 use genealogy_java_apis::exception::Exception;
-use genealogy_java_apis::function::BiFunction;
-use std::fmt::{Display, Formatter};
+use genealogy_java_apis::function::bi_function::BiFunction;
+use std::fmt::{Debug, Display, Formatter};
+use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
 pub mod genealogist_service;
@@ -13,7 +14,7 @@ pub mod typed_relation;
 /// public interface Genealogist {
 /// ```
 /// Type erased wrapper since in Java every interface is always automatically type erased.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Genealogist {
 	geneaologist: Rc<dyn GenealogistTrait>,
 }
@@ -30,7 +31,7 @@ impl Genealogist {
 /// ```java
 /// public interface Genealogist {
 /// ```
-pub trait GenealogistTrait: Display {
+pub trait GenealogistTrait: Display + Debug {
 	/// ```java
 	/// 	TypedRelation infer(Post post1, Post post2);
 	/// ```
@@ -58,6 +59,21 @@ where
 
 impl Display for Genealogist {
 	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
-		self.geneaologist.fmt(formatter)
+		Display::fmt(&self.geneaologist, formatter)
+	}
+}
+
+impl PartialEq for Genealogist {
+	fn eq(&self, other: &Self) -> bool {
+		(self.geneaologist.as_ref() as *const dyn GenealogistTrait)
+			== (other.geneaologist.as_ref() as *const dyn GenealogistTrait)
+	}
+}
+
+impl Eq for Genealogist {}
+
+impl Hash for Genealogist {
+	fn hash<H: Hasher>(&self, state: &mut H) {
+		(self.geneaologist.as_ref() as *const dyn GenealogistTrait).hash(state)
 	}
 }

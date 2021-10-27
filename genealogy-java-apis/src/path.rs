@@ -4,7 +4,7 @@ use std::ops::Add;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-#[derive(Default, Clone)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Path {
 	path: Rc<PathBuf>,
 }

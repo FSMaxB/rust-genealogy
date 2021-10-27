@@ -1,4 +1,4 @@
-use genealogy_java_apis::function::Supplier;
+use genealogy_java_apis::function::supplier::Supplier;
 use genealogy_java_apis::stream::Stream;
 use genealogy_java_apis::string::JString;
 

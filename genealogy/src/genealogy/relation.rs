@@ -16,7 +16,6 @@ use genealogy_java_apis::{record, throw};
 ///		long score) {
 /// ```
 #[record(constructor = false)]
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
 	post1: Post,
 	post2: Post,
@@ -61,7 +60,6 @@ impl Relation {
 	/// ```
 	pub(super) fn aggregate(typed_relations: Stream<TypedRelation>, weights: Weights) -> Result<Relation, Exception> {
 		#[record]
-		#[derive(Clone, Debug, PartialEq, Eq)]
 		struct Posts {
 			post1: Post,
 			post2: Post,

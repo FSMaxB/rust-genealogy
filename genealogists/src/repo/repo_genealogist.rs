@@ -12,6 +12,7 @@ use std::fmt::{Display, Formatter};
 /// ```java
 /// public class RepoGenealogist implements Genealogist {
 /// ```
+#[derive(Debug)]
 pub struct RepoGenealogist;
 
 /// ```java

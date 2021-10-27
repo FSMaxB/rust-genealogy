@@ -12,7 +12,6 @@ use genealogy_java_apis::string::JString;
 /// 	}
 /// ```
 #[record]
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Tag {
 	text: JString,
 }

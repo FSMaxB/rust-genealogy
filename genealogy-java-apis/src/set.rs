@@ -107,11 +107,11 @@ where
 	Element: Display,
 {
 	fn fmt(&self, formatter: &mut Formatter) -> std::fmt::Result {
-		let size = self.size();
+		let size = self.set.borrow().len();
 		formatter.write_char('[')?;
 		for (index, element) in self.set.as_ref().borrow().iter().enumerate() {
 			element.fmt(formatter)?;
-			if index < (size as usize - 1) {
+			if index < (size - 1) {
 				formatter.write_str(", ")?;
 			}
 		}

@@ -106,7 +106,6 @@ impl Genealogy {
 	/// ```
 	fn infer_typed_relations(&self) -> Stream<TypedRelation> {
 		#[record]
-		#[derive(Clone)]
 		struct Posts {
 			post1: Post,
 			post2: Post,
@@ -141,7 +140,7 @@ mod test {
 	use super::*;
 	use crate::genealogist::relation_type::RelationType;
 	use crate::post::test::PostTestHelper;
-	use genealogy_java_apis::function::BiFunction;
+	use genealogy_java_apis::function::bi_function::BiFunction;
 	use genealogy_java_apis::list::List;
 	use genealogy_java_apis::map_of;
 	use genealogy_java_apis::test::assert_that;

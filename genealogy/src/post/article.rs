@@ -5,7 +5,6 @@ use crate::post::slug::Slug;
 use crate::post::tag::Tag;
 use crate::post::title::Title;
 use crate::post::Post;
-use debug_stub_derive::DebugStub;
 use genealogy_java_apis::optional::Optional;
 use genealogy_java_apis::record;
 use genealogy_java_apis::set::Set;
@@ -37,8 +36,7 @@ use std::rc::Rc;
 /// The `implements Post` can't be emulated directly since there is no
 /// inheritance in rust and traits cannot be `sealed`. Therefore [`Post`]
 /// is an enum instead and the `implements` is emulated by a [`From`] implementation.
-#[record]
-#[derive(DebugStub)]
+#[record(equals = false, hash = false)]
 pub struct Article {
 	title: Title,
 	#[omit]
@@ -47,7 +45,6 @@ pub struct Article {
 	description: Description,
 	slug: Slug,
 	repository: Optional<Repository>,
-	#[debug_stub = "Content"]
 	content: Content,
 }
 

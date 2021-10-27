@@ -27,6 +27,7 @@ use syn::{parse_quote, ItemStruct, Lit, Token, Type};
 #[proc_macro_attribute]
 pub fn record(record_parameters: TokenStream, item: TokenStream) -> TokenStream {
 	let mut build_constructor = true;
+	let mut derives = Derives::default();
 	if !record_parameters.is_empty() {
 		let record_attributes = parse_macro_input!(record_parameters as AttributeProperties);
 
@@ -35,6 +36,12 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> TokenStream 
 			match (name.as_str(), value) {
 				("constructor", Lit::Bool(boolean)) => {
 					build_constructor = boolean.value;
+				}
+				("equals", Lit::Bool(boolean)) => {
+					derives.equals = boolean.value;
+				}
+				("hash", Lit::Bool(boolean)) => {
+					derives.hash = boolean.value;
 				}
 				_ => {
 					return syn::Error::new(property.span(), "Invalid attribute property for #[record]")
@@ -75,6 +82,7 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> TokenStream 
 		name: ident,
 		fields,
 		build_constructor,
+		derives,
 	};
 
 	let mut tokens = TokenStream2::new();
@@ -83,20 +91,59 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> TokenStream 
 	tokens.into()
 }
 
+struct Derives {
+	equals: bool,
+	hash: bool,
+}
+
+impl Default for Derives {
+	fn default() -> Self {
+		Self {
+			equals: true,
+			hash: true,
+		}
+	}
+}
+
+impl ToTokens for Derives {
+	fn to_tokens(&self, tokens: &mut TokenStream2) {
+		if self.equals {
+			quote!(#[derive(PartialEq, Eq)]).to_tokens(tokens);
+		}
+
+		if self.hash {
+			quote!(#[derive(Hash)]).to_tokens(tokens);
+		}
+
+		quote!(#[derive(Clone, Debug)]).to_tokens(tokens)
+	}
+}
+
 struct AttributeProperties {
 	properties: HashMap<Ident, Lit>,
 }
 
 impl Parse for AttributeProperties {
 	fn parse(input: ParseStream) -> syn::Result<Self> {
-		let mut properties = HashMap::new();
-		while !input.is_empty() {
-			let key = input.parse::<Ident>()?;
-			input.parse::<Token!(=)>()?;
-			let value = input.parse::<Lit>()?;
-			properties.insert(key, value);
-		}
+		let properties = Punctuated::<AttributeProperty, Token!(,)>::parse_terminated(input)?
+			.into_iter()
+			.map(|property| (property.name, property.value))
+			.collect();
 		Ok(Self { properties })
+	}
+}
+
+struct AttributeProperty {
+	name: Ident,
+	value: Lit,
+}
+
+impl Parse for AttributeProperty {
+	fn parse(input: ParseStream) -> syn::Result<Self> {
+		let name = input.parse::<Ident>()?;
+		input.parse::<Token!(=)>()?;
+		let value = input.parse::<Lit>()?;
+		Ok(Self { name, value })
 	}
 }
 
@@ -106,6 +153,7 @@ struct Record {
 	name: Ident,
 	fields: RecordFields,
 	build_constructor: bool,
+	derives: Derives,
 }
 
 impl ToTokens for Record {
@@ -116,6 +164,7 @@ impl ToTokens for Record {
 			name,
 			fields,
 			build_constructor,
+			derives,
 		} = self;
 
 		let mut items = TokenStream2::new();
@@ -144,6 +193,7 @@ impl ToTokens for Record {
 		fields.to_display_implementation(&self.name, &mut display);
 
 		tokens.extend(quote! {
+			#derives
 			#attributes
 			#visibility struct #name {
 				#items

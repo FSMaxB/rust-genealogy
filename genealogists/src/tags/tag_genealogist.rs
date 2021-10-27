@@ -9,6 +9,7 @@ use std::fmt::{Display, Formatter};
 /// ```java
 /// public class TagGenealogist implements Genealogist {
 /// ```
+#[derive(Debug)]
 pub struct TagGenealogist;
 
 impl TagGenealogist {

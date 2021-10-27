@@ -198,7 +198,7 @@ $RECOMMENDED_POSTS
 					.collect(Collectors::joining(",\n"))?;
 				Ok(recommendation
 					.clone()
-					.replace("$TITLE", &rec.post.title().text())
+					.replace("$TITLE", rec.post().title().text())
 					.replace("$RECOMMENDED_POSTS", posts))
 			})
 			.collect(Collectors::joining(",\n"))?;

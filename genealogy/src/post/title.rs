@@ -8,7 +8,6 @@ use genealogy_java_apis::{record, throw};
 /// public record Title(String text) {
 /// ```
 #[record(constructor = false)]
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Title {
 	text: JString,
 }

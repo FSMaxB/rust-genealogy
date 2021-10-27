@@ -7,7 +7,6 @@ use genealogy_java_apis::{record, throw};
 /// public record Repository(String identifier) {
 /// ```
 #[record(constructor = false)]
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Repository {
 	identifier: JString,
 }

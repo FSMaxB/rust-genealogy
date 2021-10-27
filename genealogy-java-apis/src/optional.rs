@@ -2,7 +2,7 @@ use crate::exception::Exception;
 use crate::exception::Exception::NoSuchElementException;
 use std::fmt::{Display, Formatter};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Optional<T>(Option<T>);
 
 impl<T> Optional<T> {

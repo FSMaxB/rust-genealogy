@@ -1,7 +1,6 @@
+use crate::attribute::AttributeProperties;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
-use std::collections::HashMap;
-use syn::parse::{Parse, ParseStream};
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
 use syn::{parse_quote, ItemStruct, Lit, Token, Type};
@@ -94,34 +93,6 @@ impl ToTokens for Derives {
 		}
 
 		quote!(#[derive(Clone, Debug)]).to_tokens(tokens)
-	}
-}
-
-struct AttributeProperties {
-	properties: HashMap<Ident, Lit>,
-}
-
-impl Parse for AttributeProperties {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		let properties = Punctuated::<AttributeProperty, Token!(,)>::parse_terminated(input)?
-			.into_iter()
-			.map(|property| (property.name, property.value))
-			.collect();
-		Ok(Self { properties })
-	}
-}
-
-struct AttributeProperty {
-	name: Ident,
-	value: Lit,
-}
-
-impl Parse for AttributeProperty {
-	fn parse(input: ParseStream) -> syn::Result<Self> {
-		let name = input.parse::<Ident>()?;
-		input.parse::<Token!(=)>()?;
-		let value = input.parse::<Lit>()?;
-		Ok(Self { name, value })
 	}
 }
 

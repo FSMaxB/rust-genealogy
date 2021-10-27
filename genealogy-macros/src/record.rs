@@ -7,21 +7,6 @@ use syn::spanned::Spanned;
 use syn::{parse_quote, ItemStruct, Lit, Token, Type};
 use syn::{Attribute, ExprField, Field, Fields, FieldsNamed, Ident, Visibility};
 
-/// Takes a struct and implements both a constructor and accessors, similarly to a Java record.
-///
-/// ```
-/// //use genealogy_macros::record;
-///
-/// //#[record]
-/// //struct Greetings {
-/// //	text1: &'static str,
-/// //	text2: String,
-/// //}
-///
-/// //let greeting = Greetings::new("hello", String::from("world"));
-/// //println!("{} {}", greeting.text1(), greeting.text2());
-/// ```
-// TODO: Automatically generate derives.
 pub fn record(record_parameters: TokenStream, item: TokenStream) -> syn::Result<TokenStream> {
 	let mut build_constructor = true;
 	let mut derives = Derives::default();

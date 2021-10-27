@@ -65,7 +65,7 @@ impl SillyGenealogist {
 	/// ```
 	fn title_letters(post: Post) -> Result<Set<Integer>, Exception> {
 		post.title()
-			.text
+			.text()
 			.to_lower_case()
 			.chars()
 			.boxed()

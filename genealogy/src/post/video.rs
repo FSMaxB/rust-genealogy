@@ -6,6 +6,7 @@ use crate::post::title::Title;
 use crate::post::video_slug::VideoSlug;
 use crate::post::Post;
 use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::record;
 use genealogy_java_apis::set::Set;
 use genealogy_java_apis::time::LocalDate;
 use std::hash::{Hash, Hasher};
@@ -21,55 +22,34 @@ use std::rc::Rc;
 ///		VideoSlug video,
 ///		Optional<Repository> repository) implements Post {
 ///
+/// 	public Video {
+///			requireNonNull(title);
+///			requireNonNull(tags);
+///			requireNonNull(date);
+///			requireNonNull(description);
+///			requireNonNull(slug);
+///			requireNonNull(video);
+///			requireNonNull(repository);
+///		}
 /// ```
 ///
 /// The `implements Post` can't be emulated directly since there is no
 /// inheritance in rust and traits cannot be `sealed`. Therefore [`Post`]
 /// is an enum instead and the `implements` is emulated by a [`From`] implementation.
-// FIXME: Add overrides to #[record] so it can be used here.
+#[record]
 #[derive(Debug)]
 pub struct Video {
-	pub title: Title,
+	title: Title,
+	#[omit]
 	tags: Set<Tag>,
-	pub date: LocalDate,
-	pub description: Description,
-	pub slug: Slug,
-	pub video: VideoSlug,
-	pub repository: Optional<Repository>,
+	date: LocalDate,
+	description: Description,
+	slug: Slug,
+	video: VideoSlug,
+	repository: Optional<Repository>,
 }
 
 impl Video {
-	/// ```java
-	/// public Video {
-	///		requireNonNull(title);
-	///		requireNonNull(tags);
-	///		requireNonNull(date);
-	///		requireNonNull(description);
-	///		requireNonNull(slug);
-	///		requireNonNull(video);
-	///		requireNonNull(repository);
-	///	}
-	/// ```
-	pub fn new(
-		title: Title,
-		tags: Set<Tag>,
-		date: LocalDate,
-		description: Description,
-		slug: Slug,
-		video: VideoSlug,
-		repository: Optional<Repository>,
-	) -> Self {
-		Self {
-			title,
-			tags,
-			date,
-			description,
-			slug,
-			video,
-			repository,
-		}
-	}
-
 	/// ```java
 	/// @Override
 	///	public Set<Tag> tags() {

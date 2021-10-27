@@ -16,11 +16,11 @@ use std::fmt::{Display, Formatter};
 ///		Post post2,
 ///		long score) {
 /// ```
-// FIXME: Add optional constructor generation to #[record] so it can be used here
+#[record(constructor = false)]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Relation {
-	pub post1: Post,
-	pub post2: Post,
+	post1: Post,
+	post2: Post,
 	score: i64,
 }
 
@@ -44,18 +44,6 @@ impl Relation {
 		}
 
 		Ok(relation)
-	}
-
-	pub fn score(&self) -> i64 {
-		self.score
-	}
-
-	pub fn post1(&self) -> Post {
-		self.post1.clone()
-	}
-
-	pub fn post2(&self) -> Post {
-		self.post2.clone()
 	}
 
 	/// ```java
@@ -83,11 +71,11 @@ impl Relation {
 		typed_relations
 			.collect(Collectors::teeing(
 				Collectors::mapping(
-					|rel: TypedRelation| Posts::new(rel.post1, rel.post2),
+					|rel: TypedRelation| Posts::new(rel.post1(), rel.post2()),
 					collect_equal_element!(),
 				),
 				Collectors::averaging_double(move |rel: TypedRelation| {
-					Ok((rel.score() as f64) * weights.weight_of(rel.r#type))
+					Ok((rel.score() as f64) * weights.weight_of(rel.r#type()))
 				}),
 				|posts, score| posts.map(|ps| Relation::new(ps.post1(), ps.post2(), score.round() as i64)),
 			))?

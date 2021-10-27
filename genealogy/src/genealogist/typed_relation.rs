@@ -3,7 +3,7 @@ use crate::post::Post;
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::exception::Exception::IllegalArgumentException;
 use genealogy_java_apis::string::JString;
-use genealogy_java_apis::throw;
+use genealogy_java_apis::{record, throw};
 
 /// ```java
 /// public record TypedRelation(
@@ -12,12 +12,12 @@ use genealogy_java_apis::throw;
 ///		RelationType type,
 ///		long score) {
 /// ```
-// FIXME: Make constructor optional in the #[record] macro so it can be used here
+#[record(constructor = false)]
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub struct TypedRelation {
-	pub post1: Post,
-	pub post2: Post,
-	pub r#type: RelationType,
+	post1: Post,
+	post2: Post,
+	r#type: RelationType,
 	score: i64,
 }
 
@@ -45,17 +45,5 @@ impl TypedRelation {
 			r#type,
 			score,
 		})
-	}
-
-	pub fn post1(&self) -> Post {
-		self.post1.clone()
-	}
-
-	pub fn post2(&self) -> Post {
-		self.post2.clone()
-	}
-
-	pub fn score(&self) -> i64 {
-		self.score
 	}
 }

@@ -7,6 +7,7 @@ use crate::post::title::Title;
 use crate::post::Post;
 use debug_stub_derive::DebugStub;
 use genealogy_java_apis::optional::Optional;
+use genealogy_java_apis::record;
 use genealogy_java_apis::set::Set;
 use genealogy_java_apis::time::LocalDate;
 use std::hash::{Hash, Hasher};
@@ -21,56 +22,36 @@ use std::rc::Rc;
 ///		Slug slug,
 ///		Optional<Repository> repository,
 ///		Content content) implements Post {
+///
+/// 	public Article {
+///			requireNonNull(title);
+///			requireNonNull(tags);
+///			requireNonNull(date);
+///			requireNonNull(description);
+///			requireNonNull(slug);
+///			requireNonNull(repository);
+///			requireNonNull(content);
+///	}
 /// ```
 ///
 /// The `implements Post` can't be emulated directly since there is no
 /// inheritance in rust and traits cannot be `sealed`. Therefore [`Post`]
 /// is an enum instead and the `implements` is emulated by a [`From`] implementation.
-// FIXME: Add overrides to the #[record] macro, so it can be used here.
+#[record]
 #[derive(DebugStub)]
 pub struct Article {
-	pub title: Title,
+	title: Title,
+	#[omit]
 	tags: Set<Tag>,
-	pub date: LocalDate,
-	pub description: Description,
-	pub slug: Slug,
-	pub repository: Optional<Repository>,
+	date: LocalDate,
+	description: Description,
+	slug: Slug,
+	repository: Optional<Repository>,
 	#[debug_stub = "Content"]
-	pub content: Content,
+	content: Content,
 }
 
 impl Article {
-	/// ```java
-	/// public Article {
-	///		requireNonNull(title);
-	///		requireNonNull(tags);
-	///		requireNonNull(date);
-	///		requireNonNull(description);
-	///		requireNonNull(slug);
-	///		requireNonNull(repository);
-	///		requireNonNull(content);
-	///	}
-	/// ```
-	pub fn new(
-		title: Title,
-		tags: Set<Tag>,
-		date: LocalDate,
-		description: Description,
-		slug: Slug,
-		repository: Optional<Repository>,
-		content: Content,
-	) -> Self {
-		Self {
-			title,
-			tags,
-			date,
-			description,
-			slug,
-			repository,
-			content,
-		}
-	}
-
 	/// ```java
 	/// @Override
 	///	public Set<Tag> tags() {

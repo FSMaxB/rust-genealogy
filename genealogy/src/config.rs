@@ -7,7 +7,7 @@ use genealogy_java_apis::optional::Optional;
 use genealogy_java_apis::path::Path;
 use genealogy_java_apis::string::JString;
 use genealogy_java_apis::system::System;
-use genealogy_java_apis::{r#static, throw};
+use genealogy_java_apis::{r#static, record, throw};
 
 /// ```java
 /// public record Config(
@@ -16,12 +16,12 @@ use genealogy_java_apis::{r#static, throw};
 /// 	Path videoFolder,
 /// 	Optional<Path> outputFile) {
 /// ```
-// FIXME: Allow not generating a constructor so #[record] can be used here
+#[record(constructor = false)]
 pub struct Config {
-	pub article_folder: Path,
-	pub talk_folder: Path,
-	pub video_folder: Path,
-	pub output_file: Optional<Path>,
+	article_folder: Path,
+	talk_folder: Path,
+	video_folder: Path,
+	output_file: Optional<Path>,
 }
 
 impl Config {
@@ -35,7 +35,6 @@ impl Config {
 	/// @Deprecated
 	/// public Config { }
 	/// ```
-	// FIXME: Call this constructor `new` and add an option to not generate a constructor in the record macro
 	#[deprecated(note = "use static factory methods")]
 	pub fn new() -> Self {
 		Self {

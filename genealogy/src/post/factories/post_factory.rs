@@ -94,8 +94,8 @@ impl PostFactory {
 	/// ```
 	pub fn read_post(file_lines: List<JString>) -> Result<RawPost, Exception> {
 		let front_matter = Self::extract_front_matter(file_lines.clone())?;
-		let content = Box::new(move || Self::extract_content(file_lines));
-		Ok(RawPost::new(front_matter, content))
+		let content = move || Self::extract_content(file_lines.clone());
+		Ok(RawPost::new(front_matter, content.into()))
 	}
 
 	/// ```java

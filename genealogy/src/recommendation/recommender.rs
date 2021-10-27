@@ -51,7 +51,7 @@ impl Recommender {
 			));
 		}
 
-		let by_post_then_by_decreasing_score = Comparator::comparing(|relation: &Relation| relation.post1.slug())
+		let by_post_then_by_decreasing_score = Comparator::comparing(|relation: &Relation| relation.post1().slug())
 			.then_comparing(Relation::score)
 			.reversed();
 		let by_post = relations

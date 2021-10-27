@@ -1,7 +1,7 @@
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::exception::Exception::IllegalArgumentException;
 use genealogy_java_apis::string::JString;
-use genealogy_java_apis::throw;
+use genealogy_java_apis::{record, throw};
 
 /// ```java
 /// public record RelationType(String value) {
@@ -9,7 +9,7 @@ use genealogy_java_apis::throw;
 /// 	// `RelationType` is a string (and not an enum) because {@code Genealogist} implementations
 /// 	// can be plugged in via services, which means their type is unknown at runtime.
 /// ```
-// FIXME: Allow optional constructor in the #[record] macro so it can be used here.
+#[record(constructor = false)]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct RelationType {
 	value: JString,

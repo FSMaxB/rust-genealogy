@@ -88,8 +88,8 @@ impl RepoGenealogist {
 	fn get_repository(&self, post: Post) -> Optional<Repository> {
 		use Post::*;
 		match post {
-			Article(article) => article.repository.clone(),
-			Video(video) => video.repository.clone(),
+			Article(article) => article.repository(),
+			Video(video) => video.repository(),
 			_ => Optional::empty(),
 		}
 	}

@@ -54,14 +54,14 @@ impl Main {
 		System::out_println(ProcessDetails::details());
 
 		let config = Config::create(args)?.join()?;
-		let genealogy = Self::create_genealogy(config.article_folder, config.talk_folder, config.video_folder)?;
+		let genealogy = Self::create_genealogy(config.article_folder(), config.talk_folder(), config.video_folder())?;
 		let recommender = Recommender::new();
 
 		let relations = genealogy.infer_relations()?;
 		let recommendations = recommender.recommend(relations, 3)?;
 		let recommendations_as_json = Self::recommendations_to_json(recommendations)?;
 
-		config.output_file.if_present_or_else(
+		config.output_file().if_present_or_else(
 			|output_file| Utils::unchecked_files_write(output_file, recommendations_as_json.clone()),
 			|| System::out_println(recommendations_as_json.clone()),
 		)?;
@@ -190,7 +190,7 @@ $RECOMMENDED_POSTS
 				let posts = rec
 					.recommended_posts()
 					.stream()
-					.map(|rec_art| Ok(rec_art.title().text.clone()))
+					.map(|rec_art| Ok(rec_art.title().text()))
 					.map({
 						let recommended_post = recommended_post.clone();
 						move |rec_title| Ok(recommended_post.clone().replace("$TITLE", rec_title))
@@ -198,7 +198,7 @@ $RECOMMENDED_POSTS
 					.collect(Collectors::joining(",\n"))?;
 				Ok(recommendation
 					.clone()
-					.replace("$TITLE", &rec.post.title().text)
+					.replace("$TITLE", &rec.post.title().text())
 					.replace("$RECOMMENDED_POSTS", posts))
 			})
 			.collect(Collectors::joining(",\n"))?;

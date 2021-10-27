@@ -40,11 +40,11 @@ impl Post {
 	/// ```java
 	/// Title title();
 	/// ```
-	pub fn title(&self) -> &Title {
+	pub fn title(&self) -> Title {
 		match self {
-			Article(article) => &article.title,
-			Talk(talk) => &talk.title,
-			Video(video) => &video.title,
+			Article(article) => article.title(),
+			Talk(talk) => talk.title(),
+			Video(video) => video.title(),
 		}
 	}
 
@@ -64,31 +64,31 @@ impl Post {
 	/// ```
 	pub fn date(&self) -> LocalDate {
 		match self {
-			Article(article) => article.date,
-			Talk(talk) => talk.date,
-			Video(video) => video.date,
+			Article(article) => article.date(),
+			Talk(talk) => talk.date(),
+			Video(video) => video.date(),
 		}
 	}
 
 	/// ```java
 	/// Description description();
 	/// ```
-	pub fn description(&self) -> &Description {
+	pub fn description(&self) -> Description {
 		match self {
-			Article(article) => &article.description,
-			Talk(talk) => &talk.description,
-			Video(video) => &video.description,
+			Article(article) => article.description(),
+			Talk(talk) => talk.description(),
+			Video(video) => video.description(),
 		}
 	}
 
 	/// ```java
 	/// Slug slug();
 	/// ```
-	pub fn slug(&self) -> &Slug {
+	pub fn slug(&self) -> Slug {
 		match self {
-			Article(article) => &article.slug,
-			Talk(talk) => &talk.slug,
-			Video(video) => &video.slug,
+			Article(article) => article.slug(),
+			Talk(talk) => talk.slug(),
+			Video(video) => video.slug(),
 		}
 	}
 }
@@ -128,7 +128,7 @@ pub mod test {
 				Description::new("description".into())?,
 				Slug::new(slug)?,
 				Optional::empty(),
-				Box::new(|| Stream::of(["".into()])),
+				(|| Stream::of(["".into()])).into(),
 			)
 			.into())
 		}

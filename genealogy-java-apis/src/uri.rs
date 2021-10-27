@@ -2,7 +2,7 @@ use crate::exception::Exception;
 use crate::string::JString;
 use url::Url;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct URI(Url);
 
 impl URI {

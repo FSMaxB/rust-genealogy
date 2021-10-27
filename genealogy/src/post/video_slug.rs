@@ -1,7 +1,7 @@
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::exception::Exception::IllegalArgumentException;
 use genealogy_java_apis::string::JString;
-use genealogy_java_apis::throw;
+use genealogy_java_apis::{record, throw};
 
 /// ```java
 /// public record VideoSlug(String value) implements Comparable<VideoSlug> {
@@ -12,10 +12,10 @@ use genealogy_java_apis::throw;
 /// ```
 ///
 /// compareTo is automatically implemented by the PartialOrd and Ord derives
-// FIXME: Make constructor optional in #[record] so it can be used here
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[record(constructor = false)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VideoSlug {
-	pub value: JString,
+	value: JString,
 }
 
 impl VideoSlug {

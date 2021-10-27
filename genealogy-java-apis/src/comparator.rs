@@ -5,12 +5,12 @@ pub struct Comparator<T> {
 }
 
 impl<T> Comparator<T> {
-	pub fn comparing<Extracted>(key_extractor: impl for<'a> Fn(&'a T) -> &'a Extracted + 'static) -> Self
+	pub fn comparing<Extracted>(key_extractor: impl Fn(&T) -> Extracted + 'static) -> Self
 	where
-		Extracted: Ord,
+		Extracted: Ord + 'static,
 	{
 		Self {
-			compare: Box::new(move |left, right| key_extractor(left).cmp(key_extractor(right))),
+			compare: Box::new(move |left, right| key_extractor(left).cmp(&key_extractor(right))),
 		}
 	}
 

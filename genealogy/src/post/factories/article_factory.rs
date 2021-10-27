@@ -90,7 +90,6 @@ impl ArticleFactory {
 #[cfg(test)]
 mod test {
 	use super::*;
-	use crate::post::content::ContentExtensions;
 	use genealogy_java_apis::test::assert_that;
 	use genealogy_java_apis::time::LocalDate;
 	use genealogy_java_apis::time::LocalDateExtension;
@@ -133,13 +132,13 @@ mod test {
 
 		let post = ArticleFactory::create_article_from_lines(file).unwrap();
 
-		assert_that(&post.title.text).is_equal_to("Cool: A blog post");
+		assert_that(post.title().text()).is_equal_to("Cool: A blog post");
 		assert_that(post.tags())
 			.extracting(Tag::text)
 			.contains_exactly_in_any_order(["$TAG", "$TOG"]);
-		assert_that(post.date).is_equal_to(LocalDate::of(2020, 1, 23));
-		assert_that(&post.description.text).is_equal_to("Very blog, much post, so wow");
-		assert_that(&post.slug.value).is_equal_to("cool-blog-post");
+		assert_that(post.date()).is_equal_to(LocalDate::of(2020, 1, 23));
+		assert_that(post.description().text()).is_equal_to("Very blog, much post, so wow");
+		assert_that(post.slug().value()).is_equal_to("cool-blog-post");
 	}
 
 	/// ```java
@@ -180,13 +179,13 @@ mod test {
 
 		let article = ArticleFactory::create_article_from_lines(file).unwrap();
 
-		assert_that(&article.title.text).is_equal_to("A cool blog post");
+		assert_that(article.title().text()).is_equal_to("A cool blog post");
 		assert_that(article.tags())
 			.extracting(Tag::text)
 			.contains_exactly_in_any_order(["$TAG", "$TOG"]);
-		assert_that(article.date).is_equal_to(LocalDate::of(2020, 1, 23));
-		assert_that(&article.description.text).is_equal_to("Very blog, much post, so wow");
-		assert_that(&article.slug.value).is_equal_to("cool-blog-post");
+		assert_that(article.date()).is_equal_to(LocalDate::of(2020, 1, 23));
+		assert_that(article.description().text()).is_equal_to("Very blog, much post, so wow");
+		assert_that(article.slug().value()).is_equal_to("cool-blog-post");
 	}
 
 	/// ```java
@@ -240,14 +239,14 @@ mod test {
 
 		let article = ArticleFactory::create_article_from_lines(file).unwrap();
 
-		assert_that(&article.title.text).is_equal_to("A cool blog post");
+		assert_that(article.title().text()).is_equal_to("A cool blog post");
 		assert_that(article.tags())
 			.extracting(Tag::text)
 			.contains_exactly_in_any_order(["$TAG", "$TOG"]);
-		assert_that(article.date).is_equal_to(LocalDate::of(2020, 1, 23));
-		assert_that(&article.description.text).is_equal_to("Very blog, much post, so wow");
-		assert_that(&article.slug.value).is_equal_to("cool-blog-post");
-		assert_that(article.content.get().to_list().unwrap()).contains_exactly([
+		assert_that(article.date()).is_equal_to(LocalDate::of(2020, 1, 23));
+		assert_that(article.description().text()).is_equal_to("Very blog, much post, so wow");
+		assert_that(article.slug().value()).is_equal_to("cool-blog-post");
+		assert_that(article.content().get().to_list().unwrap()).contains_exactly([
 			"",
 			"Lorem ipsum dolor sit amet.",
 			"Ut enim ad minim veniam.",

@@ -2,15 +2,15 @@ use crate::utils::Utils;
 use genealogy_java_apis::exception::Exception;
 use genealogy_java_apis::exception::Exception::IllegalArgumentException;
 use genealogy_java_apis::string::JString;
-use genealogy_java_apis::throw;
+use genealogy_java_apis::{record, throw};
 
 /// ```java
 /// public record Description(String text) {
 /// ```
-// FIXME: Make constructor optional in #[record] so it can be used here.
+#[record(constructor = false)]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Description {
-	pub text: JString,
+	text: JString,
 }
 
 impl Description {

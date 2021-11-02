@@ -65,8 +65,8 @@ impl Display for Genealogist {
 
 impl PartialEq for Genealogist {
 	fn eq(&self, other: &Self) -> bool {
-		(self.geneaologist.as_ref() as *const dyn GenealogistTrait)
-			== (other.geneaologist.as_ref() as *const dyn GenealogistTrait)
+		#[allow(clippy::vtable_address_comparisons)]
+		std::ptr::eq(self.geneaologist.as_ref(), other.geneaologist.as_ref())
 	}
 }
 

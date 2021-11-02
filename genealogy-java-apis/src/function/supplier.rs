@@ -41,7 +41,8 @@ impl<Output> Debug for Supplier<Output> {
 
 impl<Output> PartialEq for Supplier<Output> {
 	fn eq(&self, other: &Self) -> bool {
-		(self.get.as_ref() as *const dyn Fn() -> Output) == (other.get.as_ref() as *const dyn Fn() -> Output)
+		#[allow(clippy::vtable_address_comparisons)]
+		std::ptr::eq(self.get.as_ref(), other.get.as_ref())
 	}
 }
 

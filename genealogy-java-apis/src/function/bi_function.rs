@@ -26,8 +26,8 @@ impl<First, Second, Output> Debug for BiFunction<First, Second, Output> {
 
 impl<First, Second, Output> PartialEq for BiFunction<First, Second, Output> {
 	fn eq(&self, other: &Self) -> bool {
-		(self.apply.as_ref() as *const dyn Fn(First, Second) -> Output)
-			== (other.apply.as_ref() as *const dyn Fn(First, Second) -> Output)
+		#[allow(clippy::vtable_address_comparisons)]
+		std::ptr::eq(self.apply.as_ref(), other.apply.as_ref())
 	}
 }
 

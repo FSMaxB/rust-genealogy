@@ -4,8 +4,8 @@ use crate::record::fields::RecordFields;
 use proc_macro2::TokenStream;
 use quote::{quote, ToTokens};
 use syn::spanned::Spanned;
+use syn::{parse_quote, ItemStruct, Lit};
 use syn::{Attribute, Ident, Visibility};
-use syn::{ItemStruct, Lit};
 
 mod derives;
 mod field;
@@ -57,7 +57,13 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> syn::Result<
 		));
 	}
 
+	let mut required_traits = derives.trait_paths();
+	required_traits.push(parse_quote!(::std::fmt::Display));
+
 	let fields = RecordFields::new(fields, vis.clone())?;
+	let mut tokens = TokenStream::new();
+	fields.to_type_assertions(&required_traits, &mut tokens);
+
 	let record = Record {
 		attributes: attrs.into(),
 		visibility: vis,
@@ -67,7 +73,6 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> syn::Result<
 		derives,
 	};
 
-	let mut tokens = TokenStream::new();
 	record.to_tokens(&mut tokens);
 
 	Ok(tokens)

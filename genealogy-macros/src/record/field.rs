@@ -1,9 +1,9 @@
 use crate::attributes::Attributes;
 use crate::record::is_omit;
-use proc_macro2::TokenStream;
-use quote::quote;
+use proc_macro2::{Span, TokenStream};
+use quote::{quote, quote_spanned};
 use syn::spanned::Spanned;
-use syn::{Field, Ident, Type, Visibility};
+use syn::{Field, Ident, Path, Type, Visibility};
 
 pub struct RecordField {
 	pub attributes: Attributes,
@@ -99,5 +99,20 @@ impl RecordField {
 				::std::clone::Clone::clone(&self.#name)
 			}
 		});
+	}
+
+	pub fn to_type_assertion(&self, trait_paths: &[Path], tokens: &mut TokenStream) {
+		let r#type = &self.r#type;
+		for trait_path in trait_paths {
+			let struct_name = format!(
+				"_Assert{}{}",
+				self.name.to_string().replace("r#", ""),
+				trait_path.segments.last().unwrap().ident.to_string()
+			);
+			let struct_name = Ident::new(&struct_name, Span::call_site());
+			tokens.extend(quote_spanned! {
+				r#type.span() => struct #struct_name where #r#type: #trait_path;
+			});
+		}
 	}
 }

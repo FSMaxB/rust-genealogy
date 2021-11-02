@@ -3,7 +3,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{parse_quote, ExprField, Fields, FieldsNamed, Ident, Token, Visibility};
+use syn::{parse_quote, ExprField, Fields, FieldsNamed, Ident, Path, Token, Visibility};
 
 pub struct RecordFields(Vec<RecordField>);
 
@@ -73,5 +73,11 @@ impl RecordFields {
 				}
 			}
 		})
+	}
+
+	pub fn to_type_assertions(&self, trait_paths: &[Path], tokens: &mut TokenStream) {
+		for field in &self.0 {
+			field.to_type_assertion(trait_paths, tokens);
+		}
 	}
 }

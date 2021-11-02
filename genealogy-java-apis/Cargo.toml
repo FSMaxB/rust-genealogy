@@ -15,6 +15,5 @@ lazy_static = "1"
 pin-project = "1"
 regex = {version = "1", default_features = false, features = ["std"]}
 rustc_version_runtime = "0.2.0"
-semver = "0.9" # Required because it is used by "rustc_version_runtime"
 url = "2"
 genealogy-macros = {path = "../genealogy-macros"}

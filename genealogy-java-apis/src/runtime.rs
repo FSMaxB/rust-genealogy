@@ -1,4 +1,4 @@
-pub use semver::Version;
+pub use rustc_version_runtime::Version;
 
 pub enum Runtime {}
 

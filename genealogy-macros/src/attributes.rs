@@ -1,11 +1,13 @@
+use proc_macro2::TokenStream;
+use quote::ToTokens;
 use std::collections::HashMap;
 use syn::parse::{Parse, ParseStream};
 use syn::punctuated::Punctuated;
-use syn::{Ident, Lit, Token};
+use syn::{Attribute, Ident, Lit, Token};
 
 /// A map of comma separated key-value properties in an attribute.
 /// `#[attribute(text = "value", number = 42)]`
-pub(crate) struct AttributeProperties {
+pub struct AttributeProperties {
 	pub properties: HashMap<Ident, Lit>,
 }
 
@@ -19,7 +21,7 @@ impl Parse for AttributeProperties {
 	}
 }
 
-pub(crate) struct AttributeProperty {
+pub struct AttributeProperty {
 	pub name: Ident,
 	pub value: Lit,
 }
@@ -30,5 +32,21 @@ impl Parse for AttributeProperty {
 		input.parse::<Token!(=)>()?;
 		let value = input.parse::<Lit>()?;
 		Ok(Self { name, value })
+	}
+}
+
+pub struct Attributes(Vec<Attribute>);
+
+impl From<Vec<Attribute>> for Attributes {
+	fn from(attributes: Vec<Attribute>) -> Self {
+		Self(attributes)
+	}
+}
+
+impl ToTokens for Attributes {
+	fn to_tokens(&self, tokens: &mut TokenStream) {
+		for attribute in &self.0 {
+			attribute.to_tokens(tokens);
+		}
 	}
 }

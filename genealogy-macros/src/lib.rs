@@ -2,7 +2,7 @@
 
 use proc_macro::TokenStream;
 
-mod attribute;
+mod attributes;
 mod record;
 
 /// Takes a struct and implements both a constructor and accessors, similarly to a Java record.

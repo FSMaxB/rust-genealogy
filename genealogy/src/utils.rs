@@ -1,6 +1,7 @@
 use genealogy_java_apis::collector::Collector;
 use genealogy_java_apis::exception::Exception::{self, IllegalArgumentException};
 use genealogy_java_apis::files::Files;
+use genealogy_java_apis::function::bi_predicate::BiPredicate;
 use genealogy_java_apis::list::List;
 use genealogy_java_apis::objects::Objects;
 use genealogy_java_apis::optional::Optional;
@@ -105,7 +106,7 @@ impl Utils {
 	where
 		Element: Clone + Debug + PartialEq + 'static,
 	{
-		Self::collect_equal_element_with_predicate(Objects::equals)
+		Self::collect_equal_element_with_predicate(Objects::equals.into())
 	}
 
 	/// ```java
@@ -130,7 +131,7 @@ impl Utils {
 	/// }
 	/// ```
 	pub fn collect_equal_element_with_predicate<Element>(
-		equals: impl Fn(Element, Element) -> bool + 'static + Clone,
+		equals: BiPredicate<Element, Element>,
 	) -> Collector<Element, Optional<Element>, Optional<Element>>
 	where
 		Element: Clone + Debug + 'static,
@@ -140,7 +141,7 @@ impl Utils {
 			{
 				let equals = equals.clone();
 				move |left: &mut Optional<Element>, right: Element| {
-					if left.is_present() && !equals(left.get()?, right.clone()) {
+					if left.is_present() && !equals.test(left.get()?, right.clone()) {
 						throw!(IllegalArgumentException(
 							format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
 						));
@@ -150,7 +151,7 @@ impl Utils {
 				}
 			},
 			move |mut left, right| {
-				if left.is_present() && right.is_present() && !equals(left.get()?, right.get()?) {
+				if left.is_present() && right.is_present() && !equals.test(left.get()?, right.get()?) {
 					throw!(IllegalArgumentException(
 						format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
 					));

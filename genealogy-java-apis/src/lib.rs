@@ -1,4 +1,5 @@
 #![allow(clippy::tabs_in_doc_comments)]
+pub mod atomic_reference;
 pub mod collection;
 pub mod collector;
 pub mod comparator;
@@ -11,6 +12,7 @@ pub mod integer;
 pub mod iterator;
 pub mod list;
 pub mod map;
+pub mod null;
 pub mod objects;
 pub mod optional;
 pub mod path;

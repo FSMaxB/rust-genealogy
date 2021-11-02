@@ -1,8 +1,10 @@
+use genealogy_java_apis::atomic_reference::AtomicReference;
 use genealogy_java_apis::collector::Collector;
 use genealogy_java_apis::exception::Exception::{self, IllegalArgumentException};
 use genealogy_java_apis::files::Files;
 use genealogy_java_apis::function::bi_predicate::BiPredicate;
 use genealogy_java_apis::list::List;
+use genealogy_java_apis::null::null;
 use genealogy_java_apis::objects::Objects;
 use genealogy_java_apis::optional::Optional;
 use genealogy_java_apis::path::Path;
@@ -102,7 +104,7 @@ impl Utils {
 	/// 	return collectEqualElement(Objects::equals);
 	/// }
 	/// ```
-	pub fn collect_equal_element<Element>() -> Collector<Element, Optional<Element>, Optional<Element>>
+	pub fn collect_equal_element<Element>() -> Collector<Element, AtomicReference<Element>, Optional<Element>>
 	where
 		Element: Clone + Debug + PartialEq + 'static,
 	{
@@ -130,41 +132,44 @@ impl Utils {
 	/// 	);
 	/// }
 	/// ```
+	///
+	/// NOTE: Compares Option<Element> in order to simulate null pointers.
 	pub fn collect_equal_element_with_predicate<Element>(
-		equals: BiPredicate<Element, Element>,
-	) -> Collector<Element, Optional<Element>, Optional<Element>>
+		equals: BiPredicate<Option<Element>, Option<Element>>,
+	) -> Collector<Element, AtomicReference<Element>, Optional<Element>>
 	where
 		Element: Clone + Debug + 'static,
 	{
 		Collector::of(
-			|| Ok(Optional::empty()),
+			AtomicReference::new,
 			{
 				let equals = equals.clone();
-				move |left: &mut Optional<Element>, right: Element| {
-					if left.is_present() && !equals.test(left.get()?, right.clone()) {
+				move |left, right: Element| {
+					// NOTE: The two calls to left.get are not a race condition because the Collector isn't concurrent
+					if left.get() != null && !equals.test(left.get(), Some(right.clone())) {
 						throw!(IllegalArgumentException(
-							format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
+							format!("Unequal elements in stream: {:?} vs {:?}", left.get(), &right).into()
 						));
 					}
 					left.set(right);
 					Ok(())
 				}
 			},
-			move |mut left, right| {
-				if left.is_present() && right.is_present() && !equals.test(left.get()?, right.get()?) {
+			move |left, right| {
+				// NOTE: The two calls to left.get are not a race condition because the Collector isn't concurrent
+				if left.get() != null && right.get() != null && !equals.test(left.get(), right.get()) {
 					throw!(IllegalArgumentException(
-						format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
+						format!("Unequal elements in stream: {:?} vs {:?}", left.get(), right.get()).into()
 					));
 				}
-				left.set(right.get()?);
 
-				if left.is_present() {
+				if left.get() != null {
 					Ok(left)
 				} else {
 					Ok(right)
 				}
 			},
-			Ok,
+			|reference| Ok(Optional::of_nullable(reference.get())),
 		)
 	}
 }

@@ -130,21 +130,38 @@ impl Utils {
 	/// }
 	/// ```
 	pub fn collect_equal_element_with_predicate<Element>(
-		equals: impl Fn(Element, Element) -> bool + 'static,
+		equals: impl Fn(Element, Element) -> bool + 'static + Clone,
 	) -> Collector<Element, Optional<Element>, Optional<Element>>
 	where
 		Element: Clone + Debug + 'static,
 	{
 		Collector::of(
 			|| Ok(Optional::empty()),
-			move |left, right: Element| {
-				if left.is_present() && !equals(left.get()?, right.clone()) {
+			{
+				let equals = equals.clone();
+				move |left: &mut Optional<Element>, right: Element| {
+					if left.is_present() && !equals(left.get()?, right.clone()) {
+						throw!(IllegalArgumentException(
+							format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
+						));
+					}
+					left.set(right);
+					Ok(())
+				}
+			},
+			move |mut left, right| {
+				if left.is_present() && right.is_present() && !equals(left.get()?, right.get()?) {
 					throw!(IllegalArgumentException(
 						format!("Unequal elements in stream: {:?} vs {:?}", left.get()?, &right).into()
 					));
 				}
-				left.set(right);
-				Ok(())
+				left.set(right.get()?);
+
+				if left.is_present() {
+					Ok(left)
+				} else {
+					Ok(right)
+				}
 			},
 			Ok,
 		)

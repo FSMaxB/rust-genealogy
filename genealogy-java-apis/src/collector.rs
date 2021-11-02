@@ -6,11 +6,11 @@ use crate::string::JString;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
-/// The combiner and characteristics where left out for easier implementation of the collectors.
-/// I don't intend to make this parallel capable anyways.
+/// The characteristics where left out because they aren't used in the original Java code anyways.
 pub struct Collector<Input, Accumulated, Reduced> {
 	pub supplier: Box<dyn FnOnce() -> Result<Accumulated, Exception>>,
 	pub accumulator: Box<dyn Fn(&mut Accumulated, Input) -> Result<(), Exception>>,
+	pub combiner: Box<dyn Fn(Accumulated, Accumulated) -> Result<Accumulated, Exception>>,
 	pub finisher: Box<dyn FnOnce(Accumulated) -> Result<Reduced, Exception>>,
 }
 
@@ -18,11 +18,13 @@ impl<Input, Accumulated, Reduced> Collector<Input, Accumulated, Reduced> {
 	pub fn of(
 		supplier: impl FnOnce() -> Result<Accumulated, Exception> + 'static,
 		accumulator: impl Fn(&mut Accumulated, Input) -> Result<(), Exception> + 'static,
+		combiner: impl Fn(Accumulated, Accumulated) -> Result<Accumulated, Exception> + 'static,
 		finisher: impl Fn(Accumulated) -> Result<Reduced, Exception> + 'static,
 	) -> Self {
 		Self {
 			supplier: Box::new(supplier),
 			accumulator: Box::new(accumulator),
+			combiner: Box::new(combiner),
 			finisher: Box::new(finisher),
 		}
 	}
@@ -42,6 +44,7 @@ impl Collectors {
 		let Collector {
 			supplier,
 			accumulator,
+			combiner,
 			finisher,
 		} = downstream;
 		Collector {
@@ -50,6 +53,7 @@ impl Collectors {
 				let mapped = mapper(item);
 				accumulator(accumulated, mapped)
 			}),
+			combiner,
 			finisher,
 		}
 	}
@@ -76,6 +80,13 @@ impl Collectors {
 				(downstream1.accumulator)(accumulated1, input.clone())?;
 				(downstream2.accumulator)(accumulated2, input)
 			}),
+			combiner: Box::new(
+				move |(first_accumulated1, first_accumulated2), (second_accumulated1, second_accumulated2)| {
+					let accumulated1 = (downstream1.combiner)(first_accumulated1, second_accumulated1)?;
+					let accumulated2 = (downstream2.combiner)(first_accumulated2, second_accumulated2)?;
+					Ok((accumulated1, accumulated2))
+				},
+			),
 			finisher: Box::new(move |(accumulated1, accumulated2)| {
 				let reduced1 = (downstream1.finisher)(accumulated1)?;
 				let reduced2 = (downstream2.finisher)(accumulated2)?;
@@ -93,6 +104,10 @@ impl Collectors {
 			accumulator: Box::new(|set, element| {
 				set.insert(element);
 				Ok(())
+			}),
+			combiner: Box::new(|mut set1, set2| {
+				set1.extend(set2);
+				Ok(set1)
 			}),
 			finisher: Box::new(|set| Ok(set.into())),
 		}
@@ -112,6 +127,10 @@ impl Collectors {
 				map.insert(key_mapper(&input), value_mapper(&input));
 				Ok(())
 			}),
+			combiner: Box::new(|mut map1, map2| {
+				map1.extend(map2);
+				Ok(map1)
+			}),
 			finisher: Box::new(|map| Ok(map.into())),
 		}
 	}
@@ -130,6 +149,10 @@ impl Collectors {
 				vector.push(input);
 				Ok(())
 			}),
+			combiner: Box::new(|mut map1, map2| {
+				map1.extend(map2);
+				Ok(map1)
+			}),
 			finisher: Box::new(|hash_map| {
 				Ok(hash_map
 					.into_iter()
@@ -146,6 +169,10 @@ impl Collectors {
 			accumulator: Box::new(|strings, string| {
 				strings.push(string.to_string());
 				Ok(())
+			}),
+			combiner: Box::new(|mut strings1, strings2| {
+				strings1.extend(strings2);
+				Ok(strings1)
 			}),
 			finisher: Box::new(|strings| Ok(strings.join(delimiter).into())),
 		}
@@ -204,6 +231,13 @@ impl Collectors {
 				accumulated.value_count += 1.0;
 				accumulated.simple_sum += double;
 				Ok(())
+			}),
+			combiner: Box::new(|mut a, b| {
+				a.sum_with_compensation(b.high_order_bits);
+				a.sum_with_compensation(b.low_order_bits);
+				a.value_count += b.value_count;
+				a.simple_sum += b.simple_sum;
+				Ok(a)
 			}),
 			finisher: Box::new(|accumulated| {
 				let average = if accumulated.value_count == 0.0 {

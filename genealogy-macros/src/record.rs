@@ -50,7 +50,6 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> syn::Result<
 	} = syn::parse2::<ItemStruct>(item)?;
 
 	if generics.gt_token.is_some() || generics.lt_token.is_some() || generics.where_clause.is_some() {
-		// FIXME: Make it work with generics
 		return Err(syn::Error::new(
 			generics.span(),
 			"#[record] currently doesn't work with generics.",

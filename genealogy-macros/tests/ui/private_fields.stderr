@@ -1,0 +1,10 @@
+error[E0616]: field `number` of struct `Record` is private
+  --> tests/ui/private_fields.rs:14:9
+   |
+14 |     record.number;
+   |            ^^^^^^ private field
+   |
+help: a method `number` also exists, call it with parentheses
+   |
+14 |     record.number();
+   |                  ++

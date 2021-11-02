@@ -1,0 +1,5 @@
+error: Invalid attribute property for #[record], allowed are "constructor", "equals" and "hash" with a boolean value.
+ --> tests/ui/invalid_atrribute.rs:3:10
+  |
+3 | #[record(invalid_attribute = true)]
+  |          ^^^^^^^^^^^^^^^^^

@@ -1,0 +1,7 @@
+error: #[record] is only allowed for structs with named fields.
+ --> tests/ui/empty_struct.rs:3:1
+  |
+3 | #[record]
+  | ^^^^^^^^^
+  |
+  = note: this error originates in the attribute macro `record` (in Nightly builds, run with -Z macro-backtrace for more info)

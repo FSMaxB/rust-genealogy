@@ -1,0 +1,52 @@
+error[E0277]: the trait bound `Struct: Clone` is not satisfied
+ --> tests/ui/field_missing_trait_implementations.rs:5:9
+  |
+5 |     value: Struct,
+  |            ^^^^^^ the trait `Clone` is not implemented for `Struct`
+  |
+  = help: see issue #48214
+
+error[E0277]: `Struct` doesn't implement `Debug`
+ --> tests/ui/field_missing_trait_implementations.rs:5:9
+  |
+5 |     value: Struct,
+  |            ^^^^^^ `Struct` cannot be formatted using `{:?}`
+  |
+  = help: the trait `Debug` is not implemented for `Struct`
+  = note: add `#[derive(Debug)]` to `Struct` or manually `impl Debug for Struct`
+  = help: see issue #48214
+
+error[E0277]: can't compare `Struct` with `Struct`
+ --> tests/ui/field_missing_trait_implementations.rs:5:9
+  |
+5 |     value: Struct,
+  |            ^^^^^^ no implementation for `Struct == Struct`
+  |
+  = help: the trait `PartialEq` is not implemented for `Struct`
+  = help: see issue #48214
+
+error[E0277]: the trait bound `Struct: Eq` is not satisfied
+ --> tests/ui/field_missing_trait_implementations.rs:5:9
+  |
+5 |     value: Struct,
+  |            ^^^^^^ the trait `Eq` is not implemented for `Struct`
+  |
+  = help: see issue #48214
+
+error[E0277]: the trait bound `Struct: Hash` is not satisfied
+ --> tests/ui/field_missing_trait_implementations.rs:5:9
+  |
+5 |     value: Struct,
+  |            ^^^^^^ the trait `Hash` is not implemented for `Struct`
+  |
+  = help: see issue #48214
+
+error[E0277]: `Struct` doesn't implement `std::fmt::Display`
+ --> tests/ui/field_missing_trait_implementations.rs:5:9
+  |
+5 |     value: Struct,
+  |            ^^^^^^ `Struct` cannot be formatted with the default formatter
+  |
+  = help: the trait `std::fmt::Display` is not implemented for `Struct`
+  = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+  = help: see issue #48214

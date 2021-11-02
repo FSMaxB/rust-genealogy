@@ -18,7 +18,7 @@ fn empty_record_with_explicit_constructor() {
 }
 
 #[test]
-fn record_with_one_attributes() {
+fn record_with_one_field() {
 	#[record]
 	struct Record {
 		value: usize,
@@ -30,7 +30,7 @@ fn record_with_one_attributes() {
 }
 
 #[test]
-fn record_with_two_attribute() {
+fn record_with_two_fields() {
 	#[record]
 	struct Record {
 		value: usize,
@@ -39,8 +39,42 @@ fn record_with_two_attribute() {
 
 	let record = Record::new(42, "hello");
 	assert_eq!(42, record.value());
+	assert_eq!(42, record.value);
+	assert_eq!("hello", record.text());
 	assert_eq!("hello", record.text);
-	assert_eq!("Record[value=42, text=hello]", record.to_string())
+	assert_eq!("Record[value=42, text=hello]", record.to_string());
+	assert_eq!(r#"Record { value: 42, text: "hello" }"#, format!("{:?}", record));
+	assert_eq!(
+		r#"Record {
+    value: 42,
+    text: "hello",
+}"#,
+		format!("{:#?}", record)
+	);
+}
+
+#[test]
+fn record_with_two_fields_all_derives_manually_enabled() {
+	#[record(constructor = true, equals = true, hash = true)]
+	struct Record {
+		value: usize,
+		text: &'static str,
+	}
+
+	let record = Record::new(42, "hello");
+	assert_eq!(42, record.value());
+	assert_eq!(42, record.value);
+	assert_eq!("hello", record.text());
+	assert_eq!("hello", record.text);
+	assert_eq!("Record[value=42, text=hello]", record.to_string());
+	assert_eq!(r#"Record { value: 42, text: "hello" }"#, format!("{:?}", record));
+	assert_eq!(
+		r#"Record {
+    value: 42,
+    text: "hello",
+}"#,
+		format!("{:#?}", record)
+	);
 }
 
 #[test]
@@ -54,10 +88,56 @@ fn record_with_derive() {
 	assert_eq!("Record[]", cloned.to_string());
 }
 
-// TODO: Test constructor = false
-// TODO: Test accessors
-// TODO: Test omitting accessors
-// TODO: Test visibility
-// TODO: Test Clone implementation of types
-// TODO: Test compiler error with generics
-// TODO: Test compiler error with tuple-structs and empty structs
+#[test]
+fn record_without_constructor() {
+	#[record(constructor = false)]
+	struct Record {}
+
+	impl Record {
+		pub fn new() -> Self {
+			Self {}
+		}
+	}
+
+	let _record = Record::new();
+}
+
+#[test]
+fn record_with_omitted_accessor() {
+	#[record]
+	struct Record {
+		#[omit]
+		number: usize,
+	}
+
+	impl Record {
+		pub fn number(&self) -> usize {
+			self.number
+		}
+	}
+
+	let record = Record::new(42);
+	assert_eq!(42, record.number);
+	assert_eq!(42, record.number());
+}
+
+#[test]
+fn public_record_has_public_methods() {
+	mod inner {
+		use super::*;
+
+		#[record]
+		pub struct Record {
+			number: usize,
+		}
+	}
+
+	let record = inner::Record::new(42);
+	assert_eq!(42, record.number());
+}
+
+#[test]
+fn record_fails_to_compile_if_invalid() {
+	let test = trybuild::TestCases::new();
+	test.compile_fail("tests/ui/*.rs");
+}

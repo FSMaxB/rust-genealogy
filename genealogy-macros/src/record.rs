@@ -32,7 +32,7 @@ pub fn record(record_parameters: TokenStream, item: TokenStream) -> syn::Result<
 				_ => {
 					return Err(syn::Error::new(
 						property.span(),
-						"Invalid attribute property for #[record]",
+						r#"Invalid attribute property for #[record], allowed are "constructor", "equals" and "hash" with a boolean value."#,
 					));
 				}
 			}

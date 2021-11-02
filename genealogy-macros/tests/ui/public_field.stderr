@@ -1,0 +1,5 @@
+error: All fields in #[record] must be private
+ --> tests/ui/public_field.rs:5:2
+  |
+5 |     pub number: usize,
+  |     ^^^

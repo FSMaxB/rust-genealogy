@@ -1,0 +1,5 @@
+error: #[record] currently doesn't work with generics.
+ --> tests/ui/generics.rs:4:14
+  |
+4 | struct Record<T> {
+  |              ^

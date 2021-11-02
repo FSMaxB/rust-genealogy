@@ -1,0 +1,23 @@
+error[E0369]: binary operation `==` cannot be applied to type `Record`
+  --> tests/ui/missing_derives.rs:10:2
+   |
+10 |     assert_eq!(record, record);
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |     |
+   |     Record
+   |     Record
+   |
+   = note: an implementation of `std::cmp::PartialEq` might be missing for `Record`
+   = note: this error originates in the macro `assert_eq` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `Record: Hash` is not satisfied
+   --> tests/ui/missing_derives.rs:12:2
+    |
+12  |     Hash::hash(&record, &mut hasher);
+    |     ^^^^^^^^^^ the trait `Hash` is not implemented for `Record`
+    |
+note: required by a bound in `std::hash::Hash::hash`
+   --> $RUST/core/src/hash/mod.rs
+    |
+    |     fn hash<H: Hasher>(&self, state: &mut H);
+    |             ^ required by this bound in `std::hash::Hash::hash`

@@ -8,4 +8,3 @@ edition = "2021"
 
 [dependencies]
 genealogy-java-apis = {path = "../genealogy-java-apis"}
-debug_stub_derive = "0.3"

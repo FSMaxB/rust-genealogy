@@ -1,5 +1,5 @@
 #![allow(clippy::tabs_in_doc_comments)]
-use genealogists::meta_inf_services::meta_inf_services;
+use genealogists::module_info::module_provides;
 use genealogy::config::Config;
 use genealogy::genealogist::genealogist_service::GenealogistService;
 use genealogy::genealogist::Genealogist;
@@ -209,7 +209,7 @@ $RECOMMENDED_POSTS
 fn main() -> Result<(), Exception> {
 	// One time global initialization that makes sure the ServiceLoader knows all the services.
 	// This can't be done automatically in Rust since there is no Reflection or class loader.
-	meta_inf_services();
+	module_provides();
 
 	// Note: Java doesn't get the first parameter as native processes do.
 	Main::main(List::of(args().skip(1).map(JString::from)))

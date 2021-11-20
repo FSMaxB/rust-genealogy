@@ -2,15 +2,12 @@ use genealogy::genealogist::genealogist_service::GenealogistService;
 use genealogy_java_apis::service_loader::ServiceLoader;
 
 /// ```java
-/// # org.codefx.java_after_eight.genealogists.repo.RepoGenealogist
-/// # org.codefx.java_after_eight.genealogists.silly.SillyGenealogistService
-/// org.codefx.java_after_eight.genealogists.tags.TagGenealogistService
-/// # org.codefx.java_after_eight.genealogists.type.TypeGenealogist
+/// provides GenealogistService with org.codefx.java_after_eight.genealogists.tags.TagGenealogistService;
 /// ```
 /// NOTE: This needs to be manually called on program start because there
 /// is no way to run one time global initialization in rust without an
 /// explicit call somewhere.
-pub fn meta_inf_services() {
+pub fn module_provides() {
 	ServiceLoader::register_many([
 		//GenealogistService::from(crate::repo::repo_genealogist_service::RepoGenealogistService),
 		//GenealogistService::from(crate::silly::silly_genealogist_service::SillyGenealogistService),

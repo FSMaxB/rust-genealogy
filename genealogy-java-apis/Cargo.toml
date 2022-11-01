@@ -13,6 +13,6 @@ futures-lite = "1"
 lazy_static = "1"
 pin-project = "1"
 regex = {version = "1", default_features = false, features = ["std"]}
-rustc_version_runtime = "0.2.0"
+rustc_version_runtime = "0.2.1"
 url = "2"
 genealogy-macros = {path = "../genealogy-macros"}

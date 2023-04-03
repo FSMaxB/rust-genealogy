@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 chrono = {version = "0.4", default_features = false, features = ["clock"]}
-dirs = "4"
+dirs = "5"
 futures-lite = "1"
 lazy_static = "1"
 pin-project = "1"

@@ -10,7 +10,7 @@ edition = "2021"
 chrono = {version = "0.4", default_features = false, features = ["clock"]}
 dirs = "4"
 futures-lite = "1"
-lazy_static = "1"
+lazy_static = "1.4.0"
 pin-project = "1"
 regex = {version = "1", default_features = false, features = ["std"]}
 rustc_version_runtime = "0.2.1"
